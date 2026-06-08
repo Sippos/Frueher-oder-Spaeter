@@ -32,14 +32,12 @@ function EmptySlot() {
 function Pile({
   label,
   count,
-  isOpponent = false,
 }: {
   label: string;
   count: number;
-  isOpponent?: boolean;
 }) {
   return (
-    <div className={`pile ${isOpponent ? "opponent-facing" : ""}`}>
+    <div className="pile">
       <span>{label}</span>
       <strong>{count}</strong>
     </div>
@@ -104,9 +102,9 @@ function PlayerBoard({
         </div>
 
         <aside className="side-piles">
-          <Pile label="Deck" count={player.deck.length} isOpponent={isOpponent} />
-          <Pile label="Spielstapel" count={0} isOpponent={isOpponent} />
-          <Pile label="Friedhof" count={player.graveyard.length} isOpponent={isOpponent} />
+          <Pile label="Deck" count={player.deck.length} />
+          <Pile label="Spielstapel" count={0} />
+          <Pile label="Friedhof" count={player.graveyard.length} />
         </aside>
       </div>
 

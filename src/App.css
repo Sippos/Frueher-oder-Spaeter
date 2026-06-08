@@ -160,7 +160,7 @@ button {
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
 }
 
-.opponent-facing {
+.small-card.opponent-facing img {
   transform: rotate(180deg);
 }
 
