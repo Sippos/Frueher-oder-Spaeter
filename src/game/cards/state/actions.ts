@@ -58,7 +58,8 @@ function drawOneCard(player: PlayerState): PlayerState {
 function resetMana(player: PlayerState): PlayerState {
   return {
     ...player,
-    mana: 2,
+    mana: 2 + player.bonusManaNextRound,
+    bonusManaNextRound: 0,
   };
 }
 
@@ -96,6 +97,20 @@ function applyStrengthChange(
           currentStrength: monster.currentStrength + amount,
         };
       }),
+    },
+  };
+}
+
+function addBonusManaNextRound(
+  players: GameState["players"],
+  playerId: PlayerId,
+  amount: number
+): GameState["players"] {
+  return {
+    ...players,
+    [playerId]: {
+      ...players[playerId],
+      bonusManaNextRound: players[playerId].bonusManaNextRound + amount,
     },
   };
 }
@@ -146,6 +161,59 @@ function applyRoundStartEffects(game: GameState): GameState {
   };
 }
 
+function isPositiveGefuehlCard(card: Card): boolean {
+  return (
+    card.id === "gefuehl-gelassenheit" ||
+    card.id === "gefuehl-freude" ||
+    card.id === "gefuehl-mut"
+  );
+}
+
+function isNegativeGefuehlCard(card: Card): boolean {
+  return (
+    card.id === "gefuehl-angst" ||
+    card.id === "gefuehl-scham" ||
+    card.id === "gefuehl-trauer"
+  );
+}
+
+function isGefuehlCard(card: Card): boolean {
+  return isPositiveGefuehlCard(card) || isNegativeGefuehlCard(card);
+}
+
+function countGefuehleAfterPlay(player: PlayerState, card: Card): number {
+  return player.spellZone.filter((spell) => isGefuehlCard(spell)).length +
+    (isGefuehlCard(card) ? 1 : 0);
+}
+
+function getGefuehlStrengthAmount(card: Card, gefuehlCount: number): number {
+  if (isPositiveGefuehlCard(card)) {
+    if (gefuehlCount >= 3) {
+      return 1000;
+    }
+
+    if (gefuehlCount === 2) {
+      return 500;
+    }
+
+    return 100;
+  }
+
+  if (isNegativeGefuehlCard(card)) {
+    if (gefuehlCount >= 3) {
+      return 500;
+    }
+
+    if (gefuehlCount === 2) {
+      return 300;
+    }
+
+    return 100;
+  }
+
+  return 0;
+}
+
 export function getTargetRequirement(card: Card): TargetRequirement | null {
   if (card.type !== "spell") {
     return null;
@@ -155,7 +223,8 @@ export function getTargetRequirement(card: Card): TargetRequirement | null {
     card.id === "eisenhauer-technik" ||
     card.id === "motivationsspritze" ||
     card.id === "pomodoro-technik" ||
-    card.id === "fokusblume"
+    card.id === "fokusblume" ||
+    isGefuehlCard(card)
   ) {
     return "ownMonster";
   }
@@ -230,6 +299,16 @@ function applySpellEffect(
           timing: "roundStart",
         },
       ];
+    }
+
+    if (isGefuehlCard(card)) {
+      const gefuehlCount = countGefuehleAfterPlay(players[playerId], card);
+      const strengthAmount = getGefuehlStrengthAmount(card, gefuehlCount);
+      players = applyStrengthChange(players, target, strengthAmount);
+
+      if (isNegativeGefuehlCard(card) && gefuehlCount >= 3) {
+        players = addBonusManaNextRound(players, playerId, 1);
+      }
     }
   }
 
