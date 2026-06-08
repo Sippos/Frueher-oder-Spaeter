@@ -22,9 +22,7 @@ body,
 }
 
 body {
-  background:
-    radial-gradient(circle at top, rgba(111, 64, 46, 0.35), transparent 42%),
-    #100c0b;
+  background: radial-gradient(circle at top, rgba(111, 64, 46, 0.35), transparent 42%), #100c0b;
   color: #f5efe7;
   font-family: system-ui, sans-serif;
   overflow: hidden;
@@ -39,27 +37,7 @@ button {
   height: 100vh;
   padding: 10px;
   display: grid;
-  grid-template-rows: 42px 1fr;
-  gap: 8px;
   overflow: hidden;
-}
-
-.game-topbar {
-  width: min(100%, 1320px);
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.game-topbar h1 {
-  margin: 0;
-  font-size: clamp(1.35rem, 3vw, 2rem);
-}
-
-.game-topbar div {
-  font-size: 0.95rem;
-  font-weight: 700;
 }
 
 .game-layout {
@@ -72,18 +50,34 @@ button {
 }
 
 .game-table {
+  position: relative;
   min-height: 0;
   padding: 12px;
+  padding-top: 34px;
   border-radius: 22px;
-  background:
-    radial-gradient(circle at center, rgba(255, 255, 255, 0.08), transparent 40%),
-    linear-gradient(180deg, #3a211b, #24130f);
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.08), transparent 40%), linear-gradient(180deg, #3a211b, #24130f);
   border: 2px solid #6e3e2f;
   box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
   display: grid;
   grid-template-rows: 106px 1fr 188px;
   gap: 10px;
   overflow: hidden;
+}
+
+.game-status {
+  position: absolute;
+  top: 10px;
+  right: 18px;
+  z-index: 10;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.32);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff4df;
+  font-weight: 800;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  text-transform: capitalize;
 }
 
 .hand-zone {
@@ -246,9 +240,7 @@ button {
   background: transparent;
   cursor: pointer;
   flex: 0 0 auto;
-  transition:
-    transform 140ms ease,
-    filter 140ms ease;
+  transition: transform 140ms ease, filter 140ms ease;
 }
 
 .card-view img {
@@ -355,23 +347,21 @@ button {
   }
 
   .app {
-    grid-template-rows: 34px 1fr;
-    gap: 6px;
     padding: 6px;
   }
 
-  .game-topbar h1 {
-    font-size: 1.25rem;
-  }
-
-  .game-topbar div {
-    font-size: 0.82rem;
-  }
-
   .game-table {
+    padding: 8px;
+    padding-top: 30px;
     grid-template-rows: 84px 1fr 142px;
     gap: 6px;
-    padding: 8px;
+  }
+
+  .game-status {
+    top: 7px;
+    right: 12px;
+    padding: 4px 10px;
+    font-size: 0.76rem;
   }
 
   .hand-zone {
