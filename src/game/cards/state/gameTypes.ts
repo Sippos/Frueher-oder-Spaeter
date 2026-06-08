@@ -43,6 +43,7 @@ export type PlayerState = {
   graveyard: Card[];
   mana: number;
   bonusManaNextRound: number;
+  nextBuffMultiplier: number;
   score: number;
 };
 
@@ -53,4 +54,5 @@ export type GameState = {
   currentPlayerId: PlayerId;
   players: Record<PlayerId, PlayerState>;
   ongoingEffects: OngoingEffect[];
+  blockNextDebuff: boolean;
 };
