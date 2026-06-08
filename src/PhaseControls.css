@@ -28,8 +28,67 @@
   gap: 10px;
 }
 
+.card-view {
+  position: relative;
+}
+
+.card-view--targetable {
+  box-shadow: 0 0 0 3px #ffd36a, 0 0 18px rgba(255, 211, 106, 0.8);
+}
+
+.strength-badge {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 4px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #f5efe7;
+  color: #24130f;
+  border: 2px solid #6e3e2f;
+  font-size: 0.72rem;
+  line-height: 1;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.45);
+}
+
+.target-banner {
+  position: absolute;
+  left: 18px;
+  top: 10px;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 211, 106, 0.95);
+  color: #24130f;
+  font-weight: 800;
+  font-size: 0.82rem;
+}
+
+.target-banner button {
+  border: 0;
+  border-radius: 999px;
+  background: rgba(36, 19, 15, 0.14);
+  color: #24130f;
+  font-weight: 800;
+  padding: 3px 8px;
+  cursor: pointer;
+}
+
 @media (max-height: 780px) {
   .phase-button {
     padding: 3px 8px;
+  }
+
+  .target-banner {
+    top: 7px;
+    left: 12px;
+    padding: 4px 8px;
+    font-size: 0.76rem;
   }
 }
