@@ -31,7 +31,6 @@ function getBaseMonsterStrength(card: Card): number {
     return card.strength;
   }
 
-  // TODO: Implement the "Du" copy-strength effect properly.
   return 0;
 }
 
@@ -76,6 +75,19 @@ function updateScores(players: GameState["players"]): GameState["players"] {
   };
 }
 
+function findMonster(
+  players: GameState["players"],
+  target?: TargetRef
+): PlayedMonsterCard | undefined {
+  if (!target) {
+    return undefined;
+  }
+
+  return players[target.playerId].monsterZone.find(
+    (monster) => monster.instanceId === target.instanceId
+  );
+}
+
 function applyStrengthChange(
   players: GameState["players"],
   target: TargetRef,
@@ -115,6 +127,94 @@ function addBonusManaNextRound(
   };
 }
 
+function discardRandomHandCard(
+  players: GameState["players"],
+  playerId: PlayerId
+): GameState["players"] {
+  const player = players[playerId];
+
+  if (player.hand.length === 0) {
+    return players;
+  }
+
+  const randomIndex = Math.floor(Math.random() * player.hand.length);
+  const discardedCard = player.hand[randomIndex];
+
+  return {
+    ...players,
+    [playerId]: {
+      ...player,
+      hand: player.hand.filter((_, index) => index !== randomIndex),
+      graveyard: [...player.graveyard, discardedCard],
+    },
+  };
+}
+
+function hasKomplexUndVisionaer(player: PlayerState): boolean {
+  return player.spellZone.some((spell) => spell.id === "komplex-und-visionaer");
+}
+
+function applyBuff(
+  players: GameState["players"],
+  playerId: PlayerId,
+  target: TargetRef,
+  amount: number
+): GameState["players"] {
+  const multiplier = players[playerId].nextBuffMultiplier;
+  const finalAmount = amount * multiplier;
+  let nextPlayers = players;
+
+  if (hasKomplexUndVisionaer(players[playerId])) {
+    for (const monster of players[playerId].monsterZone) {
+      nextPlayers = applyStrengthChange(
+        nextPlayers,
+        { playerId, instanceId: monster.instanceId },
+        finalAmount
+      );
+    }
+  } else {
+    nextPlayers = applyStrengthChange(nextPlayers, target, finalAmount);
+  }
+
+  return {
+    ...nextPlayers,
+    [playerId]: {
+      ...nextPlayers[playerId],
+      nextBuffMultiplier: 1,
+    },
+  };
+}
+
+function isDebuffBlockedByRhyzer(
+  game: GameState,
+  target?: TargetRef
+): boolean {
+  const monster = findMonster(game.players, target);
+  return (
+    !!monster &&
+    monster.id === "rhyzer-der-lichtgejagte" &&
+    (game.round === 1 || game.round === 3 || game.round === 5)
+  );
+}
+
+function applyDebuff(
+  game: GameState,
+  target: TargetRef,
+  amount: number
+): GameState {
+  if (game.blockNextDebuff || isDebuffBlockedByRhyzer(game, target)) {
+    return {
+      ...game,
+      blockNextDebuff: false,
+    };
+  }
+
+  return {
+    ...game,
+    players: applyStrengthChange(game.players, target, amount),
+  };
+}
+
 function applyRoundStartEffects(game: GameState): GameState {
   let players = game.players;
 
@@ -125,6 +225,18 @@ function applyRoundStartEffects(game: GameState): GameState {
   }
 
   for (const playerId of ["player1", "player2"] as const) {
+    if (game.round === 6 && players[playerId].monsterZone.length === 1) {
+      const onlyMonster = players[playerId].monsterZone[0];
+
+      if (onlyMonster.id === "augri-die-sanfte-riesin") {
+        players = applyStrengthChange(
+          players,
+          { playerId, instanceId: onlyMonster.instanceId },
+          onlyMonster.currentStrength
+        );
+      }
+    }
+
     for (const monster of players[playerId].monsterZone) {
       if (monster.id === "gravis-der-unermuedliche") {
         players = applyStrengthChange(
@@ -214,7 +326,20 @@ function getGefuehlStrengthAmount(card: Card, gefuehlCount: number): number {
   return 0;
 }
 
+function isBuffCard(card: Card): boolean {
+  return (
+    card.id === "eisenhauer-technik" ||
+    card.id === "motivationsspritze" ||
+    card.id === "pomodoro-technik" ||
+    isGefuehlCard(card)
+  );
+}
+
 export function getTargetRequirement(card: Card): TargetRequirement | null {
+  if (card.type === "monster" && card.id === "du") {
+    return "enemyMonster";
+  }
+
   if (card.type !== "spell") {
     return null;
   }
@@ -233,7 +358,6 @@ export function getTargetRequirement(card: Card): TargetRequirement | null {
     card.id === "selbstsabotage" ||
     card.id === "deadline" ||
     card.id === "knoten-im-kopf" ||
-    card.id === "hab-dich" ||
     card.id === "suesse-gruesse"
   ) {
     return "enemyMonster";
@@ -258,6 +382,31 @@ export function canTargetMonster(
   return true;
 }
 
+function addSpellToZone(
+  game: GameState,
+  playerId: PlayerId,
+  card: Extract<Card, { type: "spell" }>,
+  target?: TargetRef
+): GameState {
+  const sourcePlayer = game.players[playerId];
+  const playedSpell: PlayedSpellCard = {
+    ...card,
+    instanceId: createInstanceId(card.id),
+    target,
+  };
+
+  return {
+    ...game,
+    players: {
+      ...game.players,
+      [playerId]: {
+        ...sourcePlayer,
+        spellZone: [...sourcePlayer.spellZone, playedSpell],
+      },
+    },
+  };
+}
+
 function applySpellEffect(
   game: GameState,
   playerId: PlayerId,
@@ -268,16 +417,50 @@ function applySpellEffect(
     return game;
   }
 
-  let players = game.players;
-  let ongoingEffects: OngoingEffect[] = game.ongoingEffects;
+  let nextGame = game;
+  let players = nextGame.players;
+  let ongoingEffects: OngoingEffect[] = nextGame.ongoingEffects;
+
+  if (card.id === "auf-in-den-kampf") {
+    players = {
+      ...players,
+      [playerId]: {
+        ...players[playerId],
+        nextBuffMultiplier: 2,
+      },
+    };
+  }
+
+  if (card.id === "auszeit") {
+    nextGame = {
+      ...nextGame,
+      blockNextDebuff: true,
+    };
+  }
+
+  if (card.id === "hab-dich") {
+    players = addBonusManaNextRound(players, getOpponentId(playerId), -1);
+  }
+
+  nextGame = {
+    ...nextGame,
+    players,
+    ongoingEffects,
+  };
 
   if (target) {
     if (card.id === "eisenhauer-technik") {
-      players = applyStrengthChange(players, target, 300);
+      nextGame = {
+        ...nextGame,
+        players: applyBuff(nextGame.players, playerId, target, 300),
+      };
     }
 
     if (card.id === "motivationsspritze" || card.id === "pomodoro-technik") {
-      players = applyStrengthChange(players, target, 600);
+      nextGame = {
+        ...nextGame,
+        players: applyBuff(nextGame.players, playerId, target, 600),
+      };
     }
 
     if (
@@ -285,12 +468,12 @@ function applySpellEffect(
       card.id === "deadline" ||
       card.id === "knoten-im-kopf"
     ) {
-      players = applyStrengthChange(players, target, -300);
+      nextGame = applyDebuff(nextGame, target, -300);
     }
 
     if (card.id === "fokusblume") {
       ongoingEffects = [
-        ...ongoingEffects,
+        ...nextGame.ongoingEffects,
         {
           id: createInstanceId("fokusblume-effect"),
           sourceCardId: card.id,
@@ -299,38 +482,33 @@ function applySpellEffect(
           timing: "roundStart",
         },
       ];
+
+      nextGame = {
+        ...nextGame,
+        ongoingEffects,
+      };
     }
 
     if (isGefuehlCard(card)) {
-      const gefuehlCount = countGefuehleAfterPlay(players[playerId], card);
+      const gefuehlCount = countGefuehleAfterPlay(nextGame.players[playerId], card);
       const strengthAmount = getGefuehlStrengthAmount(card, gefuehlCount);
-      players = applyStrengthChange(players, target, strengthAmount);
+      nextGame = {
+        ...nextGame,
+        players: applyBuff(nextGame.players, playerId, target, strengthAmount),
+      };
 
       if (isNegativeGefuehlCard(card) && gefuehlCount >= 3) {
-        players = addBonusManaNextRound(players, playerId, 1);
+        nextGame = {
+          ...nextGame,
+          players: addBonusManaNextRound(nextGame.players, playerId, 1),
+        };
       }
     }
   }
 
-  const sourcePlayer = players[playerId];
-  const playedSpell: PlayedSpellCard = {
-    ...card,
-    instanceId: createInstanceId(card.id),
-    target,
-  };
-
-  players = {
-    ...players,
-    [playerId]: {
-      ...sourcePlayer,
-      spellZone: [...sourcePlayer.spellZone, playedSpell],
-    },
-  };
-
   return {
-    ...game,
-    players: updateScores(players),
-    ongoingEffects,
+    ...addSpellToZone(nextGame, playerId, card, target),
+    players: updateScores(addSpellToZone(nextGame, playerId, card, target).players),
   };
 }
 
@@ -383,6 +561,10 @@ export function playCardFromHand(
     return game;
   }
 
+  if (target && !findMonster(game.players, target)) {
+    return game;
+  }
+
   if (player.mana < card.mana) {
     return game;
   }
@@ -411,24 +593,35 @@ export function playCardFromHand(
   };
 
   if (card.type === "monster") {
+    const copiedStrength = target
+      ? findMonster(game.players, target)?.currentStrength
+      : undefined;
+    const baseStrength = card.id === "du" ? copiedStrength ?? 0 : getBaseMonsterStrength(card);
+
     const playedMonster: PlayedMonsterCard = {
       ...card,
       instanceId: createInstanceId(card.id),
-      baseStrength: getBaseMonsterStrength(card),
-      currentStrength: getBaseMonsterStrength(card),
+      baseStrength,
+      currentStrength: baseStrength,
     };
 
-    const updatedPlayer: PlayerState = {
+    let updatedPlayer: PlayerState = {
       ...playerAfterCost,
       monsterZone: [...playerAfterCost.monsterZone, playedMonster],
     };
 
+    let players = {
+      ...nextGame.players,
+      [playerId]: updatedPlayer,
+    };
+
+    if (card.id === "nira-die-augenlose") {
+      players = discardRandomHandCard(players, getOpponentId(playerId));
+    }
+
     nextGame = {
       ...nextGame,
-      players: updateScores({
-        ...nextGame.players,
-        [playerId]: updatedPlayer,
-      }),
+      players: updateScores(players),
     };
 
     return nextGame;
