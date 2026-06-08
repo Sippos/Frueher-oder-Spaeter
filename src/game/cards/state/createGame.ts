@@ -41,6 +41,7 @@ function createPlayer(
     graveyard: [],
     mana: 2,
     bonusManaNextRound: 0,
+    nextBuffMultiplier: 1,
     score: 0,
   };
 }
@@ -56,5 +57,6 @@ export function createGame(): GameState {
       player2: createPlayer("player2", "Finger des Aufschubs", "finger"),
     },
     ongoingEffects: [],
+    blockNextDebuff: false,
   };
 }
