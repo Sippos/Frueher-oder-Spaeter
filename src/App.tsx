@@ -1,34 +1,46 @@
 import { useState } from "react";
 import { createGame } from "./game/cards/state/createGame";
 import {
+  canTargetMonster,
   endRound,
+  getTargetRequirement,
   getWinner,
   playCardFromHand,
   startPlayPhase,
 } from "./game/cards/state/actions";
-import type { PlayerId, PlayerState } from "./game/cards/state/gameTypes";
+import type {
+  PlayedCard,
+  PlayedMonsterCard,
+  PlayerId,
+  PlayerState,
+  TargetRef,
+} from "./game/cards/state/gameTypes";
 import type { Card } from "./game/cards/cards";
 import "./App.css";
 import "./PhaseControls.css";
+
+type DisplayCard = Card | PlayedCard;
 
 function CardView({
   card,
   variant = "board",
   isOpponent = false,
+  isTargetable = false,
   onClick,
   onInspect,
 }: {
-  card: Card;
+  card: DisplayCard;
   variant?: "hand" | "opponentHand" | "board";
   isOpponent?: boolean;
+  isTargetable?: boolean;
   onClick?: () => void;
-  onInspect?: (card: Card) => void;
+  onInspect?: (card: DisplayCard) => void;
 }) {
   return (
     <button
       className={`card-view card-view--${variant} ${
         isOpponent ? "card-view--opponent" : ""
-      }`}
+      } ${isTargetable ? "card-view--targetable" : ""}`}
       onClick={onClick}
       onFocus={() => onInspect?.(card)}
       onMouseEnter={() => onInspect?.(card)}
@@ -36,6 +48,9 @@ function CardView({
       type="button"
     >
       <img src={card.imagePath} alt={card.name} />
+      {"currentStrength" in card && (
+        <strong className="strength-badge">{card.currentStrength}</strong>
+      )}
     </button>
   );
 }
@@ -72,24 +87,37 @@ function PlayerPiles({ player }: { player: PlayerState }) {
 function ZoneCards({
   cards,
   slots,
+  playerId,
   isOpponent = false,
   onInspect,
+  onTargetMonster,
+  canTarget,
 }: {
-  cards: Card[];
+  cards: PlayedCard[];
   slots: number;
+  playerId: PlayerId;
   isOpponent?: boolean;
-  onInspect: (card: Card) => void;
+  onInspect: (card: DisplayCard) => void;
+  onTargetMonster?: (target: TargetRef) => void;
+  canTarget?: (playerId: PlayerId, card: PlayedCard) => boolean;
 }) {
   return (
     <div className="zone-cards">
       {Array.from({ length: slots }, (_, index) => {
         const card = cards[index];
+        const isTargetable = card ? canTarget?.(playerId, card) ?? false : false;
 
         return card ? (
           <CardView
-            key={card.id}
+            key={card.instanceId}
             card={card}
             isOpponent={isOpponent}
+            isTargetable={isTargetable}
+            onClick={() => {
+              if (isTargetable) {
+                onTargetMonster?.({ playerId, instanceId: card.instanceId });
+              }
+            }}
             onInspect={onInspect}
           />
         ) : (
@@ -104,10 +132,14 @@ function BattlefieldSide({
   player,
   isOpponent = false,
   onInspect,
+  onTargetMonster,
+  canTarget,
 }: {
   player: PlayerState;
   isOpponent?: boolean;
-  onInspect: (card: Card) => void;
+  onInspect: (card: DisplayCard) => void;
+  onTargetMonster?: (target: TargetRef) => void;
+  canTarget?: (playerId: PlayerId, card: PlayedCard) => boolean;
 }) {
   return (
     <section className={`battlefield-side ${isOpponent ? "is-opponent" : ""}`}>
@@ -123,8 +155,13 @@ function BattlefieldSide({
           <ZoneCards
             cards={player.monsterZone}
             slots={4}
+            playerId={player.id}
             isOpponent={isOpponent}
             onInspect={onInspect}
+            onTargetMonster={onTargetMonster}
+            canTarget={(targetPlayerId, card) =>
+              card.type === "monster" && (canTarget?.(targetPlayerId, card) ?? false)
+            }
           />
         </div>
 
@@ -133,6 +170,7 @@ function BattlefieldSide({
           <ZoneCards
             cards={player.spellZone}
             slots={4}
+            playerId={player.id}
             isOpponent={isOpponent}
             onInspect={onInspect}
           />
@@ -147,13 +185,15 @@ function BattlefieldSide({
 function Hand({
   player,
   isOpponent = false,
+  selectedCardId,
   onPlayCard,
   onInspect,
 }: {
   player: PlayerState;
   isOpponent?: boolean;
+  selectedCardId?: string;
   onPlayCard: (playerId: PlayerId, cardId: string) => void;
-  onInspect: (card: Card) => void;
+  onInspect: (card: DisplayCard) => void;
 }) {
   return (
     <section className={`hand-zone ${isOpponent ? "hand-zone--opponent" : ""}`}>
@@ -169,6 +209,7 @@ function Hand({
             card={card}
             variant={isOpponent ? "opponentHand" : "hand"}
             isOpponent={isOpponent}
+            isTargetable={selectedCardId === card.id}
             onClick={() => onPlayCard(player.id, card.id)}
             onInspect={onInspect}
           />
@@ -178,7 +219,7 @@ function Hand({
   );
 }
 
-function CardPreview({ card }: { card?: Card }) {
+function CardPreview({ card }: { card?: DisplayCard }) {
   if (!card) {
     return (
       <aside className="card-preview empty-preview">
@@ -195,7 +236,11 @@ function CardPreview({ card }: { card?: Card }) {
       <p>
         {card.type === "monster" ? "Monster" : "Zauber"} · Mana: {card.mana}
       </p>
-      {card.type === "monster" && <p>Stärke: {card.strength}</p>}
+      {card.type === "monster" && (
+        <p>
+          Stärke: {"currentStrength" in card ? card.currentStrength : card.strength}
+        </p>
+      )}
       {card.type === "spell" && <p>Effekt: {card.effectType}</p>}
       <p className="preview-text">{card.text}</p>
     </aside>
@@ -204,15 +249,46 @@ function CardPreview({ card }: { card?: Card }) {
 
 function App() {
   const [game, setGame] = useState(() => createGame());
-  const [inspectedCard, setInspectedCard] = useState<Card | undefined>(() =>
+  const [inspectedCard, setInspectedCard] = useState<DisplayCard | undefined>(() =>
     game.players.player1.hand[0] ?? game.players.player2.hand[0]
   );
+  const [pendingSpell, setPendingSpell] = useState<{
+    playerId: PlayerId;
+    cardId: string;
+  } | null>(null);
 
   function handlePlayCard(playerId: PlayerId, cardId: string) {
+    const card = game.players[playerId].hand.find((handCard) => handCard.id === cardId);
+
+    if (!card) {
+      return;
+    }
+
+    const targetRequirement = getTargetRequirement(card);
+
+    if (targetRequirement) {
+      setPendingSpell({ playerId, cardId });
+      setInspectedCard(card);
+      return;
+    }
+
     setGame((currentGame) => playCardFromHand(currentGame, playerId, cardId));
   }
 
+  function handleTargetMonster(target: TargetRef) {
+    if (!pendingSpell) {
+      return;
+    }
+
+    setGame((currentGame) =>
+      playCardFromHand(currentGame, pendingSpell.playerId, pendingSpell.cardId, target)
+    );
+    setPendingSpell(null);
+  }
+
   function handlePhaseAction() {
+    setPendingSpell(null);
+
     setGame((currentGame) => {
       if (currentGame.phase === "draw") {
         return startPlayPhase(currentGame);
@@ -229,6 +305,18 @@ function App() {
   const opponent = game.players.player2;
   const player = game.players.player1;
   const winner = getWinner(game);
+  const pendingCard = pendingSpell
+    ? game.players[pendingSpell.playerId].hand.find((card) => card.id === pendingSpell.cardId)
+    : undefined;
+  const pendingRequirement = pendingCard ? getTargetRequirement(pendingCard) : null;
+
+  function canTargetCard(targetPlayerId: PlayerId, card: PlayedCard) {
+    if (!pendingSpell || !pendingRequirement || card.type !== "monster") {
+      return false;
+    }
+
+    return canTargetMonster(pendingSpell.playerId, pendingRequirement, targetPlayerId);
+  }
 
   function getPhaseButtonText() {
     if (game.phase === "draw") {
@@ -275,9 +363,19 @@ function App() {
             </button>
           </div>
 
+          {pendingCard && (
+            <div className="target-banner">
+              Ziel wählen für: <strong>{pendingCard.name}</strong>
+              <button onClick={() => setPendingSpell(null)} type="button">
+                Abbrechen
+              </button>
+            </div>
+          )}
+
           <Hand
             player={opponent}
             isOpponent
+            selectedCardId={pendingSpell?.cardId}
             onPlayCard={handlePlayCard}
             onInspect={setInspectedCard}
           />
@@ -287,17 +385,25 @@ function App() {
               player={opponent}
               isOpponent
               onInspect={setInspectedCard}
+              onTargetMonster={handleTargetMonster}
+              canTarget={canTargetCard}
             />
 
             <div className="conflict-line">
               <span>Schwächungszone</span>
             </div>
 
-            <BattlefieldSide player={player} onInspect={setInspectedCard} />
+            <BattlefieldSide
+              player={player}
+              onInspect={setInspectedCard}
+              onTargetMonster={handleTargetMonster}
+              canTarget={canTargetCard}
+            />
           </section>
 
           <Hand
             player={player}
+            selectedCardId={pendingSpell?.cardId}
             onPlayCard={handlePlayCard}
             onInspect={setInspectedCard}
           />
