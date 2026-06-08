@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { createGame } from "./game/cards/state/createGame";
-import { playCardFromHand } from "./game/cards/state/actions";
+import {
+  endRound,
+  getWinner,
+  playCardFromHand,
+  startPlayPhase,
+} from "./game/cards/state/actions";
 import type { PlayerId, PlayerState } from "./game/cards/state/gameTypes";
 import type { Card } from "./game/cards/cards";
 import "./App.css";
@@ -108,6 +113,7 @@ function BattlefieldSide({
       <div className="player-strip">
         <strong>{player.name}</strong>
         <span>Mana: {player.mana}</span>
+        <span>Stärke: {player.score}</span>
       </div>
 
       <div className="field-zones">
@@ -205,15 +211,67 @@ function App() {
     setGame((currentGame) => playCardFromHand(currentGame, playerId, cardId));
   }
 
+  function handlePhaseAction() {
+    setGame((currentGame) => {
+      if (currentGame.phase === "draw") {
+        return startPlayPhase(currentGame);
+      }
+
+      if (currentGame.phase === "play") {
+        return endRound(currentGame);
+      }
+
+      return currentGame;
+    });
+  }
+
   const opponent = game.players.player2;
   const player = game.players.player1;
+  const winner = getWinner(game);
+
+  function getPhaseButtonText() {
+    if (game.phase === "draw") {
+      return "Karten ziehen";
+    }
+
+    if (game.phase === "play") {
+      return "Runde beenden";
+    }
+
+    if (game.phase === "gameEnd") {
+      if (winner === "draw") {
+        return "Unentschieden";
+      }
+
+      if (winner === "player1") {
+        return "Auge gewinnt";
+      }
+
+      if (winner === "player2") {
+        return "Finger gewinnt";
+      }
+    }
+
+    return "Weiter";
+  }
 
   return (
     <main className="app">
       <section className="game-layout">
         <section className="game-table">
           <div className="game-status">
-            Runde {game.round} / {game.maxRounds} · {game.phase}
+            <span>
+              Runde {game.round} / {game.maxRounds} · {game.phase}
+            </span>
+
+            <button
+              className="phase-button"
+              disabled={game.phase === "gameEnd"}
+              onClick={handlePhaseAction}
+              type="button"
+            >
+              {getPhaseButtonText()}
+            </button>
           </div>
 
           <Hand
