@@ -9,6 +9,7 @@ import {
 import type { PlayerId, PlayerState } from "./game/cards/state/gameTypes";
 import type { Card } from "./game/cards/cards";
 import "./App.css";
+import "./PhaseControls.css";
 
 function CardView({
   card,
