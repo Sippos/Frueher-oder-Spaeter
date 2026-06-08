@@ -40,6 +40,7 @@ function createPlayer(
     spellZone: [],
     graveyard: [],
     mana: 2,
+    bonusManaNextRound: 0,
     score: 0,
   };
 }
