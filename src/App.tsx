@@ -210,15 +210,12 @@ function App() {
 
   return (
     <main className="app">
-      <header className="game-topbar">
-        <h1>Früher oder Später?</h1>
-        <div>
-          Runde {game.round} / {game.maxRounds} · Phase: {game.phase}
-        </div>
-      </header>
-
       <section className="game-layout">
         <section className="game-table">
+          <div className="game-status">
+            Runde {game.round} / {game.maxRounds} · {game.phase}
+          </div>
+
           <Hand
             player={opponent}
             isOpponent
