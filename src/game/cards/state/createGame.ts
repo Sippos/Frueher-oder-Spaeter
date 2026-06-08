@@ -54,5 +54,6 @@ export function createGame(): GameState {
       player1: createPlayer("player1", "Auge des Fokus", "eye"),
       player2: createPlayer("player2", "Finger des Aufschubs", "finger"),
     },
+    ongoingEffects: [],
   };
 }
