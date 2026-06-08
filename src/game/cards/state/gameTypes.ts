@@ -42,6 +42,7 @@ export type PlayerState = {
   spellZone: PlayedSpellCard[];
   graveyard: Card[];
   mana: number;
+  bonusManaNextRound: number;
   score: number;
 };
 
