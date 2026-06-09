@@ -25,12 +25,11 @@ import "./SleekOnboarding.css";
 type DisplayCard = Card | PlayedCard;
 type MonsterCard = Extract<Card, { type: "monster" }>;
 type CoinSide = DeckId;
-type SetupDrawIds = Partial<Record<DeckId, string[]>>;
 
 type SetupStep = {
   title: string;
   text: string;
-  animation: "coins" | "monster" | "shuffle" | "draw";
+  animation: "coins" | "monster" | "shuffle";
 };
 
 const setupSteps: SetupStep[] = [
@@ -46,13 +45,8 @@ const setupSteps: SetupStep[] = [
   },
   {
     title: "3. Restdeck mischen",
-    text: "Die übrigen 3 Monster und alle 11 Zauber werden gemischt und als verdeckter Kartenstapel bereitgelegt.",
+    text: "Die übrigen 3 Monster und alle 11 Zauber werden gemischt und als verdeckter Kartenstapel bereitgelegt. Die zwei Karten ziehst du gleich direkt vom Deck auf dem Spielbrett.",
     animation: "shuffle",
-  },
-  {
-    title: "4. Zwei Karten ziehen",
-    text: "Ziehe wie bei einem TCG 2 Karten vom verdeckten Stapel. Danach haben beide Seiten 3 Handkarten und das Spiel beginnt.",
-    animation: "draw",
   },
 ];
 
@@ -66,10 +60,6 @@ function getDeckName(deckId: DeckId) {
 
 function getOpponentDeckId(deckId: DeckId): DeckId {
   return deckId === "eye" ? "finger" : "eye";
-}
-
-function getDeckCards(deckId: DeckId): Card[] {
-  return cards.filter((card) => card.deck === deckId);
 }
 
 function getDeckMonsters(deckId: DeckId): MonsterCard[] {
@@ -118,51 +108,6 @@ function HiddenMonsterPickRow({
             aria-label={`Verdecktes Monster ${index + 1} aus ${getDeckName(deckId)}`}
           >
             <DeckBack deckId={deckId} small />
-            <span>{index + 1}</span>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function DrawPickRow({
-  title,
-  helper,
-  deckId,
-  deckOrder,
-  startingMonsterId,
-  selectedDrawIds,
-  onToggle,
-}: {
-  title: string;
-  helper: string;
-  deckId: DeckId;
-  deckOrder: Card[];
-  startingMonsterId?: string;
-  selectedDrawIds: string[];
-  onToggle: (cardId: string) => void;
-}) {
-  const drawableCards = deckOrder.filter((card) => card.id !== startingMonsterId);
-
-  return (
-    <div className="draw-pick-row">
-      <div className="monster-pick-copy">
-        <strong>{title}</strong>
-        <span>{helper}</span>
-      </div>
-      <div className="draw-pick-cards">
-        {drawableCards.map((card, index) => (
-          <button
-            className={`draw-pick-card ${selectedDrawIds.includes(card.id) ? "draw-pick-card--selected" : ""}`}
-            disabled={!selectedDrawIds.includes(card.id) && selectedDrawIds.length >= 2}
-            key={card.id}
-            onClick={() => onToggle(card.id)}
-            type="button"
-            aria-label={`Karte ${index + 1} aus ${getDeckName(deckId)} ziehen`}
-          >
-            <DeckBack deckId={deckId} small />
-            <span>{selectedDrawIds.includes(card.id) ? selectedDrawIds.indexOf(card.id) + 1 : ""}</span>
           </button>
         ))}
       </div>
@@ -175,31 +120,18 @@ function OnboardingAnimation({
   playerDeckId,
   opponentDeckId,
   monsterOrders,
-  deckOrders,
   selectedStartingMonsterIds,
-  selectedDrawIds,
   onSelectStartingMonster,
-  onToggleDrawCard,
 }: {
   step: SetupStep;
   playerDeckId: DeckId;
   opponentDeckId: DeckId;
   monsterOrders: Record<DeckId, MonsterCard[]>;
-  deckOrders: Record<DeckId, Card[]>;
   selectedStartingMonsterIds: Partial<Record<DeckId, string>>;
-  selectedDrawIds: SetupDrawIds;
   onSelectStartingMonster: (deckId: DeckId, cardId: string) => void;
-  onToggleDrawCard: (deckId: DeckId, cardId: string) => void;
 }) {
   if (step.animation === "coins") {
-    return (
-      <div className="setup-rules-card">
-        <strong>Vor dem Spiel</strong>
-        <span>15 Karten pro Deck</span>
-        <span>Decks per Münzwurf oder Absprache</span>
-        <span>Monster und Ziehen passieren verdeckt</span>
-      </div>
-    );
+    return <div className="setup-rules-card" />;
   }
 
   if (step.animation === "monster") {
@@ -215,7 +147,7 @@ function OnboardingAnimation({
         />
         <HiddenMonsterPickRow
           title="Gegenüber zieht bei dir"
-          helper={`Simuliere, welches deiner 4 Monster gezogen wird.`}
+          helper="Simuliere, welches deiner 4 Monster gezogen wird."
           deckId={playerDeckId}
           monsterOrder={monsterOrders[playerDeckId]}
           selectedMonsterId={selectedStartingMonsterIds[playerDeckId]}
@@ -225,66 +157,35 @@ function OnboardingAnimation({
     );
   }
 
-  if (step.animation === "shuffle") {
-    return (
-      <div className="shuffle-stack shuffle-stack--sleek" aria-hidden="true">
-        {Array.from({ length: 5 }, (_, index) => (
-          <div className="shuffle-card" key={index} style={{ animationDelay: `${index * 90}ms` }}>
-            <DeckBack deckId={playerDeckId} small />
-          </div>
-        ))}
-      </div>
-    );
-  }
-
   return (
-    <div className="draw-stage">
-      <DrawPickRow
-        title="Du ziehst 2 Karten"
-        helper="Wähle zwei verdeckte Karten von deinem Stapel."
-        deckId={playerDeckId}
-        deckOrder={deckOrders[playerDeckId]}
-        startingMonsterId={selectedStartingMonsterIds[playerDeckId]}
-        selectedDrawIds={selectedDrawIds[playerDeckId] ?? []}
-        onToggle={(cardId) => onToggleDrawCard(playerDeckId, cardId)}
-      />
-      <DrawPickRow
-        title="Gegenüber zieht 2 Karten"
-        helper="Simuliere den Startzug für die andere Seite."
-        deckId={opponentDeckId}
-        deckOrder={deckOrders[opponentDeckId]}
-        startingMonsterId={selectedStartingMonsterIds[opponentDeckId]}
-        selectedDrawIds={selectedDrawIds[opponentDeckId] ?? []}
-        onToggle={(cardId) => onToggleDrawCard(opponentDeckId, cardId)}
-      />
+    <div className="shuffle-stack shuffle-stack--sleek" aria-hidden="true">
+      {Array.from({ length: 5 }, (_, index) => (
+        <div className="shuffle-card" key={index} style={{ animationDelay: `${index * 90}ms` }}>
+          <DeckBack deckId={playerDeckId} small />
+        </div>
+      ))}
     </div>
   );
 }
 
-function Onboarding({ onStart }: { onStart: (playerDeckId: DeckId, startingMonsterIds: Partial<Record<DeckId, string>>, startingDrawIds: SetupDrawIds) => void }) {
+function Onboarding({
+  onStart,
+}: {
+  onStart: (playerDeckId: DeckId, startingMonsterIds: Partial<Record<DeckId, string>>) => void;
+}) {
   const [coinSide, setCoinSide] = useState<CoinSide>("eye");
   const [isTossingCoin, setIsTossingCoin] = useState(false);
   const [playerDeckId, setPlayerDeckId] = useState<DeckId>("eye");
   const [stepIndex, setStepIndex] = useState(0);
   const [selectedStartingMonsterIds, setSelectedStartingMonsterIds] = useState<Partial<Record<DeckId, string>>>({});
-  const [selectedDrawIds, setSelectedDrawIds] = useState<SetupDrawIds>({});
   const [monsterOrders] = useState<Record<DeckId, MonsterCard[]>>(() => ({
     eye: shuffle(getDeckMonsters("eye")),
     finger: shuffle(getDeckMonsters("finger")),
   }));
-  const [deckOrders] = useState<Record<DeckId, Card[]>>(() => ({
-    eye: shuffle(getDeckCards("eye")),
-    finger: shuffle(getDeckCards("finger")),
-  }));
   const activeStep = setupSteps[stepIndex];
   const opponentDeckId = getOpponentDeckId(playerDeckId);
   const hasPickedBothMonsters = Boolean(selectedStartingMonsterIds[playerDeckId] && selectedStartingMonsterIds[opponentDeckId]);
-  const hasDrawnBothHands = (selectedDrawIds[playerDeckId]?.length ?? 0) === 2 && (selectedDrawIds[opponentDeckId]?.length ?? 0) === 2;
-  const canContinue = activeStep.animation === "monster"
-    ? hasPickedBothMonsters
-    : activeStep.animation === "draw"
-      ? hasDrawnBothHands
-      : true;
+  const canContinue = activeStep.animation === "monster" ? hasPickedBothMonsters : true;
 
   function tossCoin() {
     setIsTossingCoin(true);
@@ -306,26 +207,6 @@ function Onboarding({ onStart }: { onStart: (playerDeckId: DeckId, startingMonst
       ...currentSelection,
       [deckId]: cardId,
     }));
-    setSelectedDrawIds((currentDraws) => ({
-      ...currentDraws,
-      [deckId]: [],
-    }));
-  }
-
-  function toggleDrawCard(deckId: DeckId, cardId: string) {
-    setSelectedDrawIds((currentDraws) => {
-      const currentDeckDraws = currentDraws[deckId] ?? [];
-      const nextDeckDraws = currentDeckDraws.includes(cardId)
-        ? currentDeckDraws.filter((selectedCardId) => selectedCardId !== cardId)
-        : currentDeckDraws.length < 2
-          ? [...currentDeckDraws, cardId]
-          : currentDeckDraws;
-
-      return {
-        ...currentDraws,
-        [deckId]: nextDeckDraws,
-      };
-    });
   }
 
   function goForward() {
@@ -339,7 +220,7 @@ function Onboarding({ onStart }: { onStart: (playerDeckId: DeckId, startingMonst
         <div className="onboarding-copy onboarding-copy--sleek">
           <p className="eyebrow">Spielaufbau</p>
           <h1>Früher oder Später?</h1>
-          <p>Decks verteilen, Startmonster verdeckt ziehen, Restdeck mischen, zwei Karten ziehen.</p>
+          <p>Decks verteilen, Startmonster verdeckt ziehen, Restdeck mischen. Danach ziehst du auf dem Spielbrett.</p>
         </div>
 
         <section className="deck-assignment deck-assignment--sleek" aria-label="Deckzuordnung">
@@ -367,11 +248,8 @@ function Onboarding({ onStart }: { onStart: (playerDeckId: DeckId, startingMonst
             playerDeckId={playerDeckId}
             opponentDeckId={opponentDeckId}
             monsterOrders={monsterOrders}
-            deckOrders={deckOrders}
             selectedStartingMonsterIds={selectedStartingMonsterIds}
-            selectedDrawIds={selectedDrawIds}
             onSelectStartingMonster={selectStartingMonster}
-            onToggleDrawCard={toggleDrawCard}
           />
           <div className="setup-copy setup-copy--sleek">
             <p className="step-counter">Schritt {stepIndex + 1} / {setupSteps.length}</p>
@@ -379,9 +257,6 @@ function Onboarding({ onStart }: { onStart: (playerDeckId: DeckId, startingMonst
             <p>{activeStep.text}</p>
             {activeStep.animation === "monster" && !hasPickedBothMonsters && (
               <p className="setup-warning">Wähle je 1 verdecktes Monster aus beiden Reihen.</p>
-            )}
-            {activeStep.animation === "draw" && !hasDrawnBothHands && (
-              <p className="setup-warning">Ziehe je 2 verdeckte Karten für beide Seiten.</p>
             )}
             <div className="setup-actions">
               <button
@@ -393,22 +268,12 @@ function Onboarding({ onStart }: { onStart: (playerDeckId: DeckId, startingMonst
                 Zurück
               </button>
               {stepIndex < setupSteps.length - 1 ? (
-                <button
-                  className="primary-button"
-                  disabled={!canContinue}
-                  onClick={goForward}
-                  type="button"
-                >
+                <button className="primary-button" disabled={!canContinue} onClick={goForward} type="button">
                   Weiter
                 </button>
               ) : (
-                <button
-                  className="primary-button"
-                  disabled={!hasDrawnBothHands}
-                  onClick={() => onStart(playerDeckId, selectedStartingMonsterIds, selectedDrawIds)}
-                  type="button"
-                >
-                  Spiel starten
+                <button className="primary-button" onClick={() => onStart(playerDeckId, selectedStartingMonsterIds)} type="button">
+                  Spielbrett öffnen
                 </button>
               )}
             </div>
@@ -438,21 +303,15 @@ function CardView({
 }) {
   return (
     <button
-      className={`card-view card-view--${variant} ${
-        isOpponent ? "card-view--opponent" : ""
-      } ${isTargetable ? "card-view--targetable" : ""} ${isHidden ? "card-view--hidden" : ""}`}
+      className={`card-view card-view--${variant} ${isOpponent ? "card-view--opponent" : ""} ${isTargetable ? "card-view--targetable" : ""} ${isHidden ? "card-view--hidden" : ""}`}
       onClick={onClick}
       onFocus={() => onInspect?.(card)}
       onMouseEnter={() => onInspect?.(card)}
       type="button"
     >
       {isHidden ? <DeckBack deckId={card.deck} /> : <img src={card.imagePath} alt={card.name} />}
-      {!isHidden && "currentStrength" in card && (
-        <strong className="strength-badge">{card.currentStrength}</strong>
-      )}
-      {!isHidden && "noBuffsUntilRound" in card && card.noBuffsUntilRound && (
-        <span className="status-badge">No Buff</span>
-      )}
+      {!isHidden && "currentStrength" in card && <strong className="strength-badge">{card.currentStrength}</strong>}
+      {!isHidden && "noBuffsUntilRound" in card && card.noBuffsUntilRound && <span className="status-badge">No Buff</span>}
     </button>
   );
 }
@@ -461,21 +320,54 @@ function EmptySlot({ small = false }: { small?: boolean }) {
   return <div className={`empty-slot ${small ? "empty-slot--small" : ""}`} />;
 }
 
-function Pile({ label, count, deckId }: { label: string; count: number; deckId?: DeckId }) {
-  return (
-    <div className={`pile ${deckId ? "pile--deck" : ""}`}>
+function Pile({
+  label,
+  count,
+  deckId,
+  onClick,
+  isDrawable = false,
+}: {
+  label: string;
+  count: number;
+  deckId?: DeckId;
+  onClick?: () => void;
+  isDrawable?: boolean;
+}) {
+  const content = (
+    <>
       {deckId && <DeckBack deckId={deckId} small />}
       <span>{label}</span>
       <strong>{count}</strong>
-    </div>
+    </>
   );
+
+  if (onClick) {
+    return (
+      <button className={`pile ${deckId ? "pile--deck" : ""} ${isDrawable ? "pile--drawable" : ""}`} onClick={onClick} type="button">
+        {content}
+      </button>
+    );
+  }
+
+  return <div className={`pile ${deckId ? "pile--deck" : ""}`}>{content}</div>;
 }
 
-function PlayerPiles({ player }: { player: PlayerState }) {
+function PlayerPiles({
+  player,
+  drawRemaining = 0,
+  onDrawFromDeck,
+}: {
+  player: PlayerState;
+  drawRemaining?: number;
+  onDrawFromDeck?: (playerId: PlayerId) => void;
+}) {
+  const canDraw = drawRemaining > 0 && player.deck.length > 0;
+
   return (
     <aside className="field-piles" aria-label={`${player.name} Stapel`}>
+      {canDraw && <span className="draw-hint">Noch {drawRemaining} ziehen</span>}
       <div className="deck-graveyard-stack">
-        <Pile label="Deck" count={player.deck.length} deckId={player.deckId} />
+        <Pile label="Deck" count={player.deck.length} deckId={player.deckId} onClick={canDraw ? () => onDrawFromDeck?.(player.id) : undefined} isDrawable={canDraw} />
         <Pile label="Friedhof" count={player.graveyard.length} />
       </div>
       <Pile label="Spielstapel" count={0} deckId={player.deckId} />
@@ -489,14 +381,8 @@ function canTargetPlayedCard(
   targetPlayerId: PlayerId,
   card: PlayedCard
 ) {
-  if (!pendingPlayerId || !pendingRequirement) {
-    return false;
-  }
-
-  if (pendingRequirement !== "enemyFieldCard" && card.type !== "monster") {
-    return false;
-  }
-
+  if (!pendingPlayerId || !pendingRequirement) return false;
+  if (pendingRequirement !== "enemyFieldCard" && card.type !== "monster") return false;
   return canTargetMonster(pendingPlayerId, pendingRequirement, targetPlayerId);
 }
 
@@ -519,16 +405,9 @@ function PlayedCardSlot({
   onInspect: (card: DisplayCard) => void;
   small?: boolean;
 }) {
-  if (!card) {
-    return <EmptySlot small={small} />;
-  }
+  if (!card) return <EmptySlot small={small} />;
 
-  const isTargetable = canTargetPlayedCard(
-    pendingPlayerId,
-    pendingRequirement,
-    playerId,
-    card
-  );
+  const isTargetable = canTargetPlayedCard(pendingPlayerId, pendingRequirement, playerId, card);
 
   return (
     <CardView
@@ -536,9 +415,7 @@ function PlayedCardSlot({
       isOpponent={isOpponent}
       isTargetable={isTargetable}
       onClick={() => {
-        if (isTargetable) {
-          onTargetCard?.({ playerId, instanceId: card.instanceId });
-        }
+        if (isTargetable) onTargetCard?.({ playerId, instanceId: card.instanceId });
       }}
       onInspect={onInspect}
     />
@@ -562,9 +439,7 @@ function CardStack({
   onTargetCard?: (target: TargetRef) => void;
   onInspect: (card: DisplayCard) => void;
 }) {
-  if (cards.length === 0) {
-    return <EmptySlot small />;
-  }
+  if (cards.length === 0) return <EmptySlot small />;
 
   return (
     <div className="spell-card-stack">
@@ -633,9 +508,7 @@ function SpellZone({
   onTargetCard?: (target: TargetRef) => void;
   onInspect: (card: DisplayCard) => void;
 }) {
-  const permanentCards = player.spellZone.filter(
-    (card) => card.effectType === "permanent"
-  );
+  const permanentCards = player.spellZone.filter((card) => card.effectType === "permanent");
   const specialCards = player.spellZone.filter((card) => card.effectType === "special");
   const buffCards = player.spellZone.filter((card) => card.effectType === "buff");
 
@@ -643,38 +516,18 @@ function SpellZone({
     <div className="spell-board">
       <div className="spell-wing spell-wing--permanent">
         <span>Permanent</span>
-        <CardStack
-          cards={permanentCards}
-          playerId={player.id}
-          isOpponent={isOpponent}
-          pendingPlayerId={pendingPlayerId}
-          pendingRequirement={pendingRequirement}
-          onTargetCard={onTargetCard}
-          onInspect={onInspect}
-        />
+        <CardStack cards={permanentCards} playerId={player.id} isOpponent={isOpponent} pendingPlayerId={pendingPlayerId} pendingRequirement={pendingRequirement} onTargetCard={onTargetCard} onInspect={onInspect} />
       </div>
 
       <div className="buff-grid" aria-label="Verstärkungen unter Monstern">
         {Array.from({ length: 4 }, (_, index) => {
           const monster = player.monsterZone[index];
-          const cardsForMonster = buffCards.filter(
-            (card) => card.target?.instanceId === monster?.instanceId
-          );
-          const looseBuffs = index === 0
-            ? buffCards.filter((card) => !card.target)
-            : [];
+          const cardsForMonster = buffCards.filter((card) => card.target?.instanceId === monster?.instanceId);
+          const looseBuffs = index === 0 ? buffCards.filter((card) => !card.target) : [];
 
           return (
             <div className="buff-stack" key={monster?.instanceId ?? index}>
-              <CardStack
-                cards={[...cardsForMonster, ...looseBuffs]}
-                playerId={player.id}
-                isOpponent={isOpponent}
-                pendingPlayerId={pendingPlayerId}
-                pendingRequirement={pendingRequirement}
-                onTargetCard={onTargetCard}
-                onInspect={onInspect}
-              />
+              <CardStack cards={[...cardsForMonster, ...looseBuffs]} playerId={player.id} isOpponent={isOpponent} pendingPlayerId={pendingPlayerId} pendingRequirement={pendingRequirement} onTargetCard={onTargetCard} onInspect={onInspect} />
             </div>
           );
         })}
@@ -682,15 +535,7 @@ function SpellZone({
 
       <div className="spell-wing spell-wing--special">
         <span>Spezial</span>
-        <CardStack
-          cards={specialCards}
-          playerId={player.id}
-          isOpponent={isOpponent}
-          pendingPlayerId={pendingPlayerId}
-          pendingRequirement={pendingRequirement}
-          onTargetCard={onTargetCard}
-          onInspect={onInspect}
-        />
+        <CardStack cards={specialCards} playerId={player.id} isOpponent={isOpponent} pendingPlayerId={pendingPlayerId} pendingRequirement={pendingRequirement} onTargetCard={onTargetCard} onInspect={onInspect} />
       </div>
     </div>
   );
@@ -704,6 +549,8 @@ function BattlefieldSide({
   onInspect,
   onTargetCard,
   isCurrentPlayer = false,
+  drawRemaining = 0,
+  onDrawFromDeck,
 }: {
   player: PlayerState;
   isOpponent?: boolean;
@@ -712,6 +559,8 @@ function BattlefieldSide({
   onInspect: (card: DisplayCard) => void;
   onTargetCard?: (target: TargetRef) => void;
   isCurrentPlayer?: boolean;
+  drawRemaining?: number;
+  onDrawFromDeck?: (playerId: PlayerId) => void;
 }) {
   return (
     <section className={`battlefield-side ${isOpponent ? "is-opponent" : ""} ${isCurrentPlayer ? "is-current-player" : ""}`}>
@@ -727,30 +576,16 @@ function BattlefieldSide({
         <div className="field-main">
           <div className="field-zone field-zone--monsters">
             <span className="zone-label">Monsterzone</span>
-            <MonsterZone
-              player={player}
-              isOpponent={isOpponent}
-              pendingPlayerId={pendingPlayerId}
-              pendingRequirement={pendingRequirement}
-              onTargetCard={onTargetCard}
-              onInspect={onInspect}
-            />
+            <MonsterZone player={player} isOpponent={isOpponent} pendingPlayerId={pendingPlayerId} pendingRequirement={pendingRequirement} onTargetCard={onTargetCard} onInspect={onInspect} />
           </div>
 
           <div className="field-zone field-zone--spells">
             <span className="zone-label">Zauberzone</span>
-            <SpellZone
-              player={player}
-              isOpponent={isOpponent}
-              pendingPlayerId={pendingPlayerId}
-              pendingRequirement={pendingRequirement}
-              onTargetCard={onTargetCard}
-              onInspect={onInspect}
-            />
+            <SpellZone player={player} isOpponent={isOpponent} pendingPlayerId={pendingPlayerId} pendingRequirement={pendingRequirement} onTargetCard={onTargetCard} onInspect={onInspect} />
           </div>
         </div>
 
-        <PlayerPiles player={player} />
+        <PlayerPiles player={player} drawRemaining={drawRemaining} onDrawFromDeck={onDrawFromDeck} />
       </div>
     </section>
   );
@@ -770,9 +605,7 @@ function DebuffZone({
   onInspect: (card: DisplayCard) => void;
 }) {
   const debuffs = (["player2", "player1"] as const).flatMap((playerId) =>
-    players[playerId].spellZone
-      .filter((card) => card.effectType === "debuff")
-      .map((card) => ({ playerId, card }))
+    players[playerId].spellZone.filter((card) => card.effectType === "debuff").map((card) => ({ playerId, card }))
   );
 
   return (
@@ -783,16 +616,7 @@ function DebuffZone({
           <span className="zone-hint">Schwächungen liegen hier</span>
         ) : (
           debuffs.map(({ playerId, card }) => (
-            <PlayedCardSlot
-              key={card.instanceId}
-              card={card}
-              playerId={playerId}
-              pendingPlayerId={pendingPlayerId}
-              pendingRequirement={pendingRequirement}
-              onTargetCard={onTargetCard}
-              onInspect={onInspect}
-              small
-            />
+            <PlayedCardSlot key={card.instanceId} card={card} playerId={playerId} pendingPlayerId={pendingPlayerId} pendingRequirement={pendingRequirement} onTargetCard={onTargetCard} onInspect={onInspect} small />
           ))
         )}
       </div>
@@ -855,22 +679,48 @@ function CardPreview({ card }: { card?: DisplayCard }) {
 }
 
 function GameScreen({ game, setGame }: { game: GameState; setGame: Dispatch<SetStateAction<GameState | null>> }) {
-  const [inspectedCard, setInspectedCard] = useState<DisplayCard | undefined>(() =>
-    game.players.player1.hand[0] ?? game.players.player2.hand[0]
-  );
+  const [inspectedCard, setInspectedCard] = useState<DisplayCard | undefined>(() => game.players.player1.hand[0] ?? game.players.player2.hand[0]);
   const [pendingSpell, setPendingSpell] = useState<{ playerId: PlayerId; cardId: string } | null>(null);
+  const [setupDrawRemaining, setSetupDrawRemaining] = useState<Record<PlayerId, number>>({ player1: 2, player2: 2 });
+
+  const needsSetupDraw = game.round === 1 && game.phase === "draw" && (setupDrawRemaining.player1 > 0 || setupDrawRemaining.player2 > 0);
 
   function hasEnemyFieldCards(playerId: PlayerId) {
     const enemy = game.players[playerId === "player1" ? "player2" : "player1"];
     return enemy.monsterZone.length + enemy.spellZone.length > 0;
   }
 
+  function drawFromDeck(playerId: PlayerId) {
+    if (game.phase !== "draw" || setupDrawRemaining[playerId] <= 0) return;
+
+    setGame((currentGame) => {
+      if (!currentGame) return currentGame;
+      const player = currentGame.players[playerId];
+      const [drawnCard, ...remainingDeck] = player.deck;
+      if (!drawnCard) return currentGame;
+
+      return {
+        ...currentGame,
+        players: {
+          ...currentGame.players,
+          [playerId]: {
+            ...player,
+            deck: remainingDeck,
+            hand: [...player.hand, drawnCard],
+          },
+        },
+      };
+    });
+
+    setSetupDrawRemaining((current) => ({
+      ...current,
+      [playerId]: Math.max(0, current[playerId] - 1),
+    }));
+  }
+
   function handlePlayCard(playerId: PlayerId, cardId: string) {
     const card = game.players[playerId].hand.find((handCard) => handCard.id === cardId);
-
-    if (!card) {
-      return;
-    }
+    if (!card) return;
 
     const targetRequirement = getTargetRequirement(card);
 
@@ -884,30 +734,20 @@ function GameScreen({ game, setGame }: { game: GameState; setGame: Dispatch<SetS
   }
 
   function handleTargetCard(target: TargetRef) {
-    if (!pendingSpell) {
-      return;
-    }
+    if (!pendingSpell) return;
 
-    setGame((currentGame) =>
-      currentGame ? playCardFromHand(currentGame, pendingSpell.playerId, pendingSpell.cardId, target) : currentGame
-    );
+    setGame((currentGame) => currentGame ? playCardFromHand(currentGame, pendingSpell.playerId, pendingSpell.cardId, target) : currentGame);
     setPendingSpell(null);
   }
 
   function handlePhaseAction() {
+    if (needsSetupDraw) return;
     setPendingSpell(null);
 
     setGame((currentGame) => {
       if (!currentGame) return currentGame;
-
-      if (currentGame.phase === "draw") {
-        return startPlayPhase(currentGame);
-      }
-
-      if (currentGame.phase === "play") {
-        return endRound(currentGame);
-      }
-
+      if (currentGame.phase === "draw") return startPlayPhase(currentGame);
+      if (currentGame.phase === "play") return endRound(currentGame);
       return currentGame;
     });
   }
@@ -915,12 +755,11 @@ function GameScreen({ game, setGame }: { game: GameState; setGame: Dispatch<SetS
   const opponent = game.players.player2;
   const player = game.players.player1;
   const winner = getWinner(game);
-  const pendingCard = pendingSpell
-    ? game.players[pendingSpell.playerId].hand.find((card) => card.id === pendingSpell.cardId)
-    : undefined;
+  const pendingCard = pendingSpell ? game.players[pendingSpell.playerId].hand.find((card) => card.id === pendingSpell.cardId) : undefined;
   const pendingRequirement = pendingCard ? getTargetRequirement(pendingCard) : null;
 
   function getPhaseButtonText() {
+    if (needsSetupDraw) return "Klicke beide Decks";
     if (game.phase === "draw") return "Karten ziehen";
     if (game.phase === "play") return game.repeatPlayPhase ? "Spielphase wiederholen" : "Runde beenden";
 
@@ -942,12 +781,7 @@ function GameScreen({ game, setGame }: { game: GameState; setGame: Dispatch<SetS
               Runde {game.round} / {game.maxRounds} · {game.phase} · {game.players[game.currentPlayerId].name} beginnt
             </span>
 
-            <button
-              className="phase-button"
-              disabled={game.phase === "gameEnd"}
-              onClick={handlePhaseAction}
-              type="button"
-            >
+            <button className="phase-button" disabled={game.phase === "gameEnd" || needsSetupDraw} onClick={handlePhaseAction} type="button">
               {getPhaseButtonText()}
             </button>
           </div>
@@ -955,42 +789,32 @@ function GameScreen({ game, setGame }: { game: GameState; setGame: Dispatch<SetS
           {pendingCard && (
             <div className="target-banner">
               Ziel wählen für: <strong>{pendingCard.name}</strong>
-              <button onClick={() => setPendingSpell(null)} type="button">
-                Abbrechen
-              </button>
+              <button onClick={() => setPendingSpell(null)} type="button">Abbrechen</button>
             </div>
           )}
 
-          <Hand
-            player={opponent}
-            isOpponent
-            selectedCardId={pendingSpell?.cardId}
-            onPlayCard={handlePlayCard}
-            onInspect={setInspectedCard}
-          />
+          <Hand player={opponent} isOpponent selectedCardId={pendingSpell?.cardId} onPlayCard={handlePlayCard} onInspect={setInspectedCard} />
 
           <section className="battlefield">
             <BattlefieldSide
               player={opponent}
               isOpponent
               isCurrentPlayer={game.currentPlayerId === opponent.id}
+              drawRemaining={setupDrawRemaining.player2}
+              onDrawFromDeck={drawFromDeck}
               pendingPlayerId={pendingSpell?.playerId}
               pendingRequirement={pendingRequirement}
               onInspect={setInspectedCard}
               onTargetCard={handleTargetCard}
             />
 
-            <DebuffZone
-              players={game.players}
-              pendingPlayerId={pendingSpell?.playerId}
-              pendingRequirement={pendingRequirement}
-              onTargetCard={handleTargetCard}
-              onInspect={setInspectedCard}
-            />
+            <DebuffZone players={game.players} pendingPlayerId={pendingSpell?.playerId} pendingRequirement={pendingRequirement} onTargetCard={handleTargetCard} onInspect={setInspectedCard} />
 
             <BattlefieldSide
               player={player}
               isCurrentPlayer={game.currentPlayerId === player.id}
+              drawRemaining={setupDrawRemaining.player1}
+              onDrawFromDeck={drawFromDeck}
               pendingPlayerId={pendingSpell?.playerId}
               pendingRequirement={pendingRequirement}
               onInspect={setInspectedCard}
@@ -998,12 +822,7 @@ function GameScreen({ game, setGame }: { game: GameState; setGame: Dispatch<SetS
             />
           </section>
 
-          <Hand
-            player={player}
-            selectedCardId={pendingSpell?.cardId}
-            onPlayCard={handlePlayCard}
-            onInspect={setInspectedCard}
-          />
+          <Hand player={player} selectedCardId={pendingSpell?.cardId} onPlayCard={handlePlayCard} onInspect={setInspectedCard} />
         </section>
 
         <CardPreview card={inspectedCard} />
@@ -1018,8 +837,8 @@ function App() {
   if (!game) {
     return (
       <Onboarding
-        onStart={(playerDeckId, startingMonsterIds, startingDrawIds) =>
-          setGame(createGame({ player1DeckId: playerDeckId, startingMonsterIds, startingDrawIds }))
+        onStart={(playerDeckId, startingMonsterIds) =>
+          setGame(createGame({ player1DeckId: playerDeckId, startingMonsterIds }))
         }
       />
     );
