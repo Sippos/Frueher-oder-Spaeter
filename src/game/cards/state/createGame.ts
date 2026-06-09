@@ -58,5 +58,6 @@ export function createGame(): GameState {
     },
     ongoingEffects: [],
     blockNextDebuff: false,
+    repeatPlayPhase: false,
   };
 }
