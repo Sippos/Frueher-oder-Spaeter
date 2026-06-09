@@ -39,6 +39,12 @@ function calculateScore(player: PlayerState): number {
   return player.monsterZone.reduce((total, card) => total + card.currentStrength, 0);
 }
 
+function getRoundStarter(players: GameState["players"], fallback: PlayerId): PlayerId {
+  if (players.player1.score > players.player2.score) return "player1";
+  if (players.player2.score > players.player1.score) return "player2";
+  return fallback;
+}
+
 function drawOneCard(player: PlayerState): PlayerState {
   const [drawnCard, ...remainingDeck] = player.deck;
 
@@ -715,11 +721,13 @@ export function endRound(game: GameState): GameState {
   }
 
   const updatedPlayers = updateScores(game.players);
+  const nextCurrentPlayerId = getRoundStarter(updatedPlayers, game.currentPlayerId);
 
   if (game.repeatPlayPhase) {
     return {
       ...game,
       phase: "play",
+      currentPlayerId: nextCurrentPlayerId,
       repeatPlayPhase: false,
       players: updatedPlayers,
     };
@@ -729,6 +737,7 @@ export function endRound(game: GameState): GameState {
     return {
       ...game,
       phase: "gameEnd",
+      currentPlayerId: nextCurrentPlayerId,
       players: updatedPlayers,
     };
   }
@@ -737,6 +746,7 @@ export function endRound(game: GameState): GameState {
     ...game,
     round: game.round + 1,
     phase: "draw",
+    currentPlayerId: nextCurrentPlayerId,
     players: updatedPlayers,
   };
 }
