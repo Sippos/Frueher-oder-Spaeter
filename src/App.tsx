@@ -19,6 +19,7 @@ import type {
 import "./App.css";
 import "./PhaseControls.css";
 import "./Onboarding.css";
+import "./MonsterPick.css";
 
 type DisplayCard = Card | PlayedCard;
 type MonsterCard = Extract<Card, { type: "monster" }>;
