@@ -1,0 +1,110 @@
+.monster-pick-stage {
+  min-height: 310px;
+  padding: 14px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at center, rgba(255, 244, 223, 0.12), transparent 46%),
+    rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: grid;
+  gap: 14px;
+  align-content: center;
+  overflow: visible;
+}
+
+.monster-pick-row {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.monster-pick-copy {
+  display: grid;
+  gap: 5px;
+}
+
+.monster-pick-copy strong {
+  color: #fff4df;
+  line-height: 1.1;
+}
+
+.monster-pick-copy span,
+.setup-warning {
+  color: #ffd6a8;
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.setup-warning {
+  margin: 0;
+  font-weight: 800;
+}
+
+.monster-pick-cards {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(62px, 1fr));
+  gap: 8px;
+}
+
+.monster-pick-card {
+  min-width: 0;
+  padding: 5px;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.2);
+  color: rgba(255, 244, 223, 0.78);
+  cursor: pointer;
+  display: grid;
+  gap: 5px;
+  justify-items: center;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.monster-pick-card:hover,
+.monster-pick-card:focus-visible {
+  transform: translateY(-8px) scale(1.04);
+  border-color: rgba(255, 211, 106, 0.6);
+  background: rgba(255, 211, 106, 0.08);
+  outline: none;
+  z-index: 3;
+}
+
+.monster-pick-card--selected {
+  border-color: #ffd36a;
+  background: rgba(255, 211, 106, 0.14);
+  box-shadow: 0 0 0 2px rgba(255, 211, 106, 0.16), 0 12px 28px rgba(0, 0, 0, 0.3);
+}
+
+.monster-pick-card img {
+  width: min(100%, 76px);
+  aspect-ratio: 134 / 232;
+  object-fit: cover;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.42);
+}
+
+.monster-pick-card span {
+  max-width: 100%;
+  font-size: 0.62rem;
+  font-weight: 800;
+  line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.primary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+@media (max-width: 820px) {
+  .monster-pick-row {
+    grid-template-columns: 1fr;
+  }
+
+  .monster-pick-cards {
+    grid-template-columns: repeat(2, minmax(92px, 1fr));
+  }
+}
