@@ -4,6 +4,7 @@ import type { GameState, PlayerId, PlayerState } from "./gameTypes";
 
 export type CreateGameOptions = {
   player1DeckId?: DeckId;
+  startingMonsterIds?: Partial<Record<DeckId, string>>;
 };
 
 function shuffle<T>(array: T[]): T[] {
@@ -25,17 +26,21 @@ function getPlayerIdForDeck(player1DeckId: DeckId, deckId: DeckId): PlayerId {
 function createPlayer(
   id: PlayerId,
   name: string,
-  deckId: DeckId
+  deckId: DeckId,
+  selectedStartingMonsterId?: string
 ): PlayerState {
   const fullDeck = cards.filter((card) => card.deck === deckId);
   const monsters = fullDeck.filter((card) => card.type === "monster");
   const spells = fullDeck.filter((card) => card.type === "spell");
 
   const shuffledMonsters = shuffle(monsters);
-  const startingMonster = shuffledMonsters[0];
+  const selectedStartingMonster = shuffledMonsters.find(
+    (card) => card.id === selectedStartingMonsterId
+  );
+  const startingMonster = selectedStartingMonster ?? shuffledMonsters[0];
 
   const remainingCards = shuffle([
-    ...shuffledMonsters.slice(1),
+    ...shuffledMonsters.filter((card) => card.id !== startingMonster.id),
     ...spells,
   ]);
 
@@ -72,8 +77,18 @@ export function createGame(options: CreateGameOptions = {}): GameState {
     phase: "draw",
     currentPlayerId: getPlayerIdForDeck(player1DeckId, "eye"),
     players: {
-      player1: createPlayer("player1", getDeckName(player1DeckId), player1DeckId),
-      player2: createPlayer("player2", getDeckName(player2DeckId), player2DeckId),
+      player1: createPlayer(
+        "player1",
+        getDeckName(player1DeckId),
+        player1DeckId,
+        options.startingMonsterIds?.[player1DeckId]
+      ),
+      player2: createPlayer(
+        "player2",
+        getDeckName(player2DeckId),
+        player2DeckId,
+        options.startingMonsterIds?.[player2DeckId]
+      ),
     },
     ongoingEffects: [],
     blockNextDebuff: false,
