@@ -5,8 +5,8 @@
 :root {
   --board-card-w: 62px;
   --board-card-h: 88px;
-  --hand-card-w: 118px;
-  --hand-card-h: 166px;
+  --hand-card-w: 134px;
+  --hand-card-h: 232px;
   --opponent-hand-card-w: 68px;
   --opponent-hand-card-h: 96px;
   --pile-w: 70px;
@@ -59,7 +59,7 @@ button {
   border: 2px solid #6e3e2f;
   box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
   display: grid;
-  grid-template-rows: 106px 1fr 188px;
+  grid-template-rows: 106px 1fr 254px;
   gap: 10px;
   overflow: hidden;
 }
@@ -90,6 +90,7 @@ button {
   grid-template-columns: 104px 1fr;
   gap: 10px;
   align-items: center;
+  overflow: visible;
 }
 
 .hand-zone--opponent {
@@ -117,9 +118,10 @@ button {
   min-width: 0;
   height: 100%;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
+  overflow: visible;
 }
 
 .battlefield {
@@ -240,6 +242,7 @@ button {
   background: transparent;
   cursor: pointer;
   flex: 0 0 auto;
+  transform-origin: center bottom;
   transition: transform 140ms ease, filter 140ms ease;
 }
 
@@ -260,6 +263,7 @@ button {
 .card-view--hand {
   width: var(--hand-card-w);
   height: var(--hand-card-h);
+  border-radius: 15px;
 }
 
 .card-view--opponentHand {
@@ -273,6 +277,13 @@ button {
   filter: brightness(1.1);
   outline: none;
   z-index: 5;
+}
+
+.card-view--hand:hover,
+.card-view--hand:focus-visible {
+  transform: translateY(-16px) scale(1.2);
+  filter: brightness(1.12);
+  z-index: 20;
 }
 
 .card-view--opponent img {
@@ -338,8 +349,8 @@ button {
   :root {
     --board-card-w: 48px;
     --board-card-h: 68px;
-    --hand-card-w: 86px;
-    --hand-card-h: 122px;
+    --hand-card-w: 100px;
+    --hand-card-h: 172px;
     --opponent-hand-card-w: 54px;
     --opponent-hand-card-h: 76px;
     --pile-w: 56px;
@@ -353,7 +364,7 @@ button {
   .game-table {
     padding: 8px;
     padding-top: 30px;
-    grid-template-rows: 84px 1fr 142px;
+    grid-template-rows: 84px 1fr 194px;
     gap: 6px;
   }
 
@@ -372,6 +383,15 @@ button {
 
   .hand-zone--opponent {
     grid-template-columns: 118px 1fr;
+  }
+
+  .hand-cards {
+    gap: 8px;
+  }
+
+  .card-view--hand:hover,
+  .card-view--hand:focus-visible {
+    transform: translateY(-10px) scale(1.16);
   }
 
   .battlefield {
