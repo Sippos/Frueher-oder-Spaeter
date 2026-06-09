@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { createGame } from "./game/cards/state/createGame";
 import {
   canTargetMonster,
@@ -18,6 +18,7 @@ import type {
 import type { Card, DeckId } from "./game/cards/cards";
 import "./App.css";
 import "./PhaseControls.css";
+import "./Onboarding.css";
 
 type DisplayCard = Card | PlayedCard;
 type CoinSide = DeckId;
@@ -793,13 +794,9 @@ function GameScreen({ game, setGame }: { game: GameState; setGame: React.Dispatc
 
 function App() {
   const [game, setGame] = useState<GameState | null>(null);
-  const memoizedOnboarding = useMemo(
-    () => <Onboarding onStart={(playerDeckId) => setGame(createGame({ player1DeckId: playerDeckId }))} />,
-    []
-  );
 
   if (!game) {
-    return memoizedOnboarding;
+    return <Onboarding onStart={(playerDeckId) => setGame(createGame({ player1DeckId: playerDeckId }))} />;
   }
 
   return <GameScreen game={game} setGame={setGame} />;
