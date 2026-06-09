@@ -5,7 +5,6 @@ import type { GameState, PlayerId, PlayerState } from "./gameTypes";
 export type CreateGameOptions = {
   player1DeckId?: DeckId;
   startingMonsterIds?: Partial<Record<DeckId, string>>;
-  startingDrawIds?: Partial<Record<DeckId, string[]>>;
 };
 
 function shuffle<T>(array: T[]): T[] {
@@ -28,8 +27,7 @@ function createPlayer(
   id: PlayerId,
   name: string,
   deckId: DeckId,
-  selectedStartingMonsterId?: string,
-  selectedDrawIds: string[] = []
+  selectedStartingMonsterId?: string
 ): PlayerState {
   const fullDeck = cards.filter((card) => card.deck === deckId);
   const monsters = fullDeck.filter((card) => card.type === "monster");
@@ -41,23 +39,12 @@ function createPlayer(
   );
   const startingMonster = selectedStartingMonster ?? shuffledMonsters[0];
 
-  const remainingCards = shuffle([
+  const deck = shuffle([
     ...shuffledMonsters.filter((card) => card.id !== startingMonster.id),
     ...spells,
   ]);
 
-  const pickedDrawCards = selectedDrawIds
-    .map((cardId) => remainingCards.find((card) => card.id === cardId))
-    .filter((card): card is Card => Boolean(card));
-  const pickedDrawCardIds = new Set(pickedDrawCards.map((card) => card.id));
-  const fallbackDrawCards = remainingCards
-    .filter((card) => !pickedDrawCardIds.has(card.id))
-    .slice(0, Math.max(0, 2 - pickedDrawCards.length));
-  const drawnCards = [...pickedDrawCards, ...fallbackDrawCards].slice(0, 2);
-  const drawnCardIds = new Set(drawnCards.map((card) => card.id));
-
-  const startingHand: Card[] = [startingMonster, ...drawnCards];
-  const deck = remainingCards.filter((card) => !drawnCardIds.has(card.id));
+  const startingHand: Card[] = [startingMonster];
 
   return {
     id,
@@ -89,15 +76,13 @@ export function createGame(options: CreateGameOptions = {}): GameState {
         "player1",
         getDeckName(player1DeckId),
         player1DeckId,
-        options.startingMonsterIds?.[player1DeckId],
-        options.startingDrawIds?.[player1DeckId]
+        options.startingMonsterIds?.[player1DeckId]
       ),
       player2: createPlayer(
         "player2",
         getDeckName(player2DeckId),
         player2DeckId,
-        options.startingMonsterIds?.[player2DeckId],
-        options.startingDrawIds?.[player2DeckId]
+        options.startingMonsterIds?.[player2DeckId]
       ),
     },
     ongoingEffects: [],
