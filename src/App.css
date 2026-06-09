@@ -61,7 +61,7 @@ button {
   border: 2px solid #6e3e2f;
   box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
   display: grid;
-  grid-template-rows: 86px minmax(0, 1fr) 108px;
+  grid-template-rows: 86px minmax(0, 1fr) 142px;
   gap: 8px;
   overflow: hidden;
 }
@@ -103,9 +103,8 @@ button {
 .hand-zone:not(.hand-zone--opponent) {
   position: relative;
   z-index: 6;
-  padding-bottom: 0;
-  align-items: end;
-  overflow: hidden;
+  align-items: center;
+  overflow: visible;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.34));
   border-top-color: rgba(255, 255, 255, 0.12);
 }
@@ -313,6 +312,17 @@ button {
   gap: 5px;
   align-content: center;
   align-items: center;
+  position: relative;
+}
+
+.draw-hint {
+  grid-column: 1 / -1;
+  color: #ffd36a;
+  font-size: 0.58rem;
+  font-weight: 900;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .deck-graveyard-stack {
@@ -331,7 +341,24 @@ button {
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   background: rgba(0, 0, 0, 0.18);
+  color: inherit;
   overflow: hidden;
+}
+
+button.pile {
+  cursor: pointer;
+}
+
+.pile--drawable {
+  border-color: #ffd36a;
+  box-shadow: 0 0 0 2px rgba(255, 211, 106, 0.18), 0 0 18px rgba(255, 211, 106, 0.25);
+  animation: deckPulse 1s ease-in-out infinite alternate;
+}
+
+.pile--drawable:hover,
+.pile--drawable:focus-visible {
+  transform: translateY(-4px) scale(1.04);
+  outline: none;
 }
 
 .pile--deck .deck-back,
@@ -413,7 +440,7 @@ button {
 }
 
 .hand-zone:not(.hand-zone--opponent) .card-view--hand {
-  transform: translateY(82px);
+  transform: translateY(18px);
 }
 
 .card-view--opponentHand {
@@ -433,7 +460,7 @@ button {
 .card-view--hand:focus-visible,
 .hand-zone:not(.hand-zone--opponent) .card-view--hand:hover,
 .hand-zone:not(.hand-zone--opponent) .card-view--hand:focus-visible {
-  transform: translateY(-22px) scale(1.28);
+  transform: translateY(-22px) scale(1.22);
   filter: brightness(1.12);
   z-index: 20;
 }
@@ -480,6 +507,11 @@ button {
   align-content: center;
 }
 
+@keyframes deckPulse {
+  from { filter: brightness(1); }
+  to { filter: brightness(1.16); }
+}
+
 @media (max-width: 1050px) {
   .game-layout {
     grid-template-columns: 1fr;
@@ -516,7 +548,7 @@ button {
   .game-table {
     padding: 8px;
     padding-top: 30px;
-    grid-template-rows: 78px minmax(0, 1fr) 92px;
+    grid-template-rows: 78px minmax(0, 1fr) 126px;
     gap: 6px;
   }
 
@@ -531,10 +563,6 @@ button {
     grid-template-columns: 78px 1fr;
     gap: 7px;
     padding: 6px;
-  }
-
-  .hand-zone:not(.hand-zone--opponent) {
-    padding-bottom: 0;
   }
 
   .hand-zone--opponent {
@@ -592,13 +620,13 @@ button {
   }
 
   .hand-zone:not(.hand-zone--opponent) .card-view--hand {
-    transform: translateY(72px);
+    transform: translateY(14px);
   }
 
   .card-view--hand:hover,
   .card-view--hand:focus-visible,
   .hand-zone:not(.hand-zone--opponent) .card-view--hand:hover,
   .hand-zone:not(.hand-zone--opponent) .card-view--hand:focus-visible {
-    transform: translateY(-16px) scale(1.24);
+    transform: translateY(-16px) scale(1.18);
   }
 }
