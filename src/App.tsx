@@ -10,10 +10,10 @@ import {
 } from "./game/cards/state/actions";
 import type {
   PlayedCard,
-  PlayedMonsterCard,
   PlayerId,
   PlayerState,
   TargetRef,
+  TargetRequirement,
 } from "./game/cards/state/gameTypes";
 import type { Card } from "./game/cards/cards";
 import "./App.css";
@@ -58,13 +58,7 @@ function EmptySlot() {
   return <div className="empty-slot" />;
 }
 
-function Pile({
-  label,
-  count,
-}: {
-  label: string;
-  count: number;
-}) {
+function Pile({ label, count }: { label: string; count: number }) {
   return (
     <div className="pile">
       <span>{label}</span>
@@ -89,7 +83,7 @@ function ZoneCards({
   playerId,
   isOpponent = false,
   onInspect,
-  onTargetMonster,
+  onTargetCard,
   canTarget,
 }: {
   cards: PlayedCard[];
@@ -97,7 +91,7 @@ function ZoneCards({
   playerId: PlayerId;
   isOpponent?: boolean;
   onInspect: (card: DisplayCard) => void;
-  onTargetMonster?: (target: TargetRef) => void;
+  onTargetCard?: (target: TargetRef) => void;
   canTarget?: (playerId: PlayerId, card: PlayedCard) => boolean;
 }) {
   return (
@@ -114,7 +108,7 @@ function ZoneCards({
             isTargetable={isTargetable}
             onClick={() => {
               if (isTargetable) {
-                onTargetMonster?.({ playerId, instanceId: card.instanceId });
+                onTargetCard?.({ playerId, instanceId: card.instanceId });
               }
             }}
             onInspect={onInspect}
@@ -131,13 +125,13 @@ function BattlefieldSide({
   player,
   isOpponent = false,
   onInspect,
-  onTargetMonster,
+  onTargetCard,
   canTarget,
 }: {
   player: PlayerState;
   isOpponent?: boolean;
   onInspect: (card: DisplayCard) => void;
-  onTargetMonster?: (target: TargetRef) => void;
+  onTargetCard?: (target: TargetRef) => void;
   canTarget?: (playerId: PlayerId, card: PlayedCard) => boolean;
 }) {
   return (
@@ -146,6 +140,7 @@ function BattlefieldSide({
         <strong>{player.name}</strong>
         <span>Mana: {player.mana}</span>
         <span>Stärke: {player.score}</span>
+        {player.forcedCardId && <span>Pflichtkarte!</span>}
       </div>
 
       <div className="field-zones">
@@ -157,10 +152,8 @@ function BattlefieldSide({
             playerId={player.id}
             isOpponent={isOpponent}
             onInspect={onInspect}
-            onTargetMonster={onTargetMonster}
-            canTarget={(targetPlayerId, card) =>
-              card.type === "monster" && (canTarget?.(targetPlayerId, card) ?? false)
-            }
+            onTargetCard={onTargetCard}
+            canTarget={canTarget}
           />
         </div>
 
@@ -172,6 +165,8 @@ function BattlefieldSide({
             playerId={player.id}
             isOpponent={isOpponent}
             onInspect={onInspect}
+            onTargetCard={onTargetCard}
+            canTarget={canTarget}
           />
         </div>
 
@@ -208,7 +203,7 @@ function Hand({
             card={card}
             variant={isOpponent ? "opponentHand" : "hand"}
             isOpponent={isOpponent}
-            isTargetable={selectedCardId === card.id}
+            isTargetable={selectedCardId === card.id || player.forcedCardId === card.id}
             onClick={() => onPlayCard(player.id, card.id)}
             onInspect={onInspect}
           />
@@ -239,10 +234,12 @@ function App() {
   const [inspectedCard, setInspectedCard] = useState<DisplayCard | undefined>(() =>
     game.players.player1.hand[0] ?? game.players.player2.hand[0]
   );
-  const [pendingSpell, setPendingSpell] = useState<{
-    playerId: PlayerId;
-    cardId: string;
-  } | null>(null);
+  const [pendingSpell, setPendingSpell] = useState<{ playerId: PlayerId; cardId: string } | null>(null);
+
+  function hasEnemyFieldCards(playerId: PlayerId) {
+    const enemy = game.players[playerId === "player1" ? "player2" : "player1"];
+    return enemy.monsterZone.length + enemy.spellZone.length > 0;
+  }
 
   function handlePlayCard(playerId: PlayerId, cardId: string) {
     const card = game.players[playerId].hand.find((handCard) => handCard.id === cardId);
@@ -253,7 +250,7 @@ function App() {
 
     const targetRequirement = getTargetRequirement(card);
 
-    if (targetRequirement) {
+    if (targetRequirement && !(card.id === "aufschieberitis" && !hasEnemyFieldCards(playerId))) {
       setPendingSpell({ playerId, cardId });
       setInspectedCard(card);
       return;
@@ -262,7 +259,7 @@ function App() {
     setGame((currentGame) => playCardFromHand(currentGame, playerId, cardId));
   }
 
-  function handleTargetMonster(target: TargetRef) {
+  function handleTargetCard(target: TargetRef) {
     if (!pendingSpell) {
       return;
     }
@@ -298,34 +295,29 @@ function App() {
   const pendingRequirement = pendingCard ? getTargetRequirement(pendingCard) : null;
 
   function canTargetCard(targetPlayerId: PlayerId, card: PlayedCard) {
-    if (!pendingSpell || !pendingRequirement || card.type !== "monster") {
+    if (!pendingSpell || !pendingRequirement) {
       return false;
     }
 
-    return canTargetMonster(pendingSpell.playerId, pendingRequirement, targetPlayerId);
+    if (pendingRequirement === "enemyFieldCard") {
+      return canTargetMonster(pendingSpell.playerId, pendingRequirement, targetPlayerId);
+    }
+
+    if (card.type !== "monster") {
+      return false;
+    }
+
+    return canTargetMonster(pendingSpell.playerId, pendingRequirement as TargetRequirement, targetPlayerId);
   }
 
   function getPhaseButtonText() {
-    if (game.phase === "draw") {
-      return "Karten ziehen";
-    }
-
-    if (game.phase === "play") {
-      return "Runde beenden";
-    }
+    if (game.phase === "draw") return "Karten ziehen";
+    if (game.phase === "play") return game.repeatPlayPhase ? "Spielphase wiederholen" : "Runde beenden";
 
     if (game.phase === "gameEnd") {
-      if (winner === "draw") {
-        return "Unentschieden";
-      }
-
-      if (winner === "player1") {
-        return "Auge gewinnt";
-      }
-
-      if (winner === "player2") {
-        return "Finger gewinnt";
-      }
+      if (winner === "draw") return "Unentschieden";
+      if (winner === "player1") return "Auge gewinnt";
+      if (winner === "player2") return "Finger gewinnt";
     }
 
     return "Weiter";
@@ -372,7 +364,7 @@ function App() {
               player={opponent}
               isOpponent
               onInspect={setInspectedCard}
-              onTargetMonster={handleTargetMonster}
+              onTargetCard={handleTargetCard}
               canTarget={canTargetCard}
             />
 
@@ -383,7 +375,7 @@ function App() {
             <BattlefieldSide
               player={player}
               onInspect={setInspectedCard}
-              onTargetMonster={handleTargetMonster}
+              onTargetCard={handleTargetCard}
               canTarget={canTargetCard}
             />
           </section>
