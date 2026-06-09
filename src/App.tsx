@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
+import { cards, type Card, type DeckId } from "./game/cards/cards";
 import { createGame } from "./game/cards/state/createGame";
 import {
   canTargetMonster,
@@ -15,12 +16,12 @@ import type {
   PlayerState,
   TargetRef,
 } from "./game/cards/state/gameTypes";
-import type { Card, DeckId } from "./game/cards/cards";
 import "./App.css";
 import "./PhaseControls.css";
 import "./Onboarding.css";
 
 type DisplayCard = Card | PlayedCard;
+type MonsterCard = Extract<Card, { type: "monster" }>;
 type CoinSide = DeckId;
 
 type SetupStep = {
@@ -36,8 +37,8 @@ const setupSteps: SetupStep[] = [
     animation: "coins",
   },
   {
-    title: "2. Startmonster wählen",
-    text: "Aus den 4 Monstern deines Decks zieht die Gegenseite 1 verdeckte Karte. Sie startet auf deiner Hand.",
+    title: "2. Startmonster gegenseitig ziehen",
+    text: "Wähle verdeckt 1 Monster aus den 4 Monstern des Gegenübers. Für die digitale Version wählst du auch, welches Monster dein Gegenüber aus deinen 4 Karten zieht.",
     animation: "monster",
   },
   {
@@ -47,7 +48,7 @@ const setupSteps: SetupStep[] = [
   },
   {
     title: "4. Zwei Karten ziehen",
-    text: "Ziehe 2 Karten. Zusammen mit dem Monster hast du 3 Handkarten. Runde 1 startet mit dem Auge.",
+    text: "Ziehe 2 Karten. Zusammen mit dem gewählten Monster hast du 3 Handkarten. Runde 1 startet mit dem Auge.",
     animation: "draw",
   },
 ];
@@ -58,6 +59,10 @@ function getDeckName(deckId: DeckId) {
 
 function getOpponentDeckId(deckId: DeckId): DeckId {
   return deckId === "eye" ? "finger" : "eye";
+}
+
+function getDeckMonsters(deckId: DeckId): MonsterCard[] {
+  return cards.filter((card): card is MonsterCard => card.deck === deckId && card.type === "monster");
 }
 
 function DeckBack({ deckId, small = false }: { deckId: DeckId; small?: boolean }) {
@@ -71,7 +76,55 @@ function DeckBack({ deckId, small = false }: { deckId: DeckId; small?: boolean }
   );
 }
 
-function OnboardingAnimation({ step, playerDeckId }: { step: SetupStep; playerDeckId: DeckId }) {
+function MonsterPickRow({
+  title,
+  helper,
+  deckId,
+  selectedMonsterId,
+  onSelect,
+}: {
+  title: string;
+  helper: string;
+  deckId: DeckId;
+  selectedMonsterId?: string;
+  onSelect: (cardId: string) => void;
+}) {
+  return (
+    <div className="monster-pick-row">
+      <div className="monster-pick-copy">
+        <strong>{title}</strong>
+        <span>{helper}</span>
+      </div>
+      <div className="monster-pick-cards">
+        {getDeckMonsters(deckId).map((card) => (
+          <button
+            className={`monster-pick-card ${selectedMonsterId === card.id ? "monster-pick-card--selected" : ""}`}
+            key={card.id}
+            onClick={() => onSelect(card.id)}
+            type="button"
+          >
+            <img src={card.imagePath} alt={card.name} />
+            <span>{card.name}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function OnboardingAnimation({
+  step,
+  playerDeckId,
+  opponentDeckId,
+  selectedStartingMonsterIds,
+  onSelectStartingMonster,
+}: {
+  step: SetupStep;
+  playerDeckId: DeckId;
+  opponentDeckId: DeckId;
+  selectedStartingMonsterIds: Partial<Record<DeckId, string>>;
+  onSelectStartingMonster: (deckId: DeckId, cardId: string) => void;
+}) {
   if (step.animation === "coins") {
     return (
       <div className="coin-stage" aria-hidden="true">
@@ -83,12 +136,21 @@ function OnboardingAnimation({ step, playerDeckId }: { step: SetupStep; playerDe
 
   if (step.animation === "monster") {
     return (
-      <div className="setup-card-fan" aria-hidden="true">
-        {Array.from({ length: 4 }, (_, index) => (
-          <button className="setup-card-choice" key={index} type="button">
-            <DeckBack deckId={playerDeckId} small />
-          </button>
-        ))}
+      <div className="monster-pick-stage">
+        <MonsterPickRow
+          title="Du ziehst beim Gegenüber"
+          helper={`Wähle das Startmonster für ${getDeckName(opponentDeckId)}.`}
+          deckId={opponentDeckId}
+          selectedMonsterId={selectedStartingMonsterIds[opponentDeckId]}
+          onSelect={(cardId) => onSelectStartingMonster(opponentDeckId, cardId)}
+        />
+        <MonsterPickRow
+          title="Gegenüber zieht bei dir"
+          helper={`Wähle, welches deiner 4 Monster auf deine Hand kommt.`}
+          deckId={playerDeckId}
+          selectedMonsterId={selectedStartingMonsterIds[playerDeckId]}
+          onSelect={(cardId) => onSelectStartingMonster(playerDeckId, cardId)}
+        />
       </div>
     );
   }
@@ -114,12 +176,14 @@ function OnboardingAnimation({ step, playerDeckId }: { step: SetupStep; playerDe
   );
 }
 
-function Onboarding({ onStart }: { onStart: (playerDeckId: DeckId) => void }) {
+function Onboarding({ onStart }: { onStart: (playerDeckId: DeckId, startingMonsterIds: Partial<Record<DeckId, string>>) => void }) {
   const [coinSide, setCoinSide] = useState<CoinSide>("eye");
   const [playerDeckId, setPlayerDeckId] = useState<DeckId>("eye");
   const [stepIndex, setStepIndex] = useState(0);
+  const [selectedStartingMonsterIds, setSelectedStartingMonsterIds] = useState<Partial<Record<DeckId, string>>>({});
   const activeStep = setupSteps[stepIndex];
   const opponentDeckId = getOpponentDeckId(playerDeckId);
+  const hasPickedBothMonsters = Boolean(selectedStartingMonsterIds[playerDeckId] && selectedStartingMonsterIds[opponentDeckId]);
 
   function tossCoin() {
     const result: CoinSide = Math.random() > 0.5 ? "eye" : "finger";
@@ -132,6 +196,21 @@ function Onboarding({ onStart }: { onStart: (playerDeckId: DeckId) => void }) {
     setPlayerDeckId((currentDeckId) => getOpponentDeckId(currentDeckId));
   }
 
+  function selectStartingMonster(deckId: DeckId, cardId: string) {
+    setSelectedStartingMonsterIds((currentSelection) => ({
+      ...currentSelection,
+      [deckId]: cardId,
+    }));
+  }
+
+  function goForward() {
+    if (activeStep.animation === "monster" && !hasPickedBothMonsters) {
+      return;
+    }
+
+    setStepIndex((index) => Math.min(setupSteps.length - 1, index + 1));
+  }
+
   return (
     <main className="app onboarding-app">
       <section className="onboarding-panel">
@@ -139,7 +218,7 @@ function Onboarding({ onStart }: { onStart: (playerDeckId: DeckId) => void }) {
           <p className="eyebrow">Spielaufbau</p>
           <h1>Früher oder Später?</h1>
           <p>
-            Starte wie im Handbuch: Deck per Münzwurf bestimmen, 1 Monster verdeckt ziehen,
+            Starte wie im Handbuch: Deck bestimmen, gegenseitig je 1 Monster aus 4 verdeckten Monstern ziehen,
             Restdeck mischen und 2 Karten nachziehen.
           </p>
         </div>
@@ -164,11 +243,20 @@ function Onboarding({ onStart }: { onStart: (playerDeckId: DeckId) => void }) {
         </section>
 
         <section className="setup-walkthrough">
-          <OnboardingAnimation step={activeStep} playerDeckId={playerDeckId} />
+          <OnboardingAnimation
+            step={activeStep}
+            playerDeckId={playerDeckId}
+            opponentDeckId={opponentDeckId}
+            selectedStartingMonsterIds={selectedStartingMonsterIds}
+            onSelectStartingMonster={selectStartingMonster}
+          />
           <div className="setup-copy">
             <p className="step-counter">Schritt {stepIndex + 1} / {setupSteps.length}</p>
             <h2>{activeStep.title}</h2>
             <p>{activeStep.text}</p>
+            {activeStep.animation === "monster" && !hasPickedBothMonsters && (
+              <p className="setup-warning">Wähle je 1 Monster aus beiden Decks, bevor es weitergeht.</p>
+            )}
             <div className="setup-actions">
               <button
                 className="secondary-button"
@@ -181,13 +269,14 @@ function Onboarding({ onStart }: { onStart: (playerDeckId: DeckId) => void }) {
               {stepIndex < setupSteps.length - 1 ? (
                 <button
                   className="primary-button"
-                  onClick={() => setStepIndex((index) => Math.min(setupSteps.length - 1, index + 1))}
+                  disabled={activeStep.animation === "monster" && !hasPickedBothMonsters}
+                  onClick={goForward}
                   type="button"
                 >
                   Weiter
                 </button>
               ) : (
-                <button className="primary-button" onClick={() => onStart(playerDeckId)} type="button">
+                <button className="primary-button" onClick={() => onStart(playerDeckId, selectedStartingMonsterIds)} type="button">
                   Spiel starten
                 </button>
               )}
@@ -634,7 +723,7 @@ function CardPreview({ card }: { card?: DisplayCard }) {
   );
 }
 
-function GameScreen({ game, setGame }: { game: GameState; setGame: React.Dispatch<React.SetStateAction<GameState | null>> }) {
+function GameScreen({ game, setGame }: { game: GameState; setGame: Dispatch<SetStateAction<GameState | null>> }) {
   const [inspectedCard, setInspectedCard] = useState<DisplayCard | undefined>(() =>
     game.players.player1.hand[0] ?? game.players.player2.hand[0]
   );
@@ -796,7 +885,13 @@ function App() {
   const [game, setGame] = useState<GameState | null>(null);
 
   if (!game) {
-    return <Onboarding onStart={(playerDeckId) => setGame(createGame({ player1DeckId: playerDeckId }))} />;
+    return (
+      <Onboarding
+        onStart={(playerDeckId, startingMonsterIds) =>
+          setGame(createGame({ player1DeckId: playerDeckId, startingMonsterIds }))
+        }
+      />
+    );
   }
 
   return <GameScreen game={game} setGame={setGame} />;
