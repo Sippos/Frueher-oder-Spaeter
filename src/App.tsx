@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { createGame } from "./game/cards/state/createGame";
 import {
   canTargetMonster,
@@ -9,22 +9,201 @@ import {
   startPlayPhase,
 } from "./game/cards/state/actions";
 import type {
+  GameState,
   PlayedCard,
   PlayerId,
   PlayerState,
   TargetRef,
 } from "./game/cards/state/gameTypes";
-import type { Card } from "./game/cards/cards";
+import type { Card, DeckId } from "./game/cards/cards";
 import "./App.css";
 import "./PhaseControls.css";
 
 type DisplayCard = Card | PlayedCard;
+type CoinSide = DeckId;
+
+type SetupStep = {
+  title: string;
+  text: string;
+  animation: "coins" | "monster" | "shuffle" | "draw";
+};
+
+const setupSteps: SetupStep[] = [
+  {
+    title: "1. Decks verteilen",
+    text: "Per Münzwurf wird entschieden, wer welches Deck spielt. Du kannst das Ergebnis danach noch tauschen.",
+    animation: "coins",
+  },
+  {
+    title: "2. Startmonster wählen",
+    text: "Aus den 4 Monstern deines Decks zieht die Gegenseite 1 verdeckte Karte. Sie startet auf deiner Hand.",
+    animation: "monster",
+  },
+  {
+    title: "3. Restdeck mischen",
+    text: "Die übrigen 3 Monster und alle 11 Zauber werden zu deinem verdeckten Kartenstapel gemischt.",
+    animation: "shuffle",
+  },
+  {
+    title: "4. Zwei Karten ziehen",
+    text: "Ziehe 2 Karten. Zusammen mit dem Monster hast du 3 Handkarten. Runde 1 startet mit dem Auge.",
+    animation: "draw",
+  },
+];
+
+function getDeckName(deckId: DeckId) {
+  return deckId === "eye" ? "Auge des Fokus" : "Finger des Aufschubs";
+}
+
+function getOpponentDeckId(deckId: DeckId): DeckId {
+  return deckId === "eye" ? "finger" : "eye";
+}
+
+function DeckBack({ deckId, small = false }: { deckId: DeckId; small?: boolean }) {
+  return (
+    <div className={`deck-back deck-back--${deckId} ${small ? "deck-back--small" : ""}`}>
+      <span className="deck-back__logo" aria-hidden="true">
+        {deckId === "eye" ? "◉" : "◒"}
+      </span>
+      <span className="deck-back__title">Früher oder Später</span>
+    </div>
+  );
+}
+
+function OnboardingAnimation({ step, playerDeckId }: { step: SetupStep; playerDeckId: DeckId }) {
+  if (step.animation === "coins") {
+    return (
+      <div className="coin-stage" aria-hidden="true">
+        <div className="coin coin--eye"><span>◉</span></div>
+        <div className="coin coin--finger"><span>◒</span></div>
+      </div>
+    );
+  }
+
+  if (step.animation === "monster") {
+    return (
+      <div className="setup-card-fan" aria-hidden="true">
+        {Array.from({ length: 4 }, (_, index) => (
+          <button className="setup-card-choice" key={index} type="button">
+            <DeckBack deckId={playerDeckId} small />
+          </button>
+        ))}
+      </div>
+    );
+  }
+
+  if (step.animation === "shuffle") {
+    return (
+      <div className="shuffle-stack" aria-hidden="true">
+        {Array.from({ length: 5 }, (_, index) => (
+          <div className="shuffle-card" key={index} style={{ animationDelay: `${index * 90}ms` }}>
+            <DeckBack deckId={playerDeckId} small />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="draw-animation" aria-hidden="true">
+      <div className="mini-deck"><DeckBack deckId={playerDeckId} small /></div>
+      <div className="drawn-card drawn-card--one"><DeckBack deckId={playerDeckId} small /></div>
+      <div className="drawn-card drawn-card--two"><DeckBack deckId={playerDeckId} small /></div>
+    </div>
+  );
+}
+
+function Onboarding({ onStart }: { onStart: (playerDeckId: DeckId) => void }) {
+  const [coinSide, setCoinSide] = useState<CoinSide>("eye");
+  const [playerDeckId, setPlayerDeckId] = useState<DeckId>("eye");
+  const [stepIndex, setStepIndex] = useState(0);
+  const activeStep = setupSteps[stepIndex];
+  const opponentDeckId = getOpponentDeckId(playerDeckId);
+
+  function tossCoin() {
+    const result: CoinSide = Math.random() > 0.5 ? "eye" : "finger";
+    setCoinSide(result);
+    setPlayerDeckId(result);
+    setStepIndex(0);
+  }
+
+  function swapDecks() {
+    setPlayerDeckId((currentDeckId) => getOpponentDeckId(currentDeckId));
+  }
+
+  return (
+    <main className="app onboarding-app">
+      <section className="onboarding-panel">
+        <div className="onboarding-copy">
+          <p className="eyebrow">Spielaufbau</p>
+          <h1>Früher oder Später?</h1>
+          <p>
+            Starte wie im Handbuch: Deck per Münzwurf bestimmen, 1 Monster verdeckt ziehen,
+            Restdeck mischen und 2 Karten nachziehen.
+          </p>
+        </div>
+
+        <section className="deck-assignment" aria-label="Deckzuordnung">
+          <button className="deck-assignment-card" onClick={swapDecks} type="button">
+            <span>Du spielst</span>
+            <DeckBack deckId={playerDeckId} />
+            <strong>{getDeckName(playerDeckId)}</strong>
+          </button>
+          <button className="coin-toss-button" onClick={tossCoin} type="button">
+            <span className={`coin-result coin-result--${coinSide}`}>
+              {coinSide === "eye" ? "◉" : "◒"}
+            </span>
+            Münze werfen
+          </button>
+          <button className="deck-assignment-card" onClick={swapDecks} type="button">
+            <span>Gegenüber spielt</span>
+            <DeckBack deckId={opponentDeckId} />
+            <strong>{getDeckName(opponentDeckId)}</strong>
+          </button>
+        </section>
+
+        <section className="setup-walkthrough">
+          <OnboardingAnimation step={activeStep} playerDeckId={playerDeckId} />
+          <div className="setup-copy">
+            <p className="step-counter">Schritt {stepIndex + 1} / {setupSteps.length}</p>
+            <h2>{activeStep.title}</h2>
+            <p>{activeStep.text}</p>
+            <div className="setup-actions">
+              <button
+                className="secondary-button"
+                disabled={stepIndex === 0}
+                onClick={() => setStepIndex((index) => Math.max(0, index - 1))}
+                type="button"
+              >
+                Zurück
+              </button>
+              {stepIndex < setupSteps.length - 1 ? (
+                <button
+                  className="primary-button"
+                  onClick={() => setStepIndex((index) => Math.min(setupSteps.length - 1, index + 1))}
+                  type="button"
+                >
+                  Weiter
+                </button>
+              ) : (
+                <button className="primary-button" onClick={() => onStart(playerDeckId)} type="button">
+                  Spiel starten
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+  );
+}
 
 function CardView({
   card,
   variant = "board",
   isOpponent = false,
   isTargetable = false,
+  isHidden = false,
   onClick,
   onInspect,
 }: {
@@ -32,6 +211,7 @@ function CardView({
   variant?: "hand" | "opponentHand" | "board";
   isOpponent?: boolean;
   isTargetable?: boolean;
+  isHidden?: boolean;
   onClick?: () => void;
   onInspect?: (card: DisplayCard) => void;
 }) {
@@ -39,17 +219,17 @@ function CardView({
     <button
       className={`card-view card-view--${variant} ${
         isOpponent ? "card-view--opponent" : ""
-      } ${isTargetable ? "card-view--targetable" : ""}`}
+      } ${isTargetable ? "card-view--targetable" : ""} ${isHidden ? "card-view--hidden" : ""}`}
       onClick={onClick}
       onFocus={() => onInspect?.(card)}
       onMouseEnter={() => onInspect?.(card)}
       type="button"
     >
-      <img src={card.imagePath} alt={card.name} />
-      {"currentStrength" in card && (
+      {isHidden ? <DeckBack deckId={card.deck} /> : <img src={card.imagePath} alt={card.name} />}
+      {!isHidden && "currentStrength" in card && (
         <strong className="strength-badge">{card.currentStrength}</strong>
       )}
-      {"noBuffsUntilRound" in card && card.noBuffsUntilRound && (
+      {!isHidden && "noBuffsUntilRound" in card && card.noBuffsUntilRound && (
         <span className="status-badge">No Buff</span>
       )}
     </button>
@@ -60,9 +240,10 @@ function EmptySlot({ small = false }: { small?: boolean }) {
   return <div className={`empty-slot ${small ? "empty-slot--small" : ""}`} />;
 }
 
-function Pile({ label, count }: { label: string; count: number }) {
+function Pile({ label, count, deckId }: { label: string; count: number; deckId?: DeckId }) {
   return (
-    <div className="pile">
+    <div className={`pile ${deckId ? "pile--deck" : ""}`}>
+      {deckId && <DeckBack deckId={deckId} small />}
       <span>{label}</span>
       <strong>{count}</strong>
     </div>
@@ -73,10 +254,10 @@ function PlayerPiles({ player }: { player: PlayerState }) {
   return (
     <aside className="field-piles" aria-label={`${player.name} Stapel`}>
       <div className="deck-graveyard-stack">
-        <Pile label="Deck" count={player.deck.length} />
+        <Pile label="Deck" count={player.deck.length} deckId={player.deckId} />
         <Pile label="Friedhof" count={player.graveyard.length} />
       </div>
-      <Pile label="Spielstapel" count={0} />
+      <Pile label="Spielstapel" count={0} deckId={player.deckId} />
     </aside>
   );
 }
@@ -301,6 +482,7 @@ function BattlefieldSide({
   pendingRequirement,
   onInspect,
   onTargetCard,
+  isCurrentPlayer = false,
 }: {
   player: PlayerState;
   isOpponent?: boolean;
@@ -308,13 +490,15 @@ function BattlefieldSide({
   pendingRequirement: ReturnType<typeof getTargetRequirement>;
   onInspect: (card: DisplayCard) => void;
   onTargetCard?: (target: TargetRef) => void;
+  isCurrentPlayer?: boolean;
 }) {
   return (
-    <section className={`battlefield-side ${isOpponent ? "is-opponent" : ""}`}>
+    <section className={`battlefield-side ${isOpponent ? "is-opponent" : ""} ${isCurrentPlayer ? "is-current-player" : ""}`}>
       <div className="player-strip">
         <strong>{player.name}</strong>
         <span>Mana: {player.mana}</span>
         <span>Stärke: {player.score}</span>
+        {isCurrentPlayer && <span>beginnt</span>}
         {player.forcedCardId && <span>Pflichtkarte!</span>}
       </div>
 
@@ -422,6 +606,7 @@ function Hand({
             card={card}
             variant={isOpponent ? "opponentHand" : "hand"}
             isOpponent={isOpponent}
+            isHidden={isOpponent}
             isTargetable={selectedCardId === card.id || player.forcedCardId === card.id}
             onClick={() => onPlayCard(player.id, card.id)}
             onInspect={onInspect}
@@ -448,8 +633,7 @@ function CardPreview({ card }: { card?: DisplayCard }) {
   );
 }
 
-function App() {
-  const [game, setGame] = useState(() => createGame());
+function GameScreen({ game, setGame }: { game: GameState; setGame: React.Dispatch<React.SetStateAction<GameState | null>> }) {
   const [inspectedCard, setInspectedCard] = useState<DisplayCard | undefined>(() =>
     game.players.player1.hand[0] ?? game.players.player2.hand[0]
   );
@@ -475,7 +659,7 @@ function App() {
       return;
     }
 
-    setGame((currentGame) => playCardFromHand(currentGame, playerId, cardId));
+    setGame((currentGame) => currentGame ? playCardFromHand(currentGame, playerId, cardId) : currentGame);
   }
 
   function handleTargetCard(target: TargetRef) {
@@ -484,7 +668,7 @@ function App() {
     }
 
     setGame((currentGame) =>
-      playCardFromHand(currentGame, pendingSpell.playerId, pendingSpell.cardId, target)
+      currentGame ? playCardFromHand(currentGame, pendingSpell.playerId, pendingSpell.cardId, target) : currentGame
     );
     setPendingSpell(null);
   }
@@ -493,6 +677,8 @@ function App() {
     setPendingSpell(null);
 
     setGame((currentGame) => {
+      if (!currentGame) return currentGame;
+
       if (currentGame.phase === "draw") {
         return startPlayPhase(currentGame);
       }
@@ -519,8 +705,8 @@ function App() {
 
     if (game.phase === "gameEnd") {
       if (winner === "draw") return "Unentschieden";
-      if (winner === "player1") return "Auge gewinnt";
-      if (winner === "player2") return "Finger gewinnt";
+      if (winner === "player1") return `${game.players.player1.name} gewinnt`;
+      if (winner === "player2") return `${game.players.player2.name} gewinnt`;
     }
 
     return "Weiter";
@@ -532,7 +718,7 @@ function App() {
         <section className="game-table">
           <div className="game-status">
             <span>
-              Runde {game.round} / {game.maxRounds} · {game.phase}
+              Runde {game.round} / {game.maxRounds} · {game.phase} · {game.players[game.currentPlayerId].name} beginnt
             </span>
 
             <button
@@ -566,6 +752,7 @@ function App() {
             <BattlefieldSide
               player={opponent}
               isOpponent
+              isCurrentPlayer={game.currentPlayerId === opponent.id}
               pendingPlayerId={pendingSpell?.playerId}
               pendingRequirement={pendingRequirement}
               onInspect={setInspectedCard}
@@ -582,6 +769,7 @@ function App() {
 
             <BattlefieldSide
               player={player}
+              isCurrentPlayer={game.currentPlayerId === player.id}
               pendingPlayerId={pendingSpell?.playerId}
               pendingRequirement={pendingRequirement}
               onInspect={setInspectedCard}
@@ -601,6 +789,20 @@ function App() {
       </section>
     </main>
   );
+}
+
+function App() {
+  const [game, setGame] = useState<GameState | null>(null);
+  const memoizedOnboarding = useMemo(
+    () => <Onboarding onStart={(playerDeckId) => setGame(createGame({ player1DeckId: playerDeckId }))} />,
+    []
+  );
+
+  if (!game) {
+    return memoizedOnboarding;
+  }
+
+  return <GameScreen game={game} setGame={setGame} />;
 }
 
 export default App;
