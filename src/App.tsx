@@ -13,7 +13,6 @@ import type {
   PlayerId,
   PlayerState,
   TargetRef,
-  TargetRequirement,
 } from "./game/cards/state/gameTypes";
 import type { Card } from "./game/cards/cards";
 import "./App.css";
@@ -50,12 +49,15 @@ function CardView({
       {"currentStrength" in card && (
         <strong className="strength-badge">{card.currentStrength}</strong>
       )}
+      {"noBuffsUntilRound" in card && card.noBuffsUntilRound && (
+        <span className="status-badge">No Buff</span>
+      )}
     </button>
   );
 }
 
-function EmptySlot() {
-  return <div className="empty-slot" />;
+function EmptySlot({ small = false }: { small?: boolean }) {
+  return <div className={`empty-slot ${small ? "empty-slot--small" : ""}`} />;
 }
 
 function Pile({ label, count }: { label: string; count: number }) {
@@ -69,54 +71,225 @@ function Pile({ label, count }: { label: string; count: number }) {
 
 function PlayerPiles({ player }: { player: PlayerState }) {
   return (
-    <div className="pile-row">
-      <Pile label="Deck" count={player.deck.length} />
+    <aside className="field-piles" aria-label={`${player.name} Stapel`}>
+      <div className="deck-graveyard-stack">
+        <Pile label="Deck" count={player.deck.length} />
+        <Pile label="Friedhof" count={player.graveyard.length} />
+      </div>
       <Pile label="Spielstapel" count={0} />
-      <Pile label="Friedhof" count={player.graveyard.length} />
+    </aside>
+  );
+}
+
+function canTargetPlayedCard(
+  pendingPlayerId: PlayerId | undefined,
+  pendingRequirement: ReturnType<typeof getTargetRequirement>,
+  targetPlayerId: PlayerId,
+  card: PlayedCard
+) {
+  if (!pendingPlayerId || !pendingRequirement) {
+    return false;
+  }
+
+  if (pendingRequirement !== "enemyFieldCard" && card.type !== "monster") {
+    return false;
+  }
+
+  return canTargetMonster(pendingPlayerId, pendingRequirement, targetPlayerId);
+}
+
+function PlayedCardSlot({
+  card,
+  playerId,
+  isOpponent = false,
+  pendingPlayerId,
+  pendingRequirement,
+  onTargetCard,
+  onInspect,
+  small = false,
+}: {
+  card?: PlayedCard;
+  playerId: PlayerId;
+  isOpponent?: boolean;
+  pendingPlayerId?: PlayerId;
+  pendingRequirement: ReturnType<typeof getTargetRequirement>;
+  onTargetCard?: (target: TargetRef) => void;
+  onInspect: (card: DisplayCard) => void;
+  small?: boolean;
+}) {
+  if (!card) {
+    return <EmptySlot small={small} />;
+  }
+
+  const isTargetable = canTargetPlayedCard(
+    pendingPlayerId,
+    pendingRequirement,
+    playerId,
+    card
+  );
+
+  return (
+    <CardView
+      card={card}
+      isOpponent={isOpponent}
+      isTargetable={isTargetable}
+      onClick={() => {
+        if (isTargetable) {
+          onTargetCard?.({ playerId, instanceId: card.instanceId });
+        }
+      }}
+      onInspect={onInspect}
+    />
+  );
+}
+
+function CardStack({
+  cards,
+  playerId,
+  isOpponent = false,
+  pendingPlayerId,
+  pendingRequirement,
+  onTargetCard,
+  onInspect,
+}: {
+  cards: PlayedCard[];
+  playerId: PlayerId;
+  isOpponent?: boolean;
+  pendingPlayerId?: PlayerId;
+  pendingRequirement: ReturnType<typeof getTargetRequirement>;
+  onTargetCard?: (target: TargetRef) => void;
+  onInspect: (card: DisplayCard) => void;
+}) {
+  if (cards.length === 0) {
+    return <EmptySlot small />;
+  }
+
+  return (
+    <div className="spell-card-stack">
+      {cards.map((card) => (
+        <PlayedCardSlot
+          key={card.instanceId}
+          card={card}
+          playerId={playerId}
+          isOpponent={isOpponent}
+          pendingPlayerId={pendingPlayerId}
+          pendingRequirement={pendingRequirement}
+          onTargetCard={onTargetCard}
+          onInspect={onInspect}
+          small
+        />
+      ))}
     </div>
   );
 }
 
-function ZoneCards({
-  cards,
-  slots,
-  playerId,
+function MonsterZone({
+  player,
   isOpponent = false,
-  onInspect,
+  pendingPlayerId,
+  pendingRequirement,
   onTargetCard,
-  canTarget,
+  onInspect,
 }: {
-  cards: PlayedCard[];
-  slots: number;
-  playerId: PlayerId;
+  player: PlayerState;
   isOpponent?: boolean;
-  onInspect: (card: DisplayCard) => void;
+  pendingPlayerId?: PlayerId;
+  pendingRequirement: ReturnType<typeof getTargetRequirement>;
   onTargetCard?: (target: TargetRef) => void;
-  canTarget?: (playerId: PlayerId, card: PlayedCard) => boolean;
+  onInspect: (card: DisplayCard) => void;
 }) {
   return (
-    <div className="zone-cards">
-      {Array.from({ length: slots }, (_, index) => {
-        const card = cards[index];
-        const isTargetable = card ? canTarget?.(playerId, card) ?? false : false;
+    <div className="monster-row">
+      {Array.from({ length: 4 }, (_, index) => (
+        <PlayedCardSlot
+          key={player.monsterZone[index]?.instanceId ?? index}
+          card={player.monsterZone[index]}
+          playerId={player.id}
+          isOpponent={isOpponent}
+          pendingPlayerId={pendingPlayerId}
+          pendingRequirement={pendingRequirement}
+          onTargetCard={onTargetCard}
+          onInspect={onInspect}
+        />
+      ))}
+    </div>
+  );
+}
 
-        return card ? (
-          <CardView
-            key={card.instanceId}
-            card={card}
-            isOpponent={isOpponent}
-            isTargetable={isTargetable}
-            onClick={() => {
-              if (isTargetable) {
-                onTargetCard?.({ playerId, instanceId: card.instanceId });
-              }
-            }}
-            onInspect={onInspect}
-          />
-        ) : (
-          <EmptySlot key={index} />
-        );
-      })}
+function SpellZone({
+  player,
+  isOpponent = false,
+  pendingPlayerId,
+  pendingRequirement,
+  onTargetCard,
+  onInspect,
+}: {
+  player: PlayerState;
+  isOpponent?: boolean;
+  pendingPlayerId?: PlayerId;
+  pendingRequirement: ReturnType<typeof getTargetRequirement>;
+  onTargetCard?: (target: TargetRef) => void;
+  onInspect: (card: DisplayCard) => void;
+}) {
+  const permanentCards = player.spellZone.filter(
+    (card) => card.effectType === "permanent"
+  );
+  const specialCards = player.spellZone.filter((card) => card.effectType === "special");
+  const buffCards = player.spellZone.filter((card) => card.effectType === "buff");
+
+  return (
+    <div className="spell-board">
+      <div className="spell-wing spell-wing--permanent">
+        <span>Permanent</span>
+        <CardStack
+          cards={permanentCards}
+          playerId={player.id}
+          isOpponent={isOpponent}
+          pendingPlayerId={pendingPlayerId}
+          pendingRequirement={pendingRequirement}
+          onTargetCard={onTargetCard}
+          onInspect={onInspect}
+        />
+      </div>
+
+      <div className="buff-grid" aria-label="Verstärkungen unter Monstern">
+        {Array.from({ length: 4 }, (_, index) => {
+          const monster = player.monsterZone[index];
+          const cardsForMonster = buffCards.filter(
+            (card) => card.target?.instanceId === monster?.instanceId
+          );
+          const looseBuffs = index === 0
+            ? buffCards.filter((card) => !card.target)
+            : [];
+
+          return (
+            <div className="buff-stack" key={monster?.instanceId ?? index}>
+              <CardStack
+                cards={[...cardsForMonster, ...looseBuffs]}
+                playerId={player.id}
+                isOpponent={isOpponent}
+                pendingPlayerId={pendingPlayerId}
+                pendingRequirement={pendingRequirement}
+                onTargetCard={onTargetCard}
+                onInspect={onInspect}
+              />
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="spell-wing spell-wing--special">
+        <span>Spezial</span>
+        <CardStack
+          cards={specialCards}
+          playerId={player.id}
+          isOpponent={isOpponent}
+          pendingPlayerId={pendingPlayerId}
+          pendingRequirement={pendingRequirement}
+          onTargetCard={onTargetCard}
+          onInspect={onInspect}
+        />
+      </div>
     </div>
   );
 }
@@ -124,15 +297,17 @@ function ZoneCards({
 function BattlefieldSide({
   player,
   isOpponent = false,
+  pendingPlayerId,
+  pendingRequirement,
   onInspect,
   onTargetCard,
-  canTarget,
 }: {
   player: PlayerState;
   isOpponent?: boolean;
+  pendingPlayerId?: PlayerId;
+  pendingRequirement: ReturnType<typeof getTargetRequirement>;
   onInspect: (card: DisplayCard) => void;
   onTargetCard?: (target: TargetRef) => void;
-  canTarget?: (playerId: PlayerId, card: PlayedCard) => boolean;
 }) {
   return (
     <section className={`battlefield-side ${isOpponent ? "is-opponent" : ""}`}>
@@ -143,36 +318,80 @@ function BattlefieldSide({
         {player.forcedCardId && <span>Pflichtkarte!</span>}
       </div>
 
-      <div className="field-zones">
-        <div className="field-zone">
-          <span className="zone-label">Monster</span>
-          <ZoneCards
-            cards={player.monsterZone}
-            slots={4}
-            playerId={player.id}
-            isOpponent={isOpponent}
-            onInspect={onInspect}
-            onTargetCard={onTargetCard}
-            canTarget={canTarget}
-          />
-        </div>
+      <div className="field-board">
+        <div className="field-main">
+          <div className="field-zone field-zone--monsters">
+            <span className="zone-label">Monsterzone</span>
+            <MonsterZone
+              player={player}
+              isOpponent={isOpponent}
+              pendingPlayerId={pendingPlayerId}
+              pendingRequirement={pendingRequirement}
+              onTargetCard={onTargetCard}
+              onInspect={onInspect}
+            />
+          </div>
 
-        <div className="field-zone">
-          <span className="zone-label">Zauber</span>
-          <ZoneCards
-            cards={player.spellZone}
-            slots={4}
-            playerId={player.id}
-            isOpponent={isOpponent}
-            onInspect={onInspect}
-            onTargetCard={onTargetCard}
-            canTarget={canTarget}
-          />
+          <div className="field-zone field-zone--spells">
+            <span className="zone-label">Zauberzone</span>
+            <SpellZone
+              player={player}
+              isOpponent={isOpponent}
+              pendingPlayerId={pendingPlayerId}
+              pendingRequirement={pendingRequirement}
+              onTargetCard={onTargetCard}
+              onInspect={onInspect}
+            />
+          </div>
         </div>
 
         <PlayerPiles player={player} />
       </div>
     </section>
+  );
+}
+
+function DebuffZone({
+  players,
+  pendingPlayerId,
+  pendingRequirement,
+  onTargetCard,
+  onInspect,
+}: {
+  players: Record<PlayerId, PlayerState>;
+  pendingPlayerId?: PlayerId;
+  pendingRequirement: ReturnType<typeof getTargetRequirement>;
+  onTargetCard?: (target: TargetRef) => void;
+  onInspect: (card: DisplayCard) => void;
+}) {
+  const debuffs = (["player2", "player1"] as const).flatMap((playerId) =>
+    players[playerId].spellZone
+      .filter((card) => card.effectType === "debuff")
+      .map((card) => ({ playerId, card }))
+  );
+
+  return (
+    <div className="conflict-line">
+      <span>Schwächungszone</span>
+      <div className="debuff-cards">
+        {debuffs.length === 0 ? (
+          <span className="zone-hint">Schwächungen liegen hier</span>
+        ) : (
+          debuffs.map(({ playerId, card }) => (
+            <PlayedCardSlot
+              key={card.instanceId}
+              card={card}
+              playerId={playerId}
+              pendingPlayerId={pendingPlayerId}
+              pendingRequirement={pendingRequirement}
+              onTargetCard={onTargetCard}
+              onInspect={onInspect}
+              small
+            />
+          ))
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -294,22 +513,6 @@ function App() {
     : undefined;
   const pendingRequirement = pendingCard ? getTargetRequirement(pendingCard) : null;
 
-  function canTargetCard(targetPlayerId: PlayerId, card: PlayedCard) {
-    if (!pendingSpell || !pendingRequirement) {
-      return false;
-    }
-
-    if (pendingRequirement === "enemyFieldCard") {
-      return canTargetMonster(pendingSpell.playerId, pendingRequirement, targetPlayerId);
-    }
-
-    if (card.type !== "monster") {
-      return false;
-    }
-
-    return canTargetMonster(pendingSpell.playerId, pendingRequirement as TargetRequirement, targetPlayerId);
-  }
-
   function getPhaseButtonText() {
     if (game.phase === "draw") return "Karten ziehen";
     if (game.phase === "play") return game.repeatPlayPhase ? "Spielphase wiederholen" : "Runde beenden";
@@ -363,20 +566,26 @@ function App() {
             <BattlefieldSide
               player={opponent}
               isOpponent
+              pendingPlayerId={pendingSpell?.playerId}
+              pendingRequirement={pendingRequirement}
               onInspect={setInspectedCard}
               onTargetCard={handleTargetCard}
-              canTarget={canTargetCard}
             />
 
-            <div className="conflict-line">
-              <span>Schwächungszone</span>
-            </div>
+            <DebuffZone
+              players={game.players}
+              pendingPlayerId={pendingSpell?.playerId}
+              pendingRequirement={pendingRequirement}
+              onTargetCard={handleTargetCard}
+              onInspect={setInspectedCard}
+            />
 
             <BattlefieldSide
               player={player}
+              pendingPlayerId={pendingSpell?.playerId}
+              pendingRequirement={pendingRequirement}
               onInspect={setInspectedCard}
               onTargetCard={handleTargetCard}
-              canTarget={canTargetCard}
             />
           </section>
 
