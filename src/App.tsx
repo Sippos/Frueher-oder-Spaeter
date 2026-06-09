@@ -44,7 +44,6 @@ function CardView({
       onClick={onClick}
       onFocus={() => onInspect?.(card)}
       onMouseEnter={() => onInspect?.(card)}
-      title={card.name}
       type="button"
     >
       <img src={card.imagePath} alt={card.name} />
@@ -223,8 +222,7 @@ function CardPreview({ card }: { card?: DisplayCard }) {
   if (!card) {
     return (
       <aside className="card-preview empty-preview">
-        <h2>Karte ansehen</h2>
-        <p>Bewege die Maus über eine Karte, um sie groß zu sehen.</p>
+        <p>Bewege die Maus über eine Karte.</p>
       </aside>
     );
   }
@@ -232,17 +230,6 @@ function CardPreview({ card }: { card?: DisplayCard }) {
   return (
     <aside className="card-preview">
       <img src={card.imagePath} alt={card.name} />
-      <h2>{card.name}</h2>
-      <p>
-        {card.type === "monster" ? "Monster" : "Zauber"} · Mana: {card.mana}
-      </p>
-      {card.type === "monster" && (
-        <p>
-          Stärke: {"currentStrength" in card ? card.currentStrength : card.strength}
-        </p>
-      )}
-      {card.type === "spell" && <p>Effekt: {card.effectType}</p>}
-      <p className="preview-text">{card.text}</p>
     </aside>
   );
 }
