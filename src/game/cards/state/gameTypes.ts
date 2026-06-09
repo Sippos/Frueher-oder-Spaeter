@@ -9,12 +9,17 @@ export type TargetRef = {
   instanceId: string;
 };
 
-export type TargetRequirement = "ownMonster" | "enemyMonster" | "anyMonster";
+export type TargetRequirement =
+  | "ownMonster"
+  | "enemyMonster"
+  | "anyMonster"
+  | "enemyFieldCard";
 
 export type PlayedMonsterCard = Extract<Card, { type: "monster" }> & {
   instanceId: string;
   baseStrength: number;
   currentStrength: number;
+  noBuffsUntilRound?: number;
 };
 
 export type PlayedSpellCard = Extract<Card, { type: "spell" }> & {
@@ -32,6 +37,12 @@ export type OngoingEffect = {
   timing: "roundStart";
 };
 
+export type BuffRedirect = {
+  controllerPlayerId: PlayerId;
+  affectedPlayerId: PlayerId;
+  target: TargetRef;
+};
+
 export type PlayerState = {
   id: PlayerId;
   name: string;
@@ -44,6 +55,8 @@ export type PlayerState = {
   mana: number;
   bonusManaNextRound: number;
   nextBuffMultiplier: number;
+  forcedCardId?: string;
+  forcedCardIdNextRound?: string;
   score: number;
 };
 
@@ -55,4 +68,6 @@ export type GameState = {
   players: Record<PlayerId, PlayerState>;
   ongoingEffects: OngoingEffect[];
   blockNextDebuff: boolean;
+  buffRedirect?: BuffRedirect;
+  repeatPlayPhase: boolean;
 };
