@@ -3,14 +3,16 @@
 }
 
 :root {
-  --board-card-w: 62px;
-  --board-card-h: 88px;
+  --board-card-w: 56px;
+  --board-card-h: 78px;
+  --spell-card-w: 38px;
+  --spell-card-h: 54px;
   --hand-card-w: 134px;
   --hand-card-h: 232px;
   --opponent-hand-card-w: 68px;
   --opponent-hand-card-h: 96px;
   --pile-w: 70px;
-  --pile-h: 82px;
+  --pile-h: 78px;
 }
 
 html,
@@ -127,25 +129,26 @@ button {
 .battlefield {
   min-height: 0;
   display: grid;
-  grid-template-rows: 1fr 36px 1fr;
+  grid-template-rows: 1fr 46px 1fr;
   gap: 8px;
 }
 
 .battlefield-side {
   min-height: 0;
-  padding: 10px;
+  padding: 8px;
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.055);
   border: 1px solid rgba(255, 255, 255, 0.1);
   display: grid;
   grid-template-rows: 24px 1fr;
-  gap: 8px;
+  gap: 7px;
 }
 
 .player-strip {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
   font-size: 0.95rem;
 }
 
@@ -154,38 +157,98 @@ button {
   font-weight: 800;
 }
 
-.field-zones {
+.field-board {
   min-height: 0;
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
   align-items: stretch;
+}
+
+.field-main {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 7px;
 }
 
 .field-zone {
   min-height: 0;
-  padding: 8px;
+  padding: 6px;
   border-radius: 14px;
   background: rgba(0, 0, 0, 0.16);
   display: grid;
-  grid-template-rows: 16px 1fr;
-  gap: 6px;
+  grid-template-rows: 14px 1fr;
+  gap: 4px;
+}
+
+.field-zone--monsters {
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.field-zone--spells {
+  background: rgba(245, 239, 231, 0.08);
 }
 
 .zone-label {
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   opacity: 0.72;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   text-align: center;
 }
 
-.zone-cards {
+.monster-row,
+.buff-grid {
   min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(var(--board-card-w), 1fr));
+  gap: 6px;
+  align-items: center;
+  justify-items: center;
+}
+
+.spell-board {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) 76px;
+  gap: 6px;
+  align-items: stretch;
+}
+
+.spell-wing,
+.buff-stack {
+  min-width: 0;
+  min-height: 0;
+  border-radius: 10px;
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.12);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.spell-wing {
+  grid-template-rows: 11px 1fr;
+  padding: 3px;
+}
+
+.spell-wing span {
+  font-size: 0.48rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.72;
+}
+
+.spell-card-stack {
+  max-width: 100%;
+  max-height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 3px;
+  flex-wrap: wrap;
+  overflow: hidden;
 }
 
 .conflict-line {
@@ -194,15 +257,38 @@ button {
   background: rgba(0, 0, 0, 0.2);
   color: rgba(255, 255, 255, 0.58);
   display: grid;
-  place-items: center;
-  font-size: 0.85rem;
+  grid-template-columns: 150px 1fr;
+  align-items: center;
+  padding: 4px 10px;
+  font-size: 0.82rem;
 }
 
-.pile-row {
+.debuff-cards {
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  overflow: hidden;
+}
+
+.zone-hint {
+  font-size: 0.72rem;
+  opacity: 0.6;
+}
+
+.field-piles {
   display: grid;
-  grid-template-columns: repeat(3, var(--pile-w));
+  grid-template-columns: var(--pile-w) var(--pile-w);
   gap: 6px;
   align-content: center;
+  align-items: center;
+}
+
+.deck-graveyard-stack {
+  display: grid;
+  gap: 6px;
 }
 
 .pile,
@@ -215,6 +301,11 @@ button {
 .empty-slot {
   width: var(--board-card-w);
   height: var(--board-card-h);
+}
+
+.empty-slot--small {
+  width: var(--spell-card-w);
+  height: var(--spell-card-h);
 }
 
 .pile {
@@ -236,6 +327,7 @@ button {
 }
 
 .card-view {
+  position: relative;
   padding: 0;
   border: none;
   border-radius: 0;
@@ -258,6 +350,12 @@ button {
 .card-view--board {
   width: var(--board-card-w);
   height: var(--board-card-h);
+}
+
+.spell-card-stack .card-view--board,
+.debuff-cards .card-view--board {
+  width: var(--spell-card-w);
+  height: var(--spell-card-h);
 }
 
 .card-view--hand {
@@ -338,14 +436,16 @@ button {
 
 @media (max-height: 780px) {
   :root {
-    --board-card-w: 48px;
-    --board-card-h: 68px;
+    --board-card-w: 42px;
+    --board-card-h: 60px;
+    --spell-card-w: 30px;
+    --spell-card-h: 42px;
     --hand-card-w: 100px;
     --hand-card-h: 172px;
     --opponent-hand-card-w: 54px;
     --opponent-hand-card-h: 76px;
     --pile-w: 56px;
-    --pile-h: 68px;
+    --pile-h: 60px;
   }
 
   .app {
@@ -391,7 +491,7 @@ button {
   }
 
   .battlefield {
-    grid-template-rows: 1fr 26px 1fr;
+    grid-template-rows: 1fr 34px 1fr;
     gap: 6px;
   }
 
@@ -401,21 +501,33 @@ button {
     gap: 5px;
   }
 
-  .field-zones {
+  .field-board {
     gap: 6px;
   }
 
-  .field-zone {
-    padding: 6px;
-    grid-template-rows: 12px 1fr;
-    gap: 4px;
-  }
-
-  .zone-cards {
+  .field-main {
     gap: 5px;
   }
 
-  .pile-row {
+  .field-zone {
+    padding: 5px;
+    grid-template-rows: 10px 1fr;
+    gap: 3px;
+  }
+
+  .spell-board {
+    grid-template-columns: 58px minmax(0, 1fr) 58px;
     gap: 4px;
+  }
+
+  .monster-row,
+  .buff-grid {
+    gap: 4px;
+  }
+
+  .conflict-line {
+    grid-template-columns: 120px 1fr;
+    padding: 3px 8px;
+    font-size: 0.74rem;
   }
 }
