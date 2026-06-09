@@ -3,16 +3,16 @@
 }
 
 :root {
-  --board-card-w: 56px;
-  --board-card-h: 78px;
-  --spell-card-w: 38px;
-  --spell-card-h: 54px;
-  --hand-card-w: 134px;
-  --hand-card-h: 232px;
-  --opponent-hand-card-w: 68px;
-  --opponent-hand-card-h: 96px;
-  --pile-w: 70px;
-  --pile-h: 78px;
+  --board-card-w: 48px;
+  --board-card-h: 67px;
+  --spell-card-w: 30px;
+  --spell-card-h: 42px;
+  --hand-card-w: 94px;
+  --hand-card-h: 162px;
+  --opponent-hand-card-w: 54px;
+  --opponent-hand-card-h: 76px;
+  --pile-w: 58px;
+  --pile-h: 54px;
 }
 
 html,
@@ -37,7 +37,7 @@ button {
 .app {
   width: 100vw;
   height: 100vh;
-  padding: 10px;
+  padding: 8px;
   display: grid;
   overflow: hidden;
 }
@@ -47,72 +47,72 @@ button {
   min-height: 0;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 274px;
-  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) 250px;
+  gap: 10px;
 }
 
 .game-table {
   position: relative;
   min-height: 0;
-  padding: 12px;
+  padding: 10px;
   padding-top: 34px;
   border-radius: 22px;
   background: radial-gradient(circle at center, rgba(255, 255, 255, 0.08), transparent 40%), linear-gradient(180deg, #3a211b, #24130f);
   border: 2px solid #6e3e2f;
   box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
   display: grid;
-  grid-template-rows: 106px 1fr 254px;
-  gap: 10px;
+  grid-template-rows: 84px minmax(0, 1fr) 172px;
+  gap: 8px;
   overflow: hidden;
 }
 
 .game-status {
   position: absolute;
-  top: 10px;
-  right: 18px;
+  top: 8px;
+  right: 14px;
   z-index: 10;
-  padding: 5px 12px;
+  padding: 4px 10px;
   border-radius: 999px;
   background: rgba(0, 0, 0, 0.32);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: #fff4df;
   font-weight: 800;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   letter-spacing: 0.02em;
   text-transform: capitalize;
 }
 
 .hand-zone {
   min-height: 0;
-  padding: 8px;
+  padding: 7px;
   border-radius: 16px;
   background: rgba(0, 0, 0, 0.18);
   border: 1px solid rgba(255, 255, 255, 0.08);
   display: grid;
-  grid-template-columns: 104px 1fr;
-  gap: 10px;
+  grid-template-columns: 96px 1fr;
+  gap: 8px;
   align-items: center;
   overflow: visible;
 }
 
 .hand-zone--opponent {
-  grid-template-columns: 150px 1fr;
+  grid-template-columns: 130px 1fr;
   opacity: 0.94;
 }
 
 .hand-label {
   display: grid;
-  gap: 4px;
+  gap: 3px;
   align-content: center;
   color: rgba(255, 255, 255, 0.75);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  font-size: 0.68rem;
+  font-size: 0.66rem;
 }
 
 .hand-label strong {
   color: #fff;
-  font-size: 1.6rem;
+  font-size: 1.55rem;
   line-height: 1;
 }
 
@@ -122,34 +122,41 @@ button {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   overflow: visible;
 }
 
 .battlefield {
   min-height: 0;
   display: grid;
-  grid-template-rows: 1fr 46px 1fr;
-  gap: 8px;
+  grid-template-rows: minmax(0, 1fr) 34px minmax(0, 1fr);
+  gap: 6px;
 }
 
 .battlefield-side {
   min-height: 0;
-  padding: 8px;
-  border-radius: 18px;
+  padding: 7px;
+  border-radius: 16px;
   background: rgba(255, 255, 255, 0.055);
   border: 1px solid rgba(255, 255, 255, 0.1);
   display: grid;
-  grid-template-rows: 24px 1fr;
-  gap: 7px;
+  grid-template-rows: 20px minmax(0, 1fr);
+  gap: 5px;
+  overflow: hidden;
 }
 
 .player-strip {
+  min-width: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
-  font-size: 0.95rem;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.player-strip strong,
+.player-strip span {
+  white-space: nowrap;
 }
 
 .player-strip span {
@@ -160,26 +167,27 @@ button {
 .field-board {
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) 124px;
+  gap: 7px;
   align-items: stretch;
 }
 
 .field-main {
   min-height: 0;
   display: grid;
-  grid-template-rows: 1fr 1fr;
-  gap: 7px;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 5px;
 }
 
 .field-zone {
   min-height: 0;
-  padding: 6px;
-  border-radius: 14px;
+  padding: 4px 6px;
+  border-radius: 12px;
   background: rgba(0, 0, 0, 0.16);
   display: grid;
-  grid-template-rows: 14px 1fr;
-  gap: 4px;
+  grid-template-rows: 10px minmax(0, 1fr);
+  gap: 3px;
+  overflow: hidden;
 }
 
 .field-zone--monsters {
@@ -191,7 +199,8 @@ button {
 }
 
 .zone-label {
-  font-size: 0.58rem;
+  font-size: 0.52rem;
+  line-height: 1;
   opacity: 0.72;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -203,7 +212,7 @@ button {
   min-height: 0;
   display: grid;
   grid-template-columns: repeat(4, minmax(var(--board-card-w), 1fr));
-  gap: 6px;
+  gap: 5px;
   align-items: center;
   justify-items: center;
 }
@@ -211,8 +220,8 @@ button {
 .spell-board {
   min-height: 0;
   display: grid;
-  grid-template-columns: 76px minmax(0, 1fr) 76px;
-  gap: 6px;
+  grid-template-columns: 58px minmax(0, 1fr) 58px;
+  gap: 5px;
   align-items: stretch;
 }
 
@@ -220,7 +229,7 @@ button {
 .buff-stack {
   min-width: 0;
   min-height: 0;
-  border-radius: 10px;
+  border-radius: 9px;
   border: 1px dashed rgba(255, 255, 255, 0.16);
   background: rgba(0, 0, 0, 0.12);
   display: grid;
@@ -229,14 +238,15 @@ button {
 }
 
 .spell-wing {
-  grid-template-rows: 11px 1fr;
-  padding: 3px;
+  grid-template-rows: 9px minmax(0, 1fr);
+  padding: 2px;
 }
 
 .spell-wing span {
-  font-size: 0.48rem;
+  font-size: 0.44rem;
+  line-height: 1;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   opacity: 0.72;
 }
 
@@ -246,21 +256,23 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 2px;
   flex-wrap: wrap;
   overflow: hidden;
 }
 
 .conflict-line {
+  min-height: 0;
   border: 1px dashed rgba(255, 255, 255, 0.25);
   border-radius: 999px;
   background: rgba(0, 0, 0, 0.2);
   color: rgba(255, 255, 255, 0.58);
   display: grid;
-  grid-template-columns: 150px 1fr;
+  grid-template-columns: 130px 1fr;
   align-items: center;
-  padding: 4px 10px;
-  font-size: 0.82rem;
+  padding: 3px 10px;
+  font-size: 0.78rem;
+  overflow: hidden;
 }
 
 .debuff-cards {
@@ -269,31 +281,32 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
   overflow: hidden;
 }
 
 .zone-hint {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   opacity: 0.6;
 }
 
 .field-piles {
+  min-height: 0;
   display: grid;
   grid-template-columns: var(--pile-w) var(--pile-w);
-  gap: 6px;
+  gap: 5px;
   align-content: center;
   align-items: center;
 }
 
 .deck-graveyard-stack {
   display: grid;
-  gap: 6px;
+  gap: 5px;
 }
 
 .pile,
 .empty-slot {
-  border-radius: 10px;
+  border-radius: 9px;
   border: 2px dashed rgba(255, 255, 255, 0.22);
   background: rgba(0, 0, 0, 0.18);
 }
@@ -314,16 +327,16 @@ button {
   display: grid;
   place-items: center;
   text-align: center;
-  padding: 4px;
+  padding: 3px;
 }
 
 .pile span {
-  font-size: 0.58rem;
+  font-size: 0.52rem;
   opacity: 0.75;
 }
 
 .pile strong {
-  font-size: 1.05rem;
+  font-size: 1rem;
 }
 
 .card-view {
@@ -370,7 +383,7 @@ button {
 
 .card-view:hover,
 .card-view:focus-visible {
-  transform: translateY(-10px) scale(1.05);
+  transform: translateY(-8px) scale(1.05);
   filter: brightness(1.1);
   outline: none;
   z-index: 5;
@@ -378,7 +391,7 @@ button {
 
 .card-view--hand:hover,
 .card-view--hand:focus-visible {
-  transform: translateY(-16px) scale(1.2);
+  transform: translateY(-18px) scale(1.42);
   filter: brightness(1.12);
   z-index: 20;
 }
@@ -389,7 +402,7 @@ button {
 
 .card-view--opponent:hover,
 .card-view--opponent:focus-visible {
-  transform: translateY(8px) scale(1.05);
+  transform: translateY(7px) scale(1.05);
 }
 
 .card-preview {
@@ -436,16 +449,16 @@ button {
 
 @media (max-height: 780px) {
   :root {
-    --board-card-w: 42px;
-    --board-card-h: 60px;
-    --spell-card-w: 30px;
-    --spell-card-h: 42px;
-    --hand-card-w: 100px;
-    --hand-card-h: 172px;
-    --opponent-hand-card-w: 54px;
-    --opponent-hand-card-h: 76px;
-    --pile-w: 56px;
-    --pile-h: 60px;
+    --board-card-w: 44px;
+    --board-card-h: 62px;
+    --spell-card-w: 28px;
+    --spell-card-h: 39px;
+    --hand-card-w: 88px;
+    --hand-card-h: 152px;
+    --opponent-hand-card-w: 52px;
+    --opponent-hand-card-h: 73px;
+    --pile-w: 54px;
+    --pile-h: 50px;
   }
 
   .app {
@@ -453,14 +466,14 @@ button {
   }
 
   .game-layout {
-    grid-template-columns: minmax(0, 1fr) 252px;
+    grid-template-columns: minmax(0, 1fr) 250px;
     gap: 8px;
   }
 
   .game-table {
     padding: 8px;
     padding-top: 30px;
-    grid-template-rows: 84px 1fr 194px;
+    grid-template-rows: 78px minmax(0, 1fr) 162px;
     gap: 6px;
   }
 
@@ -472,51 +485,51 @@ button {
   }
 
   .hand-zone {
-    grid-template-columns: 82px 1fr;
-    gap: 8px;
+    grid-template-columns: 78px 1fr;
+    gap: 7px;
     padding: 6px;
   }
 
   .hand-zone--opponent {
-    grid-template-columns: 118px 1fr;
+    grid-template-columns: 112px 1fr;
   }
 
   .hand-cards {
     gap: 8px;
   }
 
-  .card-view--hand:hover,
-  .card-view--hand:focus-visible {
-    transform: translateY(-10px) scale(1.16);
-  }
-
   .battlefield {
-    grid-template-rows: 1fr 34px 1fr;
-    gap: 6px;
+    grid-template-rows: minmax(0, 1fr) 30px minmax(0, 1fr);
+    gap: 5px;
   }
 
   .battlefield-side {
-    padding: 7px;
-    grid-template-rows: 20px 1fr;
-    gap: 5px;
+    padding: 6px;
+    grid-template-rows: 18px minmax(0, 1fr);
+    gap: 4px;
+  }
+
+  .player-strip {
+    font-size: 0.84rem;
   }
 
   .field-board {
-    gap: 6px;
-  }
-
-  .field-main {
+    grid-template-columns: minmax(0, 1fr) 114px;
     gap: 5px;
   }
 
+  .field-main {
+    gap: 4px;
+  }
+
   .field-zone {
-    padding: 5px;
-    grid-template-rows: 10px 1fr;
-    gap: 3px;
+    padding: 4px;
+    grid-template-rows: 9px minmax(0, 1fr);
+    gap: 2px;
   }
 
   .spell-board {
-    grid-template-columns: 58px minmax(0, 1fr) 58px;
+    grid-template-columns: 52px minmax(0, 1fr) 52px;
     gap: 4px;
   }
 
@@ -526,8 +539,13 @@ button {
   }
 
   .conflict-line {
-    grid-template-columns: 120px 1fr;
-    padding: 3px 8px;
-    font-size: 0.74rem;
+    grid-template-columns: 112px 1fr;
+    padding: 2px 8px;
+    font-size: 0.72rem;
+  }
+
+  .card-view--hand:hover,
+  .card-view--hand:focus-visible {
+    transform: translateY(-12px) scale(1.35);
   }
 }
