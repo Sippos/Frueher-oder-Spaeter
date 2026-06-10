@@ -6,6 +6,10 @@
   overflow: visible;
 }
 
+.hand-zone--opponent {
+  min-height: 72px;
+}
+
 .hand-label {
   display: none;
 }
@@ -21,7 +25,8 @@
   padding: 0 10px;
 }
 
-.card-view--hand {
+.card-view--hand,
+.card-view--opponentHand {
   width: 78px;
   min-width: 78px;
-  transition: transform 0.16s ease, box-shadow
+  transition
