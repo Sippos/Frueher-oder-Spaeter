@@ -2,20 +2,14 @@ import { useState } from "react";
 import App from "./App";
 import "./MainMenu.css";
 
-type MenuScreen = "main" | "local" | "cpu" | "online" | "rules";
+type Screen = "menu" | "local" | "cpu" | "online" | "rules";
 
-type MenuAction = {
-  id: MenuScreen;
-  eyebrow: string;
-  title: string;
-  description: string;
-  status?: string;
-  primary?: boolean;
-};
+export default function Root() {
+  const [screen, setScreen] = useState<Screen>("menu");
 
-const menuActions: MenuAction[] = [
-  {
-    id: "cpu",
-    eyebrow: "Solo",
-    title: "Gegen CPU spielen",
-    description: "Sp
+  if (screen === "local") return <App />;
+
+  return (
+    <main className="main-menu-app">
+      <section className="main-menu-panel">
+        <p className="eyebrow">Kartenspiel
