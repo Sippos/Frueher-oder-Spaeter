@@ -203,6 +203,7 @@ function OnboardingAnimation({
 function DeckAssignmentCard({
   label,
   deckId,
+  pickDeckId,
   coinSide,
   showMonsterPick,
   monsterOrder,
@@ -214,6 +215,7 @@ function DeckAssignmentCard({
 }: {
   label: string;
   deckId: DeckId;
+  pickDeckId: DeckId;
   coinSide: CoinSide;
   showMonsterPick: boolean;
   monsterOrder: MonsterCard[];
@@ -252,7 +254,7 @@ function DeckAssignmentCard({
           <HiddenMonsterPickRow
             title={pickTitle}
             helper={pickHelper}
-            deckId={deckId}
+            deckId={pickDeckId}
             monsterOrder={monsterOrder}
             selectedMonsterId={selectedMonsterId}
             onSelect={onSelectMonster}
@@ -322,6 +324,7 @@ function Onboarding({
           <DeckAssignmentCard
             label="Du spielst"
             deckId={playerDeckId}
+            pickDeckId={opponentDeckId}
             coinSide={coinSide}
             showMonsterPick={activeStep.animation === "monster"}
             monsterOrder={monsterOrders[opponentDeckId]}
@@ -350,6 +353,7 @@ function Onboarding({
           <DeckAssignmentCard
             label="Gegenüber spielt"
             deckId={opponentDeckId}
+            pickDeckId={playerDeckId}
             coinSide={coinSide}
             showMonsterPick={activeStep.animation === "monster"}
             monsterOrder={monsterOrders[playerDeckId]}
@@ -360,6 +364,25 @@ function Onboarding({
             onSwap={activeStep.animation === "coins" ? swapDecks : undefined}
           />
         </section>
+
+        <div className="setup-nav-bottom">
+          <button
+            onClick={() => setStepIndex((index) => Math.max(0, index - 1))}
+            disabled={stepIndex === 0}
+            type="button"
+          >
+            Zurück
+          </button>
+          {stepIndex < setupSteps.length - 1 ? (
+            <button className="primary-button" disabled={!canContinue} onClick={goForward} type="button">
+              Weiter
+            </button>
+          ) : (
+            <button className="primary-button" onClick={() => onStart(playerDeckId, selectedStartingMonsterIds)} type="button">
+              Spielbrett öffnen
+            </button>
+          )}
+        </div>
 
         <section className={`setup-walkthrough setup-walkthrough--sleek ${activeStep.animation !== "shuffle" ? "setup-walkthrough--text-only" : ""}`}>
           {activeStep.animation === "shuffle" && (

@@ -1143,3 +1143,99 @@
     min-height: 0;
   }
 }
+
+/* Step 2 v6: correct cross-pick cards and move navigation below the panels. */
+.setup-copy--sleek > .setup-actions {
+  display: none !important;
+}
+
+.onboarding-panel--sleek {
+  display: flex;
+  flex-direction: column;
+}
+
+.setup-walkthrough--sleek {
+  order: 2;
+}
+
+.deck-assignment--sleek {
+  order: 3;
+}
+
+.setup-nav-bottom {
+  order: 4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: clamp(12px, 2vw, 18px) auto 0;
+  position: relative;
+  z-index: 20;
+}
+
+.setup-nav-bottom button {
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 22px;
+  background: rgba(255, 244, 223, 0.16);
+  color: #fff4df;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.setup-nav-bottom .primary-button {
+  background: #fff4df;
+  color: #321b13;
+}
+
+.setup-nav-bottom button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.setup-nav-bottom button:not(:disabled):hover,
+.setup-nav-bottom button:not(:disabled):focus-visible {
+  transform: translateY(-1px);
+  outline: 2px solid rgba(255, 213, 122, 0.42);
+  outline-offset: 3px;
+}
+
+.setup-walkthrough--text-only {
+  position: static;
+  z-index: auto;
+  margin-bottom: clamp(14px, 2vw, 22px);
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek {
+  padding: 6px 14px 4px;
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek h2 {
+  margin-bottom: 10px;
+}
+
+.deck-assignment--sleek:not(:has(.coin-toss-button--sleek)) {
+  margin-top: 0;
+}
+
+.deck-assignment-card--with-pick {
+  min-height: 350px;
+}
+
+.deck-monster-pick .hidden-pick-card {
+  cursor: pointer;
+}
+
+@media (max-width: 840px) {
+  .setup-nav-bottom {
+    margin-top: 12px;
+  }
+
+  .setup-nav-bottom button {
+    padding: 11px 18px;
+  }
+
+  .deck-assignment-card--with-pick {
+    min-height: 0;
+  }
+}
