@@ -324,37 +324,39 @@ function Onboarding({
             deckId={playerDeckId}
             coinSide={coinSide}
             showMonsterPick={activeStep.animation === "monster"}
-            monsterOrder={monsterOrders[playerDeckId]}
-            selectedMonsterId={selectedStartingMonsterIds[playerDeckId]}
-            pickTitle="Gegenüber zieht bei dir"
-            pickHelper="Wähle verdeckt, welches deiner Monster gezogen wurde."
-            onSelectMonster={(cardId) => selectStartingMonster(playerDeckId, cardId)}
+            monsterOrder={monsterOrders[opponentDeckId]}
+            selectedMonsterId={selectedStartingMonsterIds[opponentDeckId]}
+            pickTitle="Du ziehst beim Gegenüber"
+            pickHelper={`Wähle 1 verdecktes Monster aus ${getDeckName(opponentDeckId)}.`}
+            onSelectMonster={(cardId) => selectStartingMonster(opponentDeckId, cardId)}
             onSwap={activeStep.animation === "coins" ? swapDecks : undefined}
           />
 
-          <button className={`coin-toss-button coin-toss-button--sleek ${isTossingCoin ? "is-tossing" : ""}`} onClick={tossCoin} type="button">
-            <span className="coin-flip" aria-hidden="true">
-              <span className="coin-flip__face coin-flip__face--front">
-                <img src={coinImages[coinSide]} alt="" />
+          {activeStep.animation === "coins" && (
+            <button className={`coin-toss-button coin-toss-button--sleek ${isTossingCoin ? "is-tossing" : ""}`} onClick={tossCoin} type="button">
+              <span className="coin-flip" aria-hidden="true">
+                <span className="coin-flip__face coin-flip__face--front">
+                  <img src={coinImages[coinSide]} alt="" />
+                </span>
+                <span className="coin-flip__face coin-flip__face--back">
+                  <img src={coinImages[coinSide === "eye" ? "finger" : "eye"]} alt="" />
+                </span>
               </span>
-              <span className="coin-flip__face coin-flip__face--back">
-                <img src={coinImages[coinSide === "eye" ? "finger" : "eye"]} alt="" />
-              </span>
-            </span>
-            <span>Münze werfen</span>
-            <small>{getDeckName(coinSide)} gewinnt</small>
-          </button>
+              <span>Münze werfen</span>
+              <small>{getDeckName(coinSide)} gewinnt</small>
+            </button>
+          )}
 
           <DeckAssignmentCard
             label="Gegenüber spielt"
             deckId={opponentDeckId}
             coinSide={coinSide}
             showMonsterPick={activeStep.animation === "monster"}
-            monsterOrder={monsterOrders[opponentDeckId]}
-            selectedMonsterId={selectedStartingMonsterIds[opponentDeckId]}
-            pickTitle="Du ziehst beim Gegenüber"
-            pickHelper={`Wähle 1 verdecktes Monster aus ${getDeckName(opponentDeckId)}.`}
-            onSelectMonster={(cardId) => selectStartingMonster(opponentDeckId, cardId)}
+            monsterOrder={monsterOrders[playerDeckId]}
+            selectedMonsterId={selectedStartingMonsterIds[playerDeckId]}
+            pickTitle="Gegenüber zieht bei dir"
+            pickHelper={`Das Gegenüber wählt 1 verdecktes Monster aus ${getDeckName(playerDeckId)}.`}
+            onSelectMonster={(cardId) => selectStartingMonster(playerDeckId, cardId)}
             onSwap={activeStep.animation === "coins" ? swapDecks : undefined}
           />
         </section>

@@ -1074,3 +1074,72 @@
     min-height: 0;
   }
 }
+
+/* Step 2 v5: cross-pick layout and less overlap */
+.deck-assignment--sleek {
+  align-items: stretch;
+}
+
+.deck-assignment--sleek:not(:has(.coin-toss-button--sleek)) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(14px, 2vw, 24px);
+  max-width: 1040px;
+  margin-inline: auto;
+}
+
+.deck-assignment-card--with-pick {
+  min-height: 330px;
+  padding-top: 18px;
+}
+
+.deck-assignment-card--with-pick .deck-assignment-visual {
+  margin-top: 6px;
+}
+
+.deck-assignment-card--with-pick .deck-back {
+  width: min(76px, 11vw) !important;
+}
+
+.deck-assignment-card--with-pick > strong {
+  font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+}
+
+.deck-monster-pick {
+  margin-top: 10px;
+}
+
+.deck-monster-pick .monster-pick-copy strong {
+  font-size: 0.82rem;
+}
+
+.deck-monster-pick .monster-pick-copy span {
+  font-size: 0.64rem;
+}
+
+.deck-monster-pick .hidden-pick-card {
+  width: clamp(42px, 4.6vw, 58px);
+}
+
+.setup-walkthrough--text-only {
+  margin-bottom: 12px;
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek h2 {
+  font-size: clamp(1.75rem, 3.4vw, 2.65rem);
+  line-height: 1.02;
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek p:not(.step-counter) {
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+@media (max-width: 840px) {
+  .deck-assignment--sleek:not(:has(.coin-toss-button--sleek)) {
+    grid-template-columns: 1fr;
+  }
+
+  .deck-assignment-card--with-pick {
+    min-height: 0;
+  }
+}
