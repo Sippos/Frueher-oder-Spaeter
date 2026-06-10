@@ -1239,3 +1239,127 @@
     min-height: 0;
   }
 }
+
+/* Step 2 v7: compact instruction banner so it never overlaps the card-choice panels. */
+.setup-walkthrough--text-only {
+  width: min(940px, 100%) !important;
+  min-height: 0 !important;
+  margin: 0 auto 14px !important;
+  padding: 0 !important;
+  display: block !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek {
+  width: 100%;
+  min-height: 0 !important;
+  padding: 8px 14px 10px !important;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(255, 244, 223, 0.08);
+  text-align: center;
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek .step-counter {
+  margin: 0 0 5px !important;
+  font-size: 0.68rem !important;
+  letter-spacing: 0.22em;
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek h2 {
+  margin: 0 !important;
+  font-size: clamp(1.22rem, 2.25vw, 1.72rem) !important;
+  line-height: 1.06 !important;
+  white-space: normal;
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek p:not(.step-counter) {
+  display: none !important;
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek > strong,
+.setup-walkthrough--text-only .setup-copy--sleek > span,
+.setup-walkthrough--text-only .setup-copy--sleek .setup-actions {
+  display: none !important;
+}
+
+.deck-assignment--sleek {
+  margin-top: 0 !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.deck-assignment--sleek:not(:has(.coin-toss-button--sleek)) {
+  max-width: 1000px !important;
+  grid-template-columns: repeat(2, minmax(280px, 1fr)) !important;
+  gap: clamp(14px, 2vw, 24px) !important;
+}
+
+.deck-assignment-card--with-pick {
+  min-height: 318px !important;
+  padding: 14px 12px 12px !important;
+}
+
+.deck-assignment-card--with-pick .deck-assignment-label {
+  margin-bottom: 4px;
+}
+
+.deck-assignment-card--with-pick .deck-assignment-visual {
+  margin-top: 4px !important;
+}
+
+.deck-assignment-card--with-pick .deck-back {
+  width: min(68px, 9vw) !important;
+}
+
+.deck-assignment-card--with-pick > strong {
+  margin: 6px 0 4px !important;
+  font-size: clamp(1rem, 1.6vw, 1.25rem) !important;
+}
+
+.deck-monster-pick {
+  margin-top: 8px !important;
+}
+
+.deck-monster-pick .monster-pick-row {
+  padding: 8px !important;
+}
+
+.deck-monster-pick .monster-pick-copy strong {
+  font-size: 0.78rem !important;
+}
+
+.deck-monster-pick .monster-pick-copy span {
+  font-size: 0.6rem !important;
+}
+
+.deck-monster-pick .hidden-pick-cards {
+  gap: 6px !important;
+}
+
+.deck-monster-pick .hidden-pick-card {
+  width: clamp(40px, 4.2vw, 54px) !important;
+}
+
+.setup-nav-bottom {
+  margin-top: 12px !important;
+}
+
+.onboarding-copy--sleek h1 {
+  margin-bottom: 4px !important;
+}
+
+@media (max-width: 840px) {
+  .deck-assignment--sleek:not(:has(.coin-toss-button--sleek)) {
+    grid-template-columns: 1fr !important;
+  }
+
+  .deck-assignment-card--with-pick {
+    min-height: 0 !important;
+  }
+
+  .setup-walkthrough--text-only .setup-copy--sleek h2 {
+    font-size: 1.25rem !important;
+  }
+}
