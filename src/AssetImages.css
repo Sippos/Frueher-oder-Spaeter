@@ -1,0 +1,12 @@
+:root {
+  --eye-coin-image: url("/src/assets/cards/eye_coin.webp");
+  --finger-coin-image: url("/src/assets/cards/finger_coin.webp");
+  --eye-card-back-image: url("/src/assets/cards/eye_card_back.webp");
+  --finger-card-back-image: url("/src/assets/cards/finger_card_back.webp");
+}
+
+.deck-back {
+  background-position: center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  border: 0 !important
