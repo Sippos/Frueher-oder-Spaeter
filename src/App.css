@@ -1,1 +1,12 @@
-*{box-sizing:border-box}html,body,#root{margin:0;width:100%;height:100%}body{background:radial-gradient(circle at 50% 0,rgba(113,67,44,.35),transparent 34rem),linear-gradient(135deg,#100c0b,#1a100d 48%,#0b0908);color:#f5efe7;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden}button{font:inherit}.app{min-height:100vh;padding:10px;display:flex;justify-content:center;align-items:stretch}.game-layout{width:min(1500px,100%);height:calc(100vh
+@import './styles/base.css';
+@import './styles/layout.css';
+@import './styles/status.css';
+@import './styles/field.css';
+@import './styles/zones.css';
+@import './styles/zones-extra.css';
+@import './styles/spells.css';
+@import './styles/piles.css';
+@import './styles/cards.css';
+@import './styles/hand.css';
+@import './styles/preview.css';
+@import './styles/mobile.css';
