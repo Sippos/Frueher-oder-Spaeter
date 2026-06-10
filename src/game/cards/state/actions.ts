@@ -1,6 +1,7 @@
 import type { Card } from "../cards";
 import type {
   GameState,
+  PlayedCard,
   PlayedMonsterCard,
   PlayedSpellCard,
   PlayerId,
