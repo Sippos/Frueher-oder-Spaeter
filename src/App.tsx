@@ -1,4 +1,8 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
+import eyeCardBackUrl from "./assets/card-backs/eye_card_back.webp";
+import fingerCardBackUrl from "./assets/card-backs/finger_card_back.webp";
+import eyeCoinUrl from "./assets/icons/eye_coin.webp";
+import fingerCoinUrl from "./assets/icons/finger_coin.webp";
 import { cards, type Card, type DeckId } from "./game/cards/cards";
 import { createGame } from "./game/cards/state/createGame";
 import {
@@ -24,6 +28,16 @@ import "./SleekOnboarding.css";
 type DisplayCard = Card | PlayedCard;
 type MonsterCard = Extract<Card, { type: "monster" }>;
 type CoinSide = DeckId;
+
+const deckBackImages: Record<DeckId, string> = {
+  eye: eyeCardBackUrl,
+  finger: fingerCardBackUrl,
+};
+
+const coinImages: Record<CoinSide, string> = {
+  eye: eyeCoinUrl,
+  finger: fingerCoinUrl,
+};
 
 type SetupStep = {
   title: string;
@@ -68,10 +82,7 @@ function getDeckMonsters(deckId: DeckId): MonsterCard[] {
 function DeckBack({ deckId, small = false }: { deckId: DeckId; small?: boolean }) {
   return (
     <div className={`deck-back deck-back--${deckId} ${small ? "deck-back--small" : ""}`}>
-      <span className="deck-back__logo" aria-hidden="true">
-        {deckId === "eye" ? "◉" : "◒"}
-      </span>
-      <span className="deck-back__title">Früher oder Später</span>
+      <img className="deck-back__image" src={deckBackImages[deckId]} alt={`${getDeckName(deckId)} Kartenrücken`} />
     </div>
   );
 }
@@ -116,6 +127,7 @@ function HiddenMonsterPickRow({
 
 function OnboardingAnimation({
   step,
+  coinSide,
   playerDeckId,
   opponentDeckId,
   monsterOrders,
@@ -123,6 +135,7 @@ function OnboardingAnimation({
   onSelectStartingMonster,
 }: {
   step: SetupStep;
+  coinSide: CoinSide;
   playerDeckId: DeckId;
   opponentDeckId: DeckId;
   monsterOrders: Record<DeckId, MonsterCard[]>;
@@ -130,7 +143,16 @@ function OnboardingAnimation({
   onSelectStartingMonster: (deckId: DeckId, cardId: string) => void;
 }) {
   if (step.animation === "coins") {
-    return <div className="setup-rules-card" />;
+    return (
+      <div className="coin-overview" aria-label="Münzwurf: Vorder- und Rückseite">
+        {(["eye", "finger"] as CoinSide[]).map((side) => (
+          <figure className={`coin-face coin-face--${side} ${coinSide === side ? "coin-face--active" : ""}`} key={side}>
+            <img src={coinImages[side]} alt={`${getDeckName(side)} Münzseite`} />
+            <figcaption>{getDeckName(side)}</figcaption>
+          </figure>
+        ))}
+      </div>
+    );
   }
 
   if (step.animation === "monster") {
@@ -230,9 +252,10 @@ function Onboarding({
           </button>
           <button className={`coin-toss-button coin-toss-button--sleek ${isTossingCoin ? "is-tossing" : ""}`} onClick={tossCoin} type="button">
             <span className={`coin-result coin-result--${coinSide}`}>
-              {coinSide === "eye" ? "◉" : "◒"}
+              <img className="coin-result__image" src={coinImages[coinSide]} alt={`${getDeckName(coinSide)} gewinnt den Münzwurf`} />
             </span>
-            Münze werfen
+            <span>Münze werfen</span>
+            <small>{getDeckName(coinSide)} gewinnt</small>
           </button>
           <button className="deck-assignment-card deck-assignment-card--sleek" onClick={swapDecks} type="button">
             <span>Gegenüber spielt</span>
@@ -241,9 +264,19 @@ function Onboarding({
           </button>
         </section>
 
+        <ol className="setup-step-overview" aria-label="Spielaufbau Übersicht">
+          {setupSteps.map((step, index) => (
+            <li className={index === stepIndex ? "setup-step-overview__item setup-step-overview__item--active" : "setup-step-overview__item"} key={step.title}>
+              <span>{index + 1}</span>
+              <strong>{step.title.replace(/^\d+\.\s*/, "")}</strong>
+            </li>
+          ))}
+        </ol>
+
         <section className="setup-walkthrough setup-walkthrough--sleek">
           <OnboardingAnimation
             step={activeStep}
+            coinSide={coinSide}
             playerDeckId={playerDeckId}
             opponentDeckId={opponentDeckId}
             monsterOrders={monsterOrders}

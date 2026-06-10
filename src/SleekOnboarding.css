@@ -309,3 +309,224 @@
     width: 100%;
   }
 }
+
+/* One-page setup polish with local WebP deck backs and coin faces */
+.onboarding-app--sleek {
+  min-height: 100vh;
+  align-items: center;
+  padding: 8px;
+}
+
+.onboarding-panel--sleek {
+  width: min(1180px, calc(100vw - 16px));
+  min-height: auto;
+  max-height: calc(100vh - 16px);
+  overflow: auto;
+  padding: clamp(12px, 1.5vw, 20px);
+  gap: 10px;
+}
+
+.onboarding-copy--sleek h1 {
+  font-size: clamp(2.2rem, 5vw, 3.55rem);
+}
+
+.onboarding-copy--sleek p:not(.eyebrow) {
+  margin: 6px auto 0;
+}
+
+.deck-assignment--sleek {
+  grid-template-columns: minmax(0, 1fr) 116px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.deck-assignment-card--sleek {
+  min-height: 150px;
+  padding: 10px;
+}
+
+.deck-assignment-card--sleek .deck-back {
+  width: min(92px, 30vw);
+  height: auto;
+  aspect-ratio: 5 / 7;
+  min-width: 0;
+  min-height: 0;
+  max-width: none;
+}
+
+.deck-back {
+  background: transparent !important;
+}
+
+.deck-back__image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.deck-back__logo,
+.deck-back__title {
+  display: none;
+}
+
+.coin-toss-button--sleek {
+  width: 116px;
+  height: 116px;
+  padding: 8px;
+  grid-template-rows: 58px auto auto;
+  gap: 2px;
+  line-height: 1.05;
+}
+
+.coin-toss-button--sleek small {
+  display: block;
+  max-width: 84px;
+  font-size: 0.55rem;
+  font-weight: 800;
+  line-height: 1.05;
+  opacity: 0.72;
+}
+
+.coin-result {
+  width: 58px;
+  height: 58px;
+  padding: 0;
+  border: 0;
+  background: transparent !important;
+  overflow: hidden;
+}
+
+.coin-result__image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.coin-overview {
+  min-height: 190px;
+  padding: 14px;
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at center, rgba(255, 244, 223, 0.11), transparent 48%),
+    rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  gap: 12px;
+}
+
+.coin-face {
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  color: rgba(255, 244, 223, 0.72);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.coin-face img {
+  width: clamp(72px, 10vw, 104px);
+  aspect-ratio: 1;
+  object-fit: contain;
+  border-radius: 999px;
+  transition:
+    transform 180ms ease,
+    filter 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.coin-face--active img {
+  transform: translateY(-4px) scale(1.08);
+  filter: brightness(1.08);
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.32);
+}
+
+.setup-step-overview {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.setup-step-overview__item {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 7px 9px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  color: rgba(255, 244, 223, 0.7);
+}
+
+.setup-step-overview__item span {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 244, 223, 0.1);
+  color: #ffd6a8;
+  font-weight: 900;
+}
+
+.setup-step-overview__item strong {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 0.78rem;
+}
+
+.setup-step-overview__item--active {
+  border-color: rgba(255, 211, 106, 0.55);
+  background: rgba(255, 211, 106, 0.09);
+  color: #fff4df;
+}
+
+.setup-walkthrough--sleek {
+  grid-template-columns: minmax(250px, 0.72fr) minmax(320px, 1fr);
+  min-height: 190px;
+  gap: 14px;
+}
+
+.setup-copy--sleek h2 {
+  font-size: clamp(1.55rem, 3.2vw, 2.65rem);
+}
+
+.setup-copy--sleek p:not(.step-counter) {
+  margin: 0;
+}
+
+.setup-rules-card,
+.monster-pick-stage--hidden,
+.draw-stage,
+.shuffle-stack--sleek {
+  min-height: 190px;
+}
+
+@media (max-width: 840px) {
+  .onboarding-panel--sleek {
+    max-height: none;
+  }
+
+  .deck-assignment--sleek,
+  .setup-walkthrough--sleek,
+  .setup-step-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .coin-toss-button--sleek {
+    margin: 0 auto;
+  }
+}
