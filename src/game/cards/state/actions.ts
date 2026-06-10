@@ -1,7 +1,6 @@
 import type { Card } from "../cards";
 import type {
   GameState,
-  PlayedCard,
   PlayedMonsterCard,
   PlayedSpellCard,
   PlayerId,
@@ -18,4 +17,5 @@ function createInstanceId(cardId: string): string {
   return id;
 }
 
-function
+function getOpponentId(playerId: PlayerId): PlayerId {
+  return player
