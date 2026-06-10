@@ -2,7 +2,6 @@ import { useState, type Dispatch, type SetStateAction } from "react";
 import { cards, type Card, type DeckId } from "./game/cards/cards";
 import { createGame } from "./game/cards/state/createGame";
 import {
-  canTargetMonster,
   endRound,
   getTargetRequirement,
   getWinner,
@@ -63,7 +62,7 @@ function getOpponentDeckId(deckId: DeckId): DeckId {
 }
 
 function getDeckMonsters(deckId: DeckId): MonsterCard[] {
-  return cards.filter((card): card is MonsterCard => card.deck === deckId && card.type === "monster");
+  return cards.filter((card) => card.deck === deckId && card.type === "monster") as MonsterCard[];
 }
 
 function DeckBack({ deckId, small = false }: { deckId: DeckId; small?: boolean }) {
@@ -382,8 +381,26 @@ function canTargetPlayedCard(
   card: PlayedCard
 ) {
   if (!pendingPlayerId || !pendingRequirement) return false;
-  if (pendingRequirement !== "enemyFieldCard" && card.type !== "monster") return false;
-  return canTargetMonster(pendingPlayerId, pendingRequirement, targetPlayerId);
+
+  const opponentId: PlayerId = pendingPlayerId === "player1" ? "player2" : "player1";
+
+  if (pendingRequirement === "ownMonster") {
+    return targetPlayerId === pendingPlayerId && card.type === "monster";
+  }
+
+  if (pendingRequirement === "enemyMonster") {
+    return targetPlayerId === opponentId && card.type === "monster";
+  }
+
+  if (pendingRequirement === "anyMonster") {
+    return card.type === "monster";
+  }
+
+  if (pendingRequirement === "enemyFieldCard") {
+    return targetPlayerId === opponentId;
+  }
+
+  return false;
 }
 
 function PlayedCardSlot({
@@ -756,7 +773,7 @@ function GameScreen({ game, setGame }: { game: GameState; setGame: Dispatch<SetS
   const player = game.players.player1;
   const winner = getWinner(game);
   const pendingCard = pendingSpell ? game.players[pendingSpell.playerId].hand.find((card) => card.id === pendingSpell.cardId) : undefined;
-  const pendingRequirement = pendingCard ? getTargetRequirement(pendingCard) : null;
+  const pendingRequirement = pendingCard ? getTargetRequirement(pendingCard) : undefined;
 
   function getPhaseButtonText() {
     if (needsSetupDraw) return "Klicke beide Decks";
