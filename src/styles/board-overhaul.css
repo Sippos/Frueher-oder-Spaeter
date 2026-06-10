@@ -1,0 +1,408 @@
+/*
+  Board layout overhaul:
+  - enemy hand stays as a small top strip
+  - your hand becomes a bottom dock, half out of frame
+  - hovering a hand card pulls it fully into view
+  - monster / buff / permanent / special / debuff zones get clearer placement
+*/
+
+.game-layout {
+  width: min(100vw - 16px, 1520px) !important;
+  height: calc(100vh - 16px) !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) clamp(170px, 16vw, 235px) !important;
+  gap: 10px !important;
+  margin: 8px auto !important;
+}
+
+.game-table {
+  position: relative !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  display: grid !important;
+  grid-template-rows: auto 48px minmax(0, 1fr) !important;
+  gap: 7px !important;
+  padding: 10px 10px 118px !important;
+  overflow: hidden !important;
+  border-radius: 20px !important;
+}
+
+.game-status {
+  min-height: 44px !important;
+  padding: 7px 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  border-radius: 14px !important;
+}
+
+.phase-button {
+  min-height: 30px !important;
+  padding: 6px 12px !important;
+  border-radius: 999px !important;
+  white-space: nowrap !important;
+}
+
+/* Opponent hand: just a readable strip, not a board zone. */
+.game-table > .hand-zone--opponent {
+  min-height: 0 !important;
+  height: 48px !important;
+  position: relative !important;
+  z-index: 4 !important;
+}
+
+.game-table > .hand-zone--opponent .hand-cards {
+  height: 48px !important;
+  padding: 0 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+}
+
+.card-view--opponentHand {
+  width: clamp(28px, 2.9vw, 42px) !important;
+  border-radius: 6px !important;
+  filter: brightness(0.86) saturate(0.8) !important;
+}
+
+/* Your hand: bottom dock, partly off-screen. */
+.game-table > .hand-zone:not(.hand-zone--opponent) {
+  position: absolute !important;
+  left: 12px !important;
+  right: 12px !important;
+  bottom: -78px !important;
+  height: 158px !important;
+  z-index: 30 !important;
+  padding: 0 16px !important;
+  pointer-events: none !important;
+  transition: bottom 180ms ease;
+  background:
+    linear-gradient(to top, rgba(20, 10, 6, 0.98), rgba(20, 10, 6, 0.72) 58%, transparent);
+}
+
+.game-table > .hand-zone:not(.hand-zone--opponent):hover,
+.game-table > .hand-zone:not(.hand-zone--opponent):focus-within {
+  bottom: -16px !important;
+}
+
+.game-table > .hand-zone:not(.hand-zone--opponent) .hand-cards {
+  height: 158px !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  gap: clamp(6px, 0.8vw, 12px) !important;
+  padding: 12px 8px 0 !important;
+  overflow: visible !important;
+  pointer-events: auto !important;
+}
+
+.card-view--hand {
+  width: clamp(72px, 7.2vw, 108px) !important;
+  flex: 0 0 auto !important;
+  border-radius: 9px !important;
+  transform: translateY(38px) rotate(var(--hand-tilt, 0deg));
+  transform-origin: 50% 100%;
+  transition:
+    transform 170ms ease,
+    filter 170ms ease,
+    box-shadow 170ms ease,
+    z-index 0s linear 170ms;
+}
+
+.hand-cards .card-view--hand:nth-child(odd) {
+  --hand-tilt: -1.5deg;
+}
+
+.hand-cards .card-view--hand:nth-child(even) {
+  --hand-tilt: 1.5deg;
+}
+
+.card-view--hand:hover,
+.card-view--hand:focus-visible,
+.card-view--hand.card-view--targetable {
+  z-index: 5 !important;
+  transform: translateY(-30px) scale(1.18) !important;
+  filter: brightness(1.06) saturate(1.05) !important;
+  box-shadow: 0 22px 42px rgba(0, 0, 0, 0.52) !important;
+  transition:
+    transform 170ms ease,
+    filter 170ms ease,
+    box-shadow 170ms ease;
+}
+
+/* Battlefield structure */
+.battlefield {
+  min-height: 0 !important;
+  height: 100% !important;
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) 44px minmax(0, 1fr) !important;
+  gap: 6px !important;
+}
+
+.battlefield-side {
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: 30px minmax(0, 1fr) !important;
+  gap: 5px !important;
+  padding: 7px !important;
+  border-radius: 16px !important;
+}
+
+.player-strip {
+  min-height: 28px !important;
+  padding: 0 2px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+}
+
+.player-strip strong {
+  font-size: 12px !important;
+}
+
+.player-strip span {
+  font-size: 11px !important;
+}
+
+.field-board {
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 72px !important;
+  gap: 6px !important;
+}
+
+.field-main {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) 72px !important;
+  gap: 6px !important;
+}
+
+.field-zone {
+  min-height: 0 !important;
+  padding: 6px !important;
+  border-radius: 12px !important;
+  background: rgba(0, 0, 0, 0.12) !important;
+}
+
+.zone-label {
+  display: block !important;
+  margin-bottom: 4px !important;
+  font-size: 10px !important;
+  letter-spacing: 0.08em !important;
+  line-height: 1 !important;
+  text-transform: uppercase !important;
+  opacity: 0.64 !important;
+}
+
+.monster-row {
+  height: calc(100% - 14px) !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+  align-items: stretch !important;
+}
+
+.field-zone--monsters .card-view--board,
+.field-zone--monsters .empty-slot {
+  width: min(100%, 82px) !important;
+  justify-self: center !important;
+  align-self: center !important;
+}
+
+/* Zauberzone: permanent left, buffs under monsters, special right. */
+.spell-board {
+  height: calc(100% - 14px) !important;
+  display: grid !important;
+  grid-template-columns: 58px minmax(0, 1fr) 58px !important;
+  gap: 5px !important;
+  align-items: stretch !important;
+}
+
+.spell-wing,
+.buff-stack {
+  min-height: 0 !important;
+  border-radius: 9px !important;
+  padding: 3px !important;
+  background: rgba(0, 0, 0, 0.16) !important;
+  display: grid !important;
+  place-items: center !important;
+  font-size: 9px !important;
+  line-height: 1 !important;
+}
+
+.spell-wing > span {
+  font-size: 8px !important;
+  opacity: 0.68 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+}
+
+.buff-grid {
+  min-width: 0 !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 5px !important;
+}
+
+.spell-card-stack,
+.debuff-cards {
+  min-width: 0 !important;
+  display: flex !important;
+  gap: 3px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-wrap: wrap !important;
+}
+
+.card-view--small,
+.empty-slot--small,
+.spell-board .card-view--board,
+.spell-board .empty-slot {
+  width: 32px !important;
+  border-radius: 5px !important;
+}
+
+/* Debuffs are the clear middle combat line. */
+.conflict-line {
+  min-height: 44px !important;
+  display: grid !important;
+  grid-template-columns: 132px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 5px 10px !important;
+  border: 1px solid rgba(255, 213, 122, 0.22) !important;
+  border-radius: 12px !important;
+  background:
+    linear-gradient(90deg, rgba(90, 42, 26, 0.48), rgba(0, 0, 0, 0.22), rgba(90, 42, 26, 0.48)) !important;
+}
+
+.conflict-line > span {
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+
+.zone-hint {
+  font-size: 11px !important;
+  opacity: 0.52 !important;
+}
+
+/* Piles: compact and clearly separated on the right side of each player board. */
+.field-piles {
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  gap: 5px !important;
+  align-content: stretch !important;
+}
+
+.deck-graveyard-stack {
+  min-height: 0 !important;
+  display: grid !important;
+  gap: 5px !important;
+}
+
+.pile {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  padding: 4px !important;
+  border-radius: 10px !important;
+  display: grid !important;
+  place-items: center !important;
+  gap: 2px !important;
+}
+
+.pile .deck-back,
+.pile .deck-back--small {
+  width: 34px !important;
+  min-width: 0 !important;
+  height: auto !important;
+  aspect-ratio: 5 / 7 !important;
+}
+
+.pile span {
+  font-size: 10px !important;
+  line-height: 1 !important;
+}
+
+.pile strong {
+  font-size: 16px !important;
+  line-height: 1 !important;
+}
+
+.draw-hint {
+  text-align: center !important;
+  font-size: 10px !important;
+  color: #ffd87f !important;
+}
+
+/* Right preview becomes supporting, not the main layout problem. */
+.card-preview {
+  height: 100% !important;
+  min-height: 0 !important;
+  padding: 10px !important;
+  border-radius: 20px !important;
+  display: grid !important;
+  place-items: center !important;
+  overflow: hidden !important;
+}
+
+.card-preview img {
+  width: min(100%, 210px) !important;
+  height: auto !important;
+  max-height: calc(100vh - 52px) !important;
+  object-fit: contain !important;
+  border-radius: 10px !important;
+}
+
+/* Responsive: on small screens preview drops away before the board breaks. */
+@media (max-width: 980px) {
+  .game-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .card-preview {
+    display: none !important;
+  }
+
+  .game-table {
+    padding-bottom: 116px !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .game-table {
+    grid-template-rows: auto 40px minmax(0, 1fr) !important;
+    padding: 7px 7px 108px !important;
+  }
+
+  .battlefield {
+    grid-template-rows: minmax(0, 1fr) 38px minmax(0, 1fr) !important;
+  }
+
+  .field-board {
+    grid-template-columns: minmax(0, 1fr) 58px !important;
+  }
+
+  .field-main {
+    grid-template-rows: minmax(0, 1fr) 62px !important;
+  }
+
+  .spell-board {
+    grid-template-columns: 46px minmax(0, 1fr) 46px !important;
+  }
+
+  .card-view--hand {
+    width: 64px !important;
+  }
+
+  .game-table > .hand-zone:not(.hand-zone--opponent) {
+    bottom: -74px !important;
+    height: 144px !important;
+  }
+}
