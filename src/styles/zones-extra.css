@@ -1,0 +1,1 @@
+.zone-label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;opacity:.7;margin-bottom:4px}.monster-row,.buff-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.spell-board{display:grid;grid-template-columns:86px minmax(0,1fr)86px;gap:7px}
