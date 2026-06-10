@@ -13,8 +13,6 @@ import type {
 let nextInstanceNumber = 1;
 
 function createInstanceId(cardId: string): string {
-  return `${cardId}-${nextInstanceNumber++}`;
-}
-
-function getOpponentId(playerId: PlayerId): PlayerId {
-  return playerId === "player1" ? "player2
+  const id = `${cardId}-${nextInstanceNumber}`;
+  nextInstanceNumber += 1;
+  return
