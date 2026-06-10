@@ -89,9 +89,11 @@ function DeckBack({ deckId, small = false }: { deckId: DeckId; small?: boolean }
 
 function DeckCoinBadge({ deckId, isWinner }: { deckId: DeckId; isWinner: boolean }) {
   return (
-    <span className={`deck-assignment-coin deck-assignment-coin--${deckId} ${isWinner ? "deck-assignment-coin--winner" : ""}`}>
-      <img src={coinImages[deckId]} alt={`${getDeckName(deckId)} Münzseite`} />
-      {isWinner && <span>Gewinnt</span>}
+    <span
+      className={`deck-assignment-coin deck-assignment-coin--${deckId} ${isWinner ? "deck-assignment-coin--winner" : ""}`}
+      aria-label={`${getDeckName(deckId)} Münzseite${isWinner ? " gewinnt den Münzwurf" : ""}`}
+    >
+      <img src={coinImages[deckId]} alt="" aria-hidden="true" />
     </span>
   );
 }
@@ -258,11 +260,19 @@ function Onboarding({
             <span>Du spielst</span>
             <span className="deck-assignment-visual">
               <DeckBack deckId={playerDeckId} />
-              <DeckCoinBadge deckId={playerDeckId} isWinner={coinSide === playerDeckId} />
             </span>
+            <DeckCoinBadge deckId={playerDeckId} isWinner={coinSide === playerDeckId} />
             <strong>{getDeckName(playerDeckId)}</strong>
           </button>
           <button className={`coin-toss-button coin-toss-button--sleek ${isTossingCoin ? "is-tossing" : ""}`} onClick={tossCoin} type="button">
+            <span className="coin-flip" aria-hidden="true">
+              <span className="coin-flip__face coin-flip__face--front">
+                <img src={coinImages[coinSide]} alt="" />
+              </span>
+              <span className="coin-flip__face coin-flip__face--back">
+                <img src={coinImages[coinSide === "eye" ? "finger" : "eye"]} alt="" />
+              </span>
+            </span>
             <span>Münze werfen</span>
             <small>{getDeckName(coinSide)} gewinnt</small>
           </button>
@@ -270,8 +280,8 @@ function Onboarding({
             <span>Gegenüber spielt</span>
             <span className="deck-assignment-visual">
               <DeckBack deckId={opponentDeckId} />
-              <DeckCoinBadge deckId={opponentDeckId} isWinner={coinSide === opponentDeckId} />
             </span>
+            <DeckCoinBadge deckId={opponentDeckId} isWinner={coinSide === opponentDeckId} />
             <strong>{getDeckName(opponentDeckId)}</strong>
           </button>
         </section>
