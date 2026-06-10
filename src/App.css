@@ -4,26 +4,17 @@
 
 :root {
   --board-card-w: 74px;
-  --board-card-h: 104px;
+  --board-card-h: 128px;
   --spell-card-w: 52px;
-  --spell-card-h: 74px;
+  --spell-card-h: 90px;
   --hand-card-w: 112px;
   --hand-card-h: 194px;
   --opponent-hand-card-w: 56px;
-  --opponent-hand-card-h: 78px;
+  --opponent-hand-card-h: 96px;
   --pile-w: 68px;
-  --pile-h: 82px;
-}
-
-html,
-body,
-#root {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-}
-
-body {
-  background: radial-gradient(circle at top, rgba(111, 64, 46, 0.35), transparent 42%), #100c0b;
-  color: #f5efe7;
-  font-family: system-ui,
+  --pile-h: 92px;
+  --bg: #100c0b;
+  --panel: rgba(42, 24, 20, 0.92);
+  --line: rgba(255, 255, 255, 0.12);
+  --text: #f5efe7;
+  --gold
