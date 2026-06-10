@@ -1,10 +1,3 @@
-import { useState } from "react";
-import App from "./App";
-
-type Screen = "menu" | "local" | "cpu" | "online" | "rules";
-
-function Placeholder({ title, text, onBack }: { title: string; text: string; onBack: () => void }) {
-  return (
-    <main className="app onboarding-app onboarding-app--sleek">
-      <section className="onboarding-panel onboarding-panel--sleek main-menu-panel">
-        <p className="eyebrow">Früher oder Später
+import{useState}from"react";
+import App from"./App";
+export default function Root(){const[s,setS]=useState("menu");if(s==="local")return <App/>;return <main className="app"><section className="onboarding-panel"><h1>Frueher oder Spaeter?</h1><button className="primary-button" onClick={()=>setS("local")} type="button">Play local</button><button className="secondary-button" disabled>Play against CPU</button><button className="secondary-button" disabled>Play online</button><button className="secondary-button" disabled>Handbook</
