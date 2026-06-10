@@ -3,16 +3,16 @@
 }
 
 :root {
-  --board-card-w: 84px;
-  --board-card-h: 118px;
-  --spell-card-w: 58px;
-  --spell-card-h: 82px;
+  --board-card-w: 74px;
+  --board-card-h: 104px;
+  --spell-card-w: 52px;
+  --spell-card-h: 74px;
   --hand-card-w: 112px;
   --hand-card-h: 194px;
-  --opponent-hand-card-w: 58px;
-  --opponent-hand-card-h: 82px;
-  --pile-w: 74px;
-  --pile-h: 96px;
+  --opponent-hand-card-w: 56px;
+  --opponent-hand-card-h: 78px;
+  --pile-w: 68px;
+  --pile-h: 82px;
 }
 
 html,
@@ -25,4 +25,5 @@ body,
 
 body {
   background: radial-gradient(circle at top, rgba(111, 64, 46, 0.35), transparent 42%), #100c0b;
-  color: #f5efe
+  color: #f5efe7;
+  font-family: system-ui,
