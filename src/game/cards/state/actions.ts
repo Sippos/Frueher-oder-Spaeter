@@ -18,7 +18,3 @@ function createInstanceId(cardId: string): string {
 }
 
 function getOpponentId(playerId: PlayerId): PlayerId {
-  return playerId === "player1" ? "player2" : "player1";
-}
-
-function findPlayedCard(game
