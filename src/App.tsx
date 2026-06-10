@@ -87,6 +87,15 @@ function DeckBack({ deckId, small = false }: { deckId: DeckId; small?: boolean }
   );
 }
 
+function DeckCoinBadge({ deckId, isWinner }: { deckId: DeckId; isWinner: boolean }) {
+  return (
+    <span className={`deck-assignment-coin deck-assignment-coin--${deckId} ${isWinner ? "deck-assignment-coin--winner" : ""}`}>
+      <img src={coinImages[deckId]} alt={`${getDeckName(deckId)} Münzseite`} />
+      {isWinner && <span>Gewinnt</span>}
+    </span>
+  );
+}
+
 function HiddenMonsterPickRow({
   title,
   helper,
@@ -247,33 +256,28 @@ function Onboarding({
         <section className="deck-assignment deck-assignment--sleek" aria-label="Deckzuordnung">
           <button className="deck-assignment-card deck-assignment-card--sleek" onClick={swapDecks} type="button">
             <span>Du spielst</span>
-            <DeckBack deckId={playerDeckId} />
+            <span className="deck-assignment-visual">
+              <DeckBack deckId={playerDeckId} />
+              <DeckCoinBadge deckId={playerDeckId} isWinner={coinSide === playerDeckId} />
+            </span>
             <strong>{getDeckName(playerDeckId)}</strong>
           </button>
           <button className={`coin-toss-button coin-toss-button--sleek ${isTossingCoin ? "is-tossing" : ""}`} onClick={tossCoin} type="button">
-            <span className={`coin-result coin-result--${coinSide}`}>
-              <img className="coin-result__image" src={coinImages[coinSide]} alt={`${getDeckName(coinSide)} gewinnt den Münzwurf`} />
-            </span>
             <span>Münze werfen</span>
             <small>{getDeckName(coinSide)} gewinnt</small>
           </button>
           <button className="deck-assignment-card deck-assignment-card--sleek" onClick={swapDecks} type="button">
             <span>Gegenüber spielt</span>
-            <DeckBack deckId={opponentDeckId} />
+            <span className="deck-assignment-visual">
+              <DeckBack deckId={opponentDeckId} />
+              <DeckCoinBadge deckId={opponentDeckId} isWinner={coinSide === opponentDeckId} />
+            </span>
             <strong>{getDeckName(opponentDeckId)}</strong>
           </button>
         </section>
 
-        <ol className="setup-step-overview" aria-label="Spielaufbau Übersicht">
-          {setupSteps.map((step, index) => (
-            <li className={index === stepIndex ? "setup-step-overview__item setup-step-overview__item--active" : "setup-step-overview__item"} key={step.title}>
-              <span>{index + 1}</span>
-              <strong>{step.title.replace(/^\d+\.\s*/, "")}</strong>
-            </li>
-          ))}
-        </ol>
-
-        <section className="setup-walkthrough setup-walkthrough--sleek">
+        <section className={`setup-walkthrough setup-walkthrough--sleek ${activeStep.animation === "coins" ? "setup-walkthrough--text-only" : ""}`}>
+          {activeStep.animation !== "coins" && (
           <OnboardingAnimation
             step={activeStep}
             coinSide={coinSide}
@@ -283,6 +287,7 @@ function Onboarding({
             selectedStartingMonsterIds={selectedStartingMonsterIds}
             onSelectStartingMonster={selectStartingMonster}
           />
+          )}
           <div className="setup-copy setup-copy--sleek">
             <p className="step-counter">Schritt {stepIndex + 1} / {setupSteps.length}</p>
             <h2>{activeStep.title}</h2>
