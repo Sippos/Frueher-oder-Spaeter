@@ -224,19 +224,28 @@ function DeckAssignmentCard({
   onSwap?: () => void;
 }) {
   return (
-    <div className={`deck-assignment-card deck-assignment-card--sleek ${showMonsterPick ? "deck-assignment-card--with-pick" : ""}`}>
-      <span className="deck-assignment-label">{label}</span>
+    <div
+      className={`deck-assignment-card deck-assignment-card--sleek ${showMonsterPick ? "deck-assignment-card--with-pick" : ""} ${onSwap ? "deck-assignment-card--clickable" : ""}`}
+      onClick={onSwap}
+      onKeyDown={(event) => {
+        if (!onSwap) return;
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onSwap();
+        }
+      }}
+      role={onSwap ? "button" : undefined}
+      tabIndex={onSwap ? 0 : undefined}
+    >
+      <span className="deck-assignment-label">
+        {label}
+        {onSwap && <em>Zum Tauschen ein Deck anklicken</em>}
+      </span>
       <span className="deck-assignment-visual">
         <DeckBack deckId={deckId} />
       </span>
       <DeckCoinBadge deckId={deckId} isWinner={coinSide === deckId} />
       <strong>{getDeckName(deckId)}</strong>
-
-      {onSwap && (
-        <button className="deck-swap-button" onClick={onSwap} type="button">
-          Decks tauschen
-        </button>
-      )}
 
       {showMonsterPick && (
         <div className="deck-monster-pick">
