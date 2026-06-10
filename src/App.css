@@ -4,18 +4,18 @@
 
 :root {
   --bg: #100c0b;
-  --table: #2f5611;
-  --table-dark: #173006;
-  --panel: rgba(18, 10, 8, 0.82);
+  --table: #244a0d;
+  --table-dark: #132506;
+  --panel: rgba(18, 10, 8, 0.88);
   --line: rgba(255, 255, 255, 0.14);
   --text: #f5efe7;
   --muted: rgba(245, 239, 231, 0.66);
-  --gold: #d7c392;
-  --card-board-w: 78px;
-  --card-board-h: 135px;
-  --card-spell-w: 54px;
-  --card-spell-h: 94px;
-  --card-hand-w: 118px;
-  --card-hand-h: 204px;
-  --card-opponent-w: 50px;
+  --gold: #f0cf75;
+  --card-board-w: 74px;
+  --card-board-h: 128px;
+  --card-spell-w: 50px;
+  --card-spell-h: 86px;
+  --card-hand-w: 112px;
+  --card-hand-h: 194px;
+  --card-opponent-w: 48px;
   --card-opponent
