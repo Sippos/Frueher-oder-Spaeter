@@ -5,7 +5,6 @@ import type {
   PlayedMonsterCard,
   PlayedSpellCard,
   PlayerId,
-  PlayerState,
   TargetRef,
   TargetRequirement,
 } from "./gameTypes";
@@ -15,4 +14,11 @@ let nextInstanceNumber = 1;
 function createInstanceId(cardId: string): string {
   const id = `${cardId}-${nextInstanceNumber}`;
   nextInstanceNumber += 1;
-  return
+  return id;
+}
+
+function getOpponentId(playerId: PlayerId): PlayerId {
+  return playerId === "player1" ? "player2" : "player1";
+}
+
+function findPlayedCard(game
