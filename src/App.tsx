@@ -939,15 +939,8 @@ function GameScreen({ game, setGame }: { game: GameState; setGame: Dispatch<SetS
     <main className="app">
       <section className="game-layout">
         <section className="game-table">
-          <div className="game-status">
-            <span>
-              Runde {game.round} / {game.maxRounds} · {game.phase} · {game.players[game.currentPlayerId].name} beginnt
-            </span>
+          
 
-            <button className="phase-button" disabled={game.phase === "gameEnd" || needsSetupDraw} onClick={handlePhaseAction} type="button">
-              {getPhaseButtonText()}
-            </button>
-          </div>
 
           {pendingCard && (
             <div className="target-banner">
@@ -987,8 +980,19 @@ function GameScreen({ game, setGame }: { game: GameState; setGame: Dispatch<SetS
 
           <Hand player={player} selectedCardId={pendingSpell?.cardId} onPlayCard={handlePlayCard} onInspect={setInspectedCard} />
         </section>
+        <aside className="game-sidebar">
+          <div className="game-status">
+                      <span>
+                        Runde {game.round} / {game.maxRounds} · {game.phase} · {game.players[game.currentPlayerId].name} beginnt
+                      </span>
 
-        <CardPreview card={inspectedCard} />
+                      <button className="phase-button" disabled={game.phase === "gameEnd" || needsSetupDraw} onClick={handlePhaseAction} type="button">
+                        {getPhaseButtonText()}
+                      </button>
+                    </div>
+
+          <CardPreview card={inspectedCard} />
+        </aside>
       </section>
     </main>
   );

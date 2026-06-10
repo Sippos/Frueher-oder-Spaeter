@@ -406,3 +406,129 @@
     height: 144px !important;
   }
 }
+
+/* Board layout v2: status lives in the right sidebar, board uses the freed space. */
+.game-layout {
+  grid-template-columns: minmax(0, 1fr) clamp(210px, 18vw, 270px) !important;
+  gap: 10px !important;
+}
+
+.game-sidebar {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 10px;
+}
+
+.game-sidebar .game-status {
+  min-height: 0 !important;
+  padding: 10px !important;
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  align-items: stretch !important;
+  gap: 8px !important;
+  border-radius: 18px !important;
+}
+
+.game-sidebar .phase-button {
+  width: 100% !important;
+  min-height: 38px !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+.game-table {
+  grid-template-rows: 48px minmax(0, 1fr) !important;
+  padding: 8px !important;
+  overflow: hidden !important;
+}
+
+.game-table > .game-status {
+  display: none !important;
+}
+
+.game-table > .hand-zone--opponent {
+  grid-row: 1;
+  height: 44px !important;
+}
+
+.battlefield {
+  grid-row: 2;
+  min-height: 0 !important;
+}
+
+.game-table > .hand-zone:not(.hand-zone--opponent) {
+  left: 18px !important;
+  right: 18px !important;
+  bottom: -92px !important;
+  height: 148px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  pointer-events: none !important;
+  z-index: 40 !important;
+}
+
+.game-table > .hand-zone:not(.hand-zone--opponent):hover,
+.game-table > .hand-zone:not(.hand-zone--opponent):focus-within {
+  bottom: -50px !important;
+}
+
+.game-table > .hand-zone:not(.hand-zone--opponent) .hand-cards {
+  height: 148px !important;
+  padding: 0 8px !important;
+  align-items: flex-start !important;
+  pointer-events: auto !important;
+}
+
+.card-view--hand {
+  transform: translateY(0) rotate(var(--hand-tilt, 0deg)) !important;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.38) !important;
+}
+
+.card-view--hand:hover,
+.card-view--hand:focus-visible,
+.card-view--hand.card-view--targetable {
+  transform: translateY(-72px) scale(1.18) !important;
+}
+
+.battlefield-side,
+.field-board,
+.field-main,
+.field-zone {
+  overflow: visible !important;
+}
+
+.battlefield-side:last-child .field-main {
+  grid-template-rows: minmax(0, 1fr) 74px !important;
+}
+
+.battlefield-side:last-child .field-zone--spells {
+  position: relative;
+  z-index: 1;
+}
+
+.game-sidebar .card-preview {
+  min-height: 0 !important;
+  height: 100% !important;
+}
+
+.game-sidebar .card-preview img {
+  max-height: calc(100vh - 130px) !important;
+}
+
+@media (max-width: 980px) {
+  .game-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .game-sidebar {
+    display: none !important;
+  }
+
+  .game-table {
+    grid-template-rows: 44px minmax(0, 1fr) !important;
+    padding: 7px !important;
+  }
+}
