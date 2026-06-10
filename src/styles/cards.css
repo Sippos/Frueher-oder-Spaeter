@@ -1,1 +1,106 @@
-.card-view,.empty-slot{position:relative;aspect-ratio:2.5/3.5;border-radius:10px;border:1px solid rgba(255,226,188,.22);background:rgba(255,255,255,.05);overflow:hidden}.card-view{padding:0;cursor:pointer;display:block;color:inherit}.card-view img,.card-preview img{width:100%;height:100%;object-fit:cover;display:block}.empty-slot{border-style:dashed;opacity:.6}.empty-slot--small,.card-view--small{width:42px}.card-view--targetable{box
+.card-view,
+.empty-slot {
+  position: relative;
+  aspect-ratio: 2.5 / 3.5;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 226, 188, 0.22);
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 226, 188, 0.12), transparent 38%),
+    rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.card-view {
+  display: block;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    filter 160ms ease;
+}
+
+.card-view:hover,
+.card-view:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(255, 226, 188, 0.5);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.32);
+  outline: none;
+}
+
+.card-view img,
+.card-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.card-view--hand {
+  width: clamp(54px, 7.4vw, 88px);
+}
+
+.card-view--opponentHand {
+  width: clamp(42px, 5.4vw, 66px);
+  filter: saturate(0.86) brightness(0.88);
+}
+
+.card-view--board {
+  width: clamp(72px, 8vw, 104px);
+}
+
+.card-view--small,
+.empty-slot--small {
+  width: 42px;
+}
+
+.empty-slot {
+  border-style: dashed;
+  opacity: 0.58;
+}
+
+.card-view--targetable {
+  border-color: rgba(255, 202, 109, 0.95);
+  box-shadow:
+    0 0 0 2px rgba(255, 202, 109, 0.22),
+    0 0 28px rgba(255, 202, 109, 0.34);
+}
+
+.card-view--hidden .deck-back {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+}
+
+.strength-badge,
+.status-badge {
+  position: absolute;
+  z-index: 2;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 226, 188, 0.35);
+  background: rgba(35, 20, 12, 0.86);
+  color: #ffe2bc;
+  line-height: 1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.strength-badge {
+  right: 6px;
+  bottom: 6px;
+  min-width: 30px;
+  padding: 5px 7px;
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.status-badge {
+  left: 6px;
+  top: 6px;
+  padding: 5px 7px;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}

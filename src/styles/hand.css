@@ -27,4 +27,16 @@
   align-items: center;
   gap: 8px;
   overflow: visible;
-  padding: 
+  padding: 8px 4px;
+}
+
+.hand-zone--opponent .hand-cards {
+  padding: 4px;
+  gap: 6px;
+}
+
+.hand-cards:empty::before {
+  content: "Keine Karten";
+  color: rgba(255, 226, 188, 0.48);
+  font-size: 0.82rem;
+}

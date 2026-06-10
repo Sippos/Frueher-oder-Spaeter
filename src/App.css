@@ -7,5 +7,6 @@
 @import './styles/spells.css';
 @import './styles/piles.css';
 @import './styles/cards.css';
+@import './styles/hand.css';
 @import './styles/preview.css';
 @import './styles/mobile.css';
