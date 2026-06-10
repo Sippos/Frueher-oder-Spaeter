@@ -4,6 +4,11 @@
   align-items: center;
   justify-content: center;
   overflow: visible;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .hand-zone--opponent {
@@ -22,11 +27,4 @@
   align-items: center;
   gap: 8px;
   overflow: visible;
-  padding: 0 10px;
-}
-
-.card-view--hand,
-.card-view--opponentHand {
-  width: 78px;
-  min-width: 78px;
-  transition
+  padding: 
