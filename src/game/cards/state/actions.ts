@@ -17,4 +17,4 @@ function createInstanceId(cardId: string): string {
   return id;
 }
 
-function getOpponentId(playerId: PlayerId): PlayerId {
+function getOpponentId
