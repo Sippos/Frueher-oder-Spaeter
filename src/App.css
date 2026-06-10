@@ -1,1 +1,21 @@
-*{box-sizing:border-box}html,body,#root{margin:0;width:100%;min-height:100%}body{background:#100c0b;color:#f5efe7;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button{font:inherit}.app{min-height:100vh;padding:12px}.game-layout{width:min(1500px,100%);height:calc(100vh - 24px);margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:12px}.game-table{min-width:0;min-height:0;display:grid;grid-template-rows:36px 110px minmax(0,1fr) 220px;gap:8px;padding:12px;border:1px solid rgba(255,255,255,.12);border-radius:24px;background:linear-gradient(#351f
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #100c0b;
+  --table: #2f5611;
+  --table-dark: #173006;
+  --panel: rgba(18, 10, 8, 0.82);
+  --line: rgba(255, 255, 255, 0.14);
+  --text: #f5efe7;
+  --muted: rgba(245, 239, 231, 0.66);
+  --gold: #d7c392;
+  --card-board-w: 78px;
+  --card-board-h: 135px;
+  --card-spell-w: 54px;
+  --card-spell-h: 94px;
+  --card-hand-w: 118px;
+  --card-hand-h: 204px;
+  --card-opponent-w: 50px;
+  --card-opponent
