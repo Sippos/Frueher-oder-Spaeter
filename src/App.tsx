@@ -200,6 +200,60 @@ function OnboardingAnimation({
   );
 }
 
+function DeckAssignmentCard({
+  label,
+  deckId,
+  coinSide,
+  showMonsterPick,
+  monsterOrder,
+  selectedMonsterId,
+  pickTitle,
+  pickHelper,
+  onSelectMonster,
+  onSwap,
+}: {
+  label: string;
+  deckId: DeckId;
+  coinSide: CoinSide;
+  showMonsterPick: boolean;
+  monsterOrder: MonsterCard[];
+  selectedMonsterId?: string;
+  pickTitle: string;
+  pickHelper: string;
+  onSelectMonster: (cardId: string) => void;
+  onSwap?: () => void;
+}) {
+  return (
+    <div className={`deck-assignment-card deck-assignment-card--sleek ${showMonsterPick ? "deck-assignment-card--with-pick" : ""}`}>
+      <span className="deck-assignment-label">{label}</span>
+      <span className="deck-assignment-visual">
+        <DeckBack deckId={deckId} />
+      </span>
+      <DeckCoinBadge deckId={deckId} isWinner={coinSide === deckId} />
+      <strong>{getDeckName(deckId)}</strong>
+
+      {onSwap && (
+        <button className="deck-swap-button" onClick={onSwap} type="button">
+          Decks tauschen
+        </button>
+      )}
+
+      {showMonsterPick && (
+        <div className="deck-monster-pick">
+          <HiddenMonsterPickRow
+            title={pickTitle}
+            helper={pickHelper}
+            deckId={deckId}
+            monsterOrder={monsterOrder}
+            selectedMonsterId={selectedMonsterId}
+            onSelect={onSelectMonster}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Onboarding({
   onStart,
 }: {
@@ -256,14 +310,19 @@ function Onboarding({
         </div>
 
         <section className="deck-assignment deck-assignment--sleek" aria-label="Deckzuordnung">
-          <button className="deck-assignment-card deck-assignment-card--sleek" onClick={swapDecks} type="button">
-            <span>Du spielst</span>
-            <span className="deck-assignment-visual">
-              <DeckBack deckId={playerDeckId} />
-            </span>
-            <DeckCoinBadge deckId={playerDeckId} isWinner={coinSide === playerDeckId} />
-            <strong>{getDeckName(playerDeckId)}</strong>
-          </button>
+          <DeckAssignmentCard
+            label="Du spielst"
+            deckId={playerDeckId}
+            coinSide={coinSide}
+            showMonsterPick={activeStep.animation === "monster"}
+            monsterOrder={monsterOrders[playerDeckId]}
+            selectedMonsterId={selectedStartingMonsterIds[playerDeckId]}
+            pickTitle="Gegenüber zieht bei dir"
+            pickHelper="Wähle verdeckt, welches deiner Monster gezogen wurde."
+            onSelectMonster={(cardId) => selectStartingMonster(playerDeckId, cardId)}
+            onSwap={activeStep.animation === "coins" ? swapDecks : undefined}
+          />
+
           <button className={`coin-toss-button coin-toss-button--sleek ${isTossingCoin ? "is-tossing" : ""}`} onClick={tossCoin} type="button">
             <span className="coin-flip" aria-hidden="true">
               <span className="coin-flip__face coin-flip__face--front">
@@ -276,18 +335,23 @@ function Onboarding({
             <span>Münze werfen</span>
             <small>{getDeckName(coinSide)} gewinnt</small>
           </button>
-          <button className="deck-assignment-card deck-assignment-card--sleek" onClick={swapDecks} type="button">
-            <span>Gegenüber spielt</span>
-            <span className="deck-assignment-visual">
-              <DeckBack deckId={opponentDeckId} />
-            </span>
-            <DeckCoinBadge deckId={opponentDeckId} isWinner={coinSide === opponentDeckId} />
-            <strong>{getDeckName(opponentDeckId)}</strong>
-          </button>
+
+          <DeckAssignmentCard
+            label="Gegenüber spielt"
+            deckId={opponentDeckId}
+            coinSide={coinSide}
+            showMonsterPick={activeStep.animation === "monster"}
+            monsterOrder={monsterOrders[opponentDeckId]}
+            selectedMonsterId={selectedStartingMonsterIds[opponentDeckId]}
+            pickTitle="Du ziehst beim Gegenüber"
+            pickHelper={`Wähle 1 verdecktes Monster aus ${getDeckName(opponentDeckId)}.`}
+            onSelectMonster={(cardId) => selectStartingMonster(opponentDeckId, cardId)}
+            onSwap={activeStep.animation === "coins" ? swapDecks : undefined}
+          />
         </section>
 
-        <section className={`setup-walkthrough setup-walkthrough--sleek ${activeStep.animation === "coins" ? "setup-walkthrough--text-only" : ""}`}>
-          {activeStep.animation !== "coins" && (
+        <section className={`setup-walkthrough setup-walkthrough--sleek ${activeStep.animation !== "shuffle" ? "setup-walkthrough--text-only" : ""}`}>
+          {activeStep.animation === "shuffle" && (
           <OnboardingAnimation
             step={activeStep}
             coinSide={coinSide}
