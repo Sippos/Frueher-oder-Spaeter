@@ -1,8 +1,6 @@
 import type { Card } from "../cards";
 import type {
   GameState,
-  OngoingEffect,
-  PlayedCard,
   PlayedMonsterCard,
   PlayedSpellCard,
   PlayerId,
@@ -17,4 +15,5 @@ function createInstanceId(cardId: string): string {
 }
 
 function getOpponentId(playerId: PlayerId): PlayerId {
-  return playerId === "player1" ? "player2" :
+  return playerId === "player1" ? "player2" : "player1";
+}
