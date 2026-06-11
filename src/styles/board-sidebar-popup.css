@@ -1,0 +1,201 @@
+/*
+  Board sidebar popup pass.
+
+  Goal from sketch:
+  - remove the big always-visible card overview column
+  - reclaim that space for the board
+  - keep the round heading + action button as a compact floating control
+    near the right-side deck/pile area
+  - show the card preview only as a popup while hovering/focusing cards
+    or the compact control
+*/
+
+.game-layout {
+  position: relative !important;
+  width: min(100vw - 16px, 1540px) !important;
+  height: calc(100vh - 16px) !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 0 !important;
+  margin: 8px auto !important;
+}
+
+.game-table {
+  grid-column: 1 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+}
+
+/* The old right column becomes a compact floating HUD. */
+.game-sidebar {
+  position: absolute !important;
+  right: clamp(58px, 5.8vw, 86px) !important;
+  top: 50% !important;
+  width: clamp(138px, 13vw, 176px) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: auto !important;
+  gap: 8px !important;
+  transform: translateY(-50%) !important;
+  z-index: 90 !important;
+  pointer-events: none !important;
+}
+
+/* Compact round/action module, placed beside the deck/pile rail. */
+.game-sidebar .game-status {
+  order: 2 !important;
+  min-height: 0 !important;
+  padding: 8px !important;
+  border-radius: 14px !important;
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 7px !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 244, 223, 0.10), transparent 55%),
+    rgba(22, 12, 8, 0.84) !important;
+  border: 1px solid rgba(255, 244, 223, 0.14) !important;
+  box-shadow:
+    0 16px 34px rgba(0, 0, 0, 0.38),
+    0 0 0 1px rgba(0, 0, 0, 0.24) inset !important;
+  backdrop-filter: blur(7px);
+  pointer-events: auto !important;
+}
+
+.game-sidebar .game-status > span,
+.game-sidebar .game-status > strong,
+.game-sidebar .game-status > div {
+  min-width: 0 !important;
+}
+
+.game-sidebar .game-status > :first-child {
+  color: #fff4df !important;
+  font-size: 0.74rem !important;
+  font-weight: 900 !important;
+  line-height: 1.18 !important;
+  letter-spacing: 0.01em !important;
+}
+
+.game-sidebar .phase-button,
+.game-sidebar .game-status button {
+  width: 100% !important;
+  min-height: 34px !important;
+  padding: 8px 10px !important;
+  border-radius: 999px !important;
+  font-size: 0.78rem !important;
+  font-weight: 950 !important;
+  line-height: 1 !important;
+  text-align: center !important;
+  justify-content: center !important;
+}
+
+/* The card preview is no longer a fixed column. It becomes a popup. */
+.game-sidebar .card-preview {
+  order: 1 !important;
+  position: absolute !important;
+  right: 0 !important;
+  bottom: calc(100% + 10px) !important;
+  width: clamp(170px, 16vw, 230px) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: calc(100vh - 40px) !important;
+  padding: 10px !important;
+  border-radius: 14px !important;
+  display: grid !important;
+  place-items: center !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 244, 223, 0.10), transparent 55%),
+    rgba(18, 10, 7, 0.92) !important;
+  border: 1px solid rgba(255, 244, 223, 0.14) !important;
+  box-shadow:
+    0 24px 56px rgba(0, 0, 0, 0.56),
+    0 0 0 1px rgba(0, 0, 0, 0.24) inset !important;
+  opacity: 0 !important;
+  transform: translateY(8px) scale(0.97) !important;
+  transform-origin: 100% 100% !important;
+  pointer-events: none !important;
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease !important;
+}
+
+.game-sidebar .card-preview img {
+  width: min(100%, 210px) !important;
+  height: auto !important;
+  max-height: calc(100vh - 96px) !important;
+  object-fit: contain !important;
+  border-radius: 2px !important;
+}
+
+/* Show preview as popup when it is useful. */
+.game-layout:has(.card-view:hover) .game-sidebar .card-preview,
+.game-layout:has(.card-view:focus-visible) .game-sidebar .card-preview,
+.game-sidebar:hover .card-preview,
+.game-sidebar:focus-within .card-preview {
+  opacity: 1 !important;
+  transform: translateY(0) scale(1) !important;
+}
+
+/* If browser does not support :has, hovering the compact control still reveals it. */
+.game-sidebar::after {
+  content: "Vorschau";
+  justify-self: end;
+  padding: 3px 7px;
+  border-radius: 999px;
+  color: rgba(255, 244, 223, 0.56);
+  background: rgba(255, 244, 223, 0.07);
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  pointer-events: auto;
+  order: 3;
+}
+
+/* Pile rail gets a touch more room because the preview column is gone. */
+.field-board {
+  grid-template-columns: minmax(0, 1fr) 56px !important;
+}
+
+.field-piles {
+  width: 56px !important;
+  margin-right: 2px !important;
+}
+
+/* Keep rightmost special/spell slots away from the floating status control. */
+.buff-stack:nth-child(4) {
+  left: 90% !important;
+  transform: translate(-70%, -50%) !important;
+}
+
+.spell-wing--special {
+  left: 94% !important;
+  transform: translate(-78%, -50%) !important;
+}
+
+/* Make the middle-right control less intrusive during card interaction. */
+.game-layout:has(.card-view:hover) .game-sidebar .game-status {
+  opacity: 0.78;
+}
+
+.game-layout:has(.card-view:hover) .game-sidebar:hover .game-status {
+  opacity: 1;
+}
+
+@media (max-width: 980px) {
+  .game-sidebar {
+    right: 10px !important;
+    top: auto !important;
+    bottom: 10px !important;
+    width: 150px !important;
+    transform: none !important;
+  }
+
+  .game-sidebar .card-preview {
+    display: none !important;
+  }
+
+  .game-sidebar::after {
+    display: none !important;
+  }
+}
