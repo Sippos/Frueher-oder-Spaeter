@@ -532,3 +532,98 @@
     padding: 7px !important;
   }
 }
+
+/* Card style v3: tarot-like cards + no bottom-edge hover glitch.
+   Only hovering/focusing a real hand card lifts it. */
+.card-view,
+.empty-slot,
+.card-preview img,
+.deck-back,
+.deck-back__image,
+.card-view img,
+.card-preview img {
+  border-radius: 2px !important;
+}
+
+.card-view {
+  border-color: rgba(255, 236, 202, 0.32) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.14) inset,
+    0 10px 22px rgba(0, 0, 0, 0.34) !important;
+}
+
+.card-view:hover,
+.card-view:focus-visible {
+  border-color: rgba(255, 236, 202, 0.62) !important;
+}
+
+/* Keep hand dock fixed. Do not open it when the mouse only reaches the bottom edge. */
+.game-table > .hand-zone:not(.hand-zone--opponent),
+.game-table > .hand-zone:not(.hand-zone--opponent):hover,
+.game-table > .hand-zone:not(.hand-zone--opponent):focus-within {
+  bottom: -102px !important;
+  height: 168px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  pointer-events: none !important;
+}
+
+/* Only the cards themselves are interactive. */
+.game-table > .hand-zone:not(.hand-zone--opponent) .hand-cards {
+  height: 168px !important;
+  padding: 0 8px !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  overflow: visible !important;
+  pointer-events: none !important;
+}
+
+.card-view--hand {
+  width: clamp(76px, 7.4vw, 112px) !important;
+  pointer-events: auto !important;
+  border-radius: 2px !important;
+  transform: translateY(0) rotate(var(--hand-tilt, 0deg)) !important;
+  transform-origin: 50% 100% !important;
+  transition:
+    transform 160ms ease,
+    filter 160ms ease,
+    box-shadow 160ms ease,
+    z-index 0s linear 160ms !important;
+}
+
+/* The only reveal interaction: actual card hover/focus/target. */
+.card-view--hand:hover,
+.card-view--hand:focus-visible,
+.card-view--hand.card-view--targetable {
+  z-index: 60 !important;
+  transform: translateY(-78px) scale(1.16) !important;
+  filter: brightness(1.06) saturate(1.05) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 24px 48px rgba(0, 0, 0, 0.58) !important;
+  transition:
+    transform 160ms ease,
+    filter 160ms ease,
+    box-shadow 160ms ease !important;
+}
+
+/* Board slots can stay slightly softer, but still not pill/rounded-card style. */
+.field-zone,
+.conflict-line,
+.pile,
+.game-sidebar .game-status,
+.card-preview {
+  border-radius: 6px !important;
+}
+
+/* Preview card should read like a physical tarot card, not a web tile. */
+.card-preview {
+  padding: 12px !important;
+}
+
+.card-preview img {
+  border-radius: 2px !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 18px 36px rgba(0, 0, 0, 0.42) !important;
+}
