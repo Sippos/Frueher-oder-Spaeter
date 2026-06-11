@@ -774,3 +774,248 @@
     transform: translateY(58px) scale(1.13) !important;
   }
 }
+
+/* Board layout v5: remove boxy scaffolding, use tactile cues/orbs, give cards more space. */
+
+/* Player strip becomes compact: name + mana/strength orbs. */
+.player-strip {
+  min-height: 22px !important;
+  padding: 0 2px 2px !important;
+  gap: 6px !important;
+}
+
+.player-strip strong {
+  margin-right: auto !important;
+  font-size: 12px !important;
+  letter-spacing: 0.01em;
+}
+
+.stat-orb {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  position: relative;
+  color: #fff4df;
+  font-size: 11px !important;
+  font-weight: 950;
+  line-height: 1;
+  border: 1px solid rgba(255, 244, 223, 0.28);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.18) inset,
+    0 5px 12px rgba(0, 0, 0, 0.22);
+}
+
+.stat-orb::before {
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  opacity: 0.72;
+}
+
+.stat-orb--mana {
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.55), transparent 26%),
+    radial-gradient(circle at center, rgba(117, 88, 255, 0.7), rgba(54, 34, 127, 0.72));
+}
+
+.stat-orb--mana::before {
+  content: "✦";
+  color: #b9abff;
+}
+
+.stat-orb--strength {
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.48), transparent 26%),
+    radial-gradient(circle at center, rgba(255, 169, 76, 0.74), rgba(122, 51, 24, 0.76));
+}
+
+.stat-orb--strength::before {
+  content: "●";
+  color: #ffbd74;
+}
+
+/* Fallback for old textual spans if App.tsx did not match. */
+.player-strip span:not(.stat-orb) {
+  padding: 3px 7px !important;
+  border-radius: 999px;
+  background: rgba(255, 244, 223, 0.08);
+  font-size: 10px !important;
+}
+
+/* Remove zone headings and heavy boxes. */
+.zone-label,
+.spell-wing > span,
+.zone-hint {
+  display: none !important;
+}
+
+.field-zone {
+  padding: 2px !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.battlefield-side {
+  padding: 6px 7px !important;
+  border-color: rgba(255, 244, 223, 0.08) !important;
+  background:
+    radial-gradient(circle at 14% 22%, rgba(255, 244, 223, 0.04), transparent 32%),
+    rgba(0, 0, 0, 0.08) !important;
+}
+
+.field-board {
+  grid-template-columns: minmax(0, 1fr) 58px !important;
+  gap: 4px !important;
+}
+
+.field-main {
+  gap: 3px !important;
+}
+
+/* Make card slots feel like table placement guides instead of boxes. */
+.monster-row,
+.buff-grid {
+  gap: clamp(8px, 1.6vw, 22px) !important;
+}
+
+.empty-slot {
+  border: 0 !important;
+  background:
+    radial-gradient(ellipse at center, rgba(255, 244, 223, 0.12), transparent 58%),
+    linear-gradient(180deg, rgba(255, 244, 223, 0.08), rgba(255, 244, 223, 0.015)) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 244, 223, 0.08) inset,
+    0 12px 24px rgba(0, 0, 0, 0.12) inset !important;
+  opacity: 0.72 !important;
+}
+
+.field-zone--monsters .empty-slot {
+  width: min(100%, 96px) !important;
+}
+
+.empty-slot--small {
+  width: 28px !important;
+  opacity: 0.45 !important;
+}
+
+/* Spell area: no containers, just permanent/buff/special landing shadows. */
+.spell-board {
+  grid-template-columns: 42px minmax(0, 1fr) 42px !important;
+  gap: 5px !important;
+}
+
+.spell-wing,
+.buff-stack {
+  background:
+    radial-gradient(ellipse at center, rgba(255, 244, 223, 0.10), transparent 66%) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.spell-board .card-view--board,
+.spell-board .empty-slot,
+.card-view--small,
+.empty-slot--small {
+  width: 30px !important;
+}
+
+/* Debuff line becomes a tactile divider, not another big box. */
+.conflict-line {
+  min-height: 34px !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  padding: 4px 10px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background:
+    linear-gradient(90deg, transparent, rgba(255, 205, 116, 0.23) 18%, rgba(255, 205, 116, 0.12) 50%, rgba(255, 205, 116, 0.23) 82%, transparent),
+    radial-gradient(circle at 50% 50%, rgba(255, 244, 223, 0.08), transparent 55%) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 244, 223, 0.14) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.22) inset !important;
+}
+
+.conflict-line > span {
+  display: none !important;
+}
+
+.debuff-cards:empty::before {
+  content: "Schwächungen";
+  color: rgba(255, 226, 188, 0.38);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Piles shrink into tactile stack tokens. */
+.field-piles {
+  gap: 3px !important;
+}
+
+.pile {
+  padding: 2px !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background:
+    radial-gradient(circle at center, rgba(255, 244, 223, 0.1), transparent 62%),
+    rgba(0, 0, 0, 0.16) !important;
+}
+
+.pile .deck-back,
+.pile .deck-back--small {
+  width: 28px !important;
+}
+
+.pile span {
+  font-size: 0 !important;
+}
+
+.pile span::before {
+  font-size: 9px !important;
+  line-height: 1;
+  opacity: 0.72;
+}
+
+.pile strong {
+  font-size: 13px !important;
+}
+
+/* Reclaim more space for actual monster cards. */
+.field-zone--monsters .card-view--board,
+.field-zone--monsters .empty-slot {
+  width: min(100%, 104px) !important;
+}
+
+.card-view--board {
+  border-radius: 2px !important;
+}
+
+/* Edge hands: keep them outside, but a little less intrusive. */
+.game-table > .hand-zone--opponent,
+.game-table > .hand-zone--opponent:hover,
+.game-table > .hand-zone--opponent:focus-within {
+  top: -88px !important;
+}
+
+.game-table > .hand-zone:not(.hand-zone--opponent),
+.game-table > .hand-zone:not(.hand-zone--opponent):hover,
+.game-table > .hand-zone:not(.hand-zone--opponent):focus-within {
+  bottom: -112px !important;
+}
+
+.card-view--opponentHand:hover,
+.card-view--opponentHand:focus-visible {
+  transform: translateY(76px) scale(1.16) !important;
+}
+
+.card-view--hand:hover,
+.card-view--hand:focus-visible,
+.card-view--hand.card-view--targetable {
+  transform: translateY(-84px) scale(1.16) !important;
+}
