@@ -1,0 +1,306 @@
+/*
+  Space cleanup pass.
+
+  Goals:
+  - remove deck/player headings from the board surface
+  - shift the playable card lanes left
+  - reserve a clear right rail for deck / Spielstapel / Friedhof and the round button
+  - keep the semantic layout:
+    monsters = main slots
+    buffs = between monsters
+    weakening = center row
+    permanent/special = side slots
+*/
+
+.game-layout {
+  width: min(100vw - 12px, 1580px) !important;
+  height: calc(100vh - 12px) !important;
+  margin: 6px auto !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+/* The table gets all horizontal space. */
+.game-table {
+  padding: 6px !important;
+  overflow: hidden !important;
+}
+
+/* Hide the textual deck/player headings; keep only tiny status pills. */
+.player-strip {
+  position: absolute !important;
+  inset-inline: 8px 76px !important;
+  top: 8px !important;
+  z-index: 24 !important;
+  min-height: 0 !important;
+  height: 18px !important;
+  padding: 0 !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 4px !important;
+  pointer-events: none !important;
+}
+
+.player-strip strong {
+  display: none !important;
+}
+
+.player-strip span,
+.player-strip .stat-orb {
+  min-width: 0 !important;
+  height: 17px !important;
+  padding: 2px 6px !important;
+  border-radius: 999px !important;
+  background: rgba(255, 244, 223, 0.075) !important;
+  color: rgba(255, 244, 223, 0.72) !important;
+  font-size: 9px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  box-shadow: none !important;
+}
+
+.stat-orb::before {
+  display: none !important;
+}
+
+/* Because headings are gone, each side can use nearly all its height. */
+.battlefield {
+  grid-template-rows: minmax(0, 1fr) 26px minmax(0, 1fr) !important;
+  gap: 4px !important;
+}
+
+.battlefield-side {
+  position: relative !important;
+  grid-template-rows: minmax(0, 1fr) !important;
+  padding: 5px 6px !important;
+  border-radius: 10px !important;
+}
+
+/* Reserve a stronger right rail. This stops card lanes colliding with piles/button. */
+.field-board {
+  grid-template-columns: minmax(0, 1fr) 76px !important;
+  gap: 8px !important;
+}
+
+.field-piles {
+  width: 72px !important;
+  padding-top: 24px !important;
+  padding-bottom: 8px !important;
+  display: grid !important;
+  grid-template-rows: repeat(3, minmax(46px, auto)) !important;
+  align-content: center !important;
+  gap: 10px !important;
+  z-index: 40 !important;
+}
+
+.field-piles .pile {
+  width: 62px !important;
+  min-height: 48px !important;
+  justify-self: center !important;
+  border-color: rgba(99, 230, 128, 0.22) !important;
+  background:
+    radial-gradient(circle at center, rgba(75, 210, 100, 0.12), transparent 62%),
+    rgba(0, 0, 0, 0.30) !important;
+}
+
+.pile .deck-back,
+.pile .deck-back--small {
+  width: 30px !important;
+}
+
+.pile strong {
+  right: -4px !important;
+  bottom: -4px !important;
+}
+
+/* Floating round/action control now sits in the free space beside the piles. */
+.game-sidebar {
+  right: 80px !important;
+  top: 50% !important;
+  width: 138px !important;
+  transform: translateY(-50%) !important;
+  z-index: 96 !important;
+}
+
+.game-sidebar .game-status {
+  padding: 7px !important;
+  gap: 6px !important;
+  opacity: 0.88;
+}
+
+.game-sidebar .game-status:hover,
+.game-sidebar:focus-within .game-status {
+  opacity: 1;
+}
+
+.game-sidebar .game-status > :first-child {
+  font-size: 0.66rem !important;
+  line-height: 1.12 !important;
+}
+
+.game-sidebar .phase-button,
+.game-sidebar .game-status button {
+  min-height: 30px !important;
+  padding: 7px 9px !important;
+  font-size: 0.72rem !important;
+}
+
+/* Main board plane: cards are intentionally shifted left. */
+.field-main {
+  --monster-w: clamp(82px, 8.3vw, 112px);
+  --buff-w: clamp(54px, 5.2vw, 72px);
+  --buff-h: calc(var(--buff-w) * 1.4);
+  --edge-w: clamp(42px, 4.2vw, 56px);
+  --edge-h: calc(var(--edge-w) * 1.4);
+
+  height: 100% !important;
+  position: relative !important;
+  display: block !important;
+  overflow: visible !important;
+}
+
+/* Monster row: left-weighted rhythm, leaving space for green rail and HUD. */
+.monster-row > * {
+  position: absolute !important;
+  width: var(--monster-w) !important;
+  max-width: var(--monster-w) !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+.monster-row > :nth-child(1) { left: 10% !important; }
+.monster-row > :nth-child(2) { left: 30% !important; }
+.monster-row > :nth-child(3) { left: 50% !important; }
+.monster-row > :nth-child(4) { left: 70% !important; }
+
+.battlefield-side:first-child .monster-row > * {
+  top: 61% !important;
+}
+
+.battlefield-side:last-child .monster-row > * {
+  top: 39% !important;
+}
+
+/* Blue buff slots: between monsters, also shifted left. */
+.buff-stack:nth-child(1) { left: 20% !important; }
+.buff-stack:nth-child(2) { left: 40% !important; }
+.buff-stack:nth-child(3) { left: 60% !important; }
+.buff-stack:nth-child(4) {
+  left: 79% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+.battlefield-side:first-child .buff-stack {
+  top: 27% !important;
+}
+
+.battlefield-side:last-child .buff-stack {
+  top: 73% !important;
+}
+
+.buff-stack {
+  width: var(--buff-w) !important;
+  height: var(--buff-h) !important;
+}
+
+/* Orange side slots: permanent left, special just before the green pile rail. */
+.spell-wing {
+  width: var(--edge-w) !important;
+  height: var(--edge-h) !important;
+}
+
+.spell-wing--permanent {
+  left: 3.5% !important;
+}
+
+.spell-wing--special {
+  left: 86% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+.battlefield-side:first-child .spell-wing {
+  top: 45% !important;
+}
+
+.battlefield-side:last-child .spell-wing {
+  top: 55% !important;
+}
+
+/* Strengthen visual semantics without adding text/headings. */
+.field-zone--monsters .empty-slot {
+  opacity: 0.46 !important;
+}
+
+.buff-stack::after {
+  opacity: 0.50 !important;
+}
+
+.spell-wing::after {
+  opacity: 0.58 !important;
+}
+
+/* Center weakening lane is thin and readable, not a huge separator. */
+.conflict-line {
+  min-height: 26px !important;
+  border-radius: 999px !important;
+  background:
+    linear-gradient(90deg, transparent, rgba(255, 216, 91, 0.22) 24%, rgba(255, 216, 91, 0.10) 50%, rgba(255, 216, 91, 0.22) 76%, transparent) !important;
+}
+
+/* Popup preview stays hidden until card hover/focus. */
+.game-sidebar .card-preview {
+  width: clamp(160px, 15vw, 220px) !important;
+}
+
+.game-layout:has(.card-view:hover) .game-sidebar .game-status {
+  opacity: 0.54;
+}
+
+.game-layout:has(.card-view:hover) .game-sidebar:hover .game-status {
+  opacity: 1;
+}
+
+/* Avoid stale labels from previous layouts. */
+.zone-label,
+.zone-hint,
+.spell-wing > span {
+  display: none !important;
+}
+
+/* On smaller widths, shift less aggressively. */
+@media (max-width: 980px) {
+  .field-board {
+    grid-template-columns: minmax(0, 1fr) 58px !important;
+  }
+
+  .field-piles {
+    width: 58px !important;
+  }
+
+  .field-main {
+    --monster-w: clamp(68px, 11vw, 92px);
+    --buff-w: clamp(40px, 6.6vw, 54px);
+    --edge-w: clamp(32px, 5.4vw, 42px);
+  }
+
+  .monster-row > :nth-child(1) { left: 12% !important; }
+  .monster-row > :nth-child(2) { left: 34% !important; }
+  .monster-row > :nth-child(3) { left: 56% !important; }
+  .monster-row > :nth-child(4) { left: 78% !important; }
+
+  .buff-stack:nth-child(1) { left: 23% !important; }
+  .buff-stack:nth-child(2) { left: 45% !important; }
+  .buff-stack:nth-child(3) { left: 67% !important; }
+  .buff-stack:nth-child(4) { left: 86% !important; }
+
+  .spell-wing--special {
+    left: 92% !important;
+  }
+
+  .game-sidebar {
+    right: 10px !important;
+    top: auto !important;
+    bottom: 10px !important;
+    width: 142px !important;
+    transform: none !important;
+  }
+}
