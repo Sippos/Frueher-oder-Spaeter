@@ -1,0 +1,414 @@
+/*
+  Board placement based on the red/blue/yellow sketch.
+
+  Meaning:
+  - monster row = main red sketch row
+  - buff/equipment spell row = blue sketch row
+  - permanent/special = yellow sketch edge slots
+
+  The colors below are subtle table cues only; actual card art stays unchanged.
+*/
+
+/* Keep the table as pure playing surface. */
+.game-table {
+  grid-template-rows: minmax(0, 1fr) !important;
+  padding: 8px !important;
+  overflow: hidden !important;
+}
+
+.battlefield {
+  grid-row: 1 !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) 28px minmax(0, 1fr) !important;
+  gap: 5px !important;
+}
+
+.battlefield-side {
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: 24px minmax(0, 1fr) !important;
+  gap: 4px !important;
+  padding: 6px 8px !important;
+  overflow: visible !important;
+}
+
+.field-board {
+  height: 100% !important;
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 52px !important;
+  gap: 6px !important;
+  overflow: visible !important;
+}
+
+.field-main {
+  --monster-w: clamp(86px, 8.8vw, 116px);
+  --spell-w: clamp(56px, 5.6vw, 74px);
+  --spell-h: calc(var(--spell-w) * 1.4);
+  --edge-w: clamp(42px, 4vw, 54px);
+  --edge-h: calc(var(--edge-w) * 1.4);
+
+  position: relative !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  display: block !important;
+  overflow: visible !important;
+}
+
+/* Monster and spell zones share one physical table plane. */
+.field-zone--monsters,
+.field-zone--spells {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+.field-zone--monsters {
+  z-index: 3 !important;
+  pointer-events: auto !important;
+}
+
+.field-zone--spells {
+  z-index: 7 !important;
+  pointer-events: none !important;
+}
+
+/* Main monster row: four large slots. */
+.monster-row {
+  position: absolute !important;
+  inset: 0 !important;
+  height: 100% !important;
+  display: block !important;
+}
+
+.monster-row > * {
+  position: absolute !important;
+  width: var(--monster-w) !important;
+  max-width: var(--monster-w) !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+/* Both sides use the same X rhythm. */
+.monster-row > :nth-child(1) {
+  left: 13% !important;
+}
+
+.monster-row > :nth-child(2) {
+  left: 37% !important;
+}
+
+.monster-row > :nth-child(3) {
+  left: 61% !important;
+}
+
+.monster-row > :nth-child(4) {
+  left: 85% !important;
+}
+
+/* Opponent monsters sit lower in the opponent half, facing the center. */
+.battlefield-side:first-child .monster-row > * {
+  top: 63% !important;
+}
+
+/* Your monsters sit higher in your half, facing the center. */
+.battlefield-side:last-child .monster-row > * {
+  top: 37% !important;
+}
+
+.field-zone--monsters .card-view--board,
+.field-zone--monsters .empty-slot {
+  width: var(--monster-w) !important;
+  max-width: var(--monster-w) !important;
+  border-radius: 2px !important;
+}
+
+/* Spell layer. */
+.spell-board,
+.buff-grid {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  pointer-events: none !important;
+}
+
+/* Blue spell row: four larger cards in the gaps above/below the monsters. */
+.buff-stack {
+  position: absolute !important;
+  width: var(--spell-w) !important;
+  height: var(--spell-h) !important;
+  display: grid !important;
+  place-items: center !important;
+  background: transparent !important;
+  pointer-events: none !important;
+  z-index: 9 !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+/* Spell X positions are in-between the monster X positions, with the last safe before piles. */
+.buff-stack:nth-child(1) {
+  left: 25% !important;
+}
+
+.buff-stack:nth-child(2) {
+  left: 49% !important;
+}
+
+.buff-stack:nth-child(3) {
+  left: 73% !important;
+}
+
+.buff-stack:nth-child(4) {
+  left: 92% !important;
+  transform: translate(-70%, -50%) !important;
+}
+
+/* Opponent spells are the upper blue row. */
+.battlefield-side:first-child .buff-stack {
+  top: 28% !important;
+}
+
+/* Your spells are the lower blue row. */
+.battlefield-side:last-child .buff-stack {
+  top: 72% !important;
+}
+
+.buff-stack::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  border-radius: 2px !important;
+  background:
+    radial-gradient(ellipse at center, rgba(119, 173, 255, 0.14), transparent 58%),
+    rgba(119, 173, 255, 0.035) !important;
+  box-shadow:
+    0 0 0 1px rgba(170, 207, 255, 0.09) inset,
+    0 10px 18px rgba(0, 0, 0, 0.13) inset !important;
+  opacity: 0.58 !important;
+  pointer-events: none !important;
+}
+
+.buff-stack:has(.card-view)::after {
+  opacity: 0.10 !important;
+}
+
+.buff-stack .spell-card-stack {
+  position: relative !important;
+  z-index: 2 !important;
+  width: 100% !important;
+  min-height: var(--spell-h) !important;
+  display: flex !important;
+  flex-flow: row wrap !important;
+  gap: 4px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: auto !important;
+}
+
+.buff-stack .spell-card-stack:empty::before {
+  display: none !important;
+}
+
+.buff-stack .card-view--small,
+.buff-stack .empty-slot--small,
+.buff-stack .card-view--board,
+.buff-stack .empty-slot {
+  width: calc(var(--spell-w) - 4px) !important;
+  max-width: calc(var(--spell-w) - 4px) !important;
+  border-radius: 2px !important;
+  position: static !important;
+}
+
+/* Yellow/global slots: permanent left, special right. */
+.spell-wing {
+  position: absolute !important;
+  width: var(--edge-w) !important;
+  height: var(--edge-h) !important;
+  display: grid !important;
+  place-items: center !important;
+  background: transparent !important;
+  pointer-events: auto !important;
+  z-index: 10 !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+/* Place yellow slots between the blue spell row and red monster row. */
+.battlefield-side:first-child .spell-wing {
+  top: 46% !important;
+}
+
+.battlefield-side:last-child .spell-wing {
+  top: 54% !important;
+}
+
+.spell-wing--permanent {
+  left: 4% !important;
+}
+
+.spell-wing--special {
+  left: 96% !important;
+  transform: translate(-72%, -50%) !important;
+}
+
+.spell-wing::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: 2px !important;
+  background:
+    radial-gradient(ellipse at center, rgba(255, 192, 74, 0.14), transparent 58%),
+    rgba(255, 192, 74, 0.04) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 214, 137, 0.10) inset,
+    0 10px 18px rgba(0, 0, 0, 0.12) inset !important;
+  opacity: 0.58 !important;
+  pointer-events: none !important;
+}
+
+.spell-wing:has(.card-view)::after {
+  opacity: 0.10 !important;
+}
+
+.spell-wing .spell-card-stack {
+  position: relative !important;
+  z-index: 2 !important;
+  width: 100% !important;
+  min-height: var(--edge-h) !important;
+  display: flex !important;
+  flex-flow: row wrap !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  pointer-events: auto !important;
+}
+
+.spell-wing .spell-card-stack:empty::before {
+  display: none !important;
+}
+
+.spell-wing .card-view--small,
+.spell-wing .empty-slot--small,
+.spell-wing .card-view--board,
+.spell-wing .empty-slot {
+  width: calc(var(--edge-w) - 4px) !important;
+  max-width: calc(var(--edge-w) - 4px) !important;
+  border-radius: 2px !important;
+  position: static !important;
+}
+
+/* Hovered small spells become readable without changing the board rhythm. */
+.buff-stack .card-view:hover,
+.buff-stack .card-view:focus-visible,
+.spell-wing .card-view:hover,
+.spell-wing .card-view:focus-visible {
+  z-index: 100 !important;
+  transform: translateY(-8px) scale(1.28) !important;
+  box-shadow: 0 24px 44px rgba(0, 0, 0, 0.55) !important;
+}
+
+/* Thin table cues for empty monster slots. */
+.empty-slot {
+  border: 0 !important;
+  border-radius: 2px !important;
+  background:
+    radial-gradient(ellipse at center, rgba(255, 244, 223, 0.10), transparent 45%),
+    rgba(255, 244, 223, 0.018) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 244, 223, 0.07) inset,
+    0 10px 18px rgba(0, 0, 0, 0.10) inset !important;
+  opacity: 0.60 !important;
+}
+
+.card-view,
+.card-view img,
+.deck-back,
+.deck-back__image,
+.card-preview img {
+  border-radius: 2px !important;
+}
+
+.zone-label,
+.zone-hint,
+.spell-wing > span {
+  display: none !important;
+}
+
+/* Thinner center line. */
+.conflict-line {
+  min-height: 28px !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  padding: 4px 10px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background:
+    linear-gradient(90deg, transparent, rgba(255, 205, 116, 0.18) 24%, rgba(255, 205, 116, 0.08) 50%, rgba(255, 205, 116, 0.18) 76%, transparent) !important;
+}
+
+.conflict-line > span {
+  display: none !important;
+}
+
+/* Pile rail stays separate and in front, so no spell overlaps it. */
+.field-piles {
+  width: 52px !important;
+  position: relative !important;
+  z-index: 30 !important;
+}
+
+.field-piles .pile {
+  width: 48px !important;
+}
+
+/* Small screens: keep the same pattern, just shrink. */
+@media (max-width: 980px) {
+  .field-main {
+    --monster-w: clamp(70px, 12vw, 94px);
+    --spell-w: clamp(42px, 7vw, 58px);
+    --edge-w: clamp(34px, 6vw, 44px);
+  }
+
+  .monster-row > :nth-child(1) {
+    left: 14% !important;
+  }
+
+  .monster-row > :nth-child(2) {
+    left: 38% !important;
+  }
+
+  .monster-row > :nth-child(3) {
+    left: 62% !important;
+  }
+
+  .monster-row > :nth-child(4) {
+    left: 84% !important;
+  }
+
+  .buff-stack:nth-child(1) {
+    left: 26% !important;
+  }
+
+  .buff-stack:nth-child(2) {
+    left: 50% !important;
+  }
+
+  .buff-stack:nth-child(3) {
+    left: 74% !important;
+  }
+
+  .buff-stack:nth-child(4) {
+    left: 92% !important;
+  }
+}
