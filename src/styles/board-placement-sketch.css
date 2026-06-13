@@ -1,0 +1,348 @@
+/*
+  Sketch-based board placement.
+  This file intentionally comes last and overrides the previous experiments.
+
+  Layout:
+  - 4 big monster slots in a row
+  - 4 bigger spell/buff slots in the gaps between monsters
+  - opponent spell slots are slightly above their monster row
+  - player spell slots are slightly below their monster row
+  - permanent/special are small edge slots
+*/
+
+.field-main {
+  --monster-w: clamp(86px, 9.2vw, 122px);
+  --spell-w: clamp(54px, 5.2vw, 72px);
+  --spell-h: calc(var(--spell-w) * 1.4);
+
+  position: relative !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  display: block !important;
+  overflow: visible !important;
+}
+
+/* Both monster and spell zones use the same physical table space. */
+.field-zone--monsters,
+.field-zone--spells {
+  position: absolute !important;
+  inset: 0 !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+.field-zone--monsters {
+  z-index: 2 !important;
+  pointer-events: auto !important;
+}
+
+.field-zone--spells {
+  z-index: 7 !important;
+  pointer-events: none !important;
+}
+
+/* Monster row: fixed physical positions like the sketch. */
+.monster-row {
+  position: absolute !important;
+  inset: 0 !important;
+  height: 100% !important;
+  display: block !important;
+}
+
+.monster-row > * {
+  position: absolute !important;
+  top: 50% !important;
+  width: var(--monster-w) !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+.monster-row > :nth-child(1) {
+  left: 12% !important;
+}
+
+.monster-row > :nth-child(2) {
+  left: 36% !important;
+}
+
+.monster-row > :nth-child(3) {
+  left: 60% !important;
+}
+
+.monster-row > :nth-child(4) {
+  left: 84% !important;
+}
+
+.field-zone--monsters .card-view--board,
+.field-zone--monsters .empty-slot {
+  width: var(--monster-w) !important;
+  max-width: var(--monster-w) !important;
+  justify-self: auto !important;
+  align-self: auto !important;
+}
+
+/* Spell board overlays the monster row. */
+.spell-board,
+.buff-grid {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  height: 100% !important;
+  width: 100% !important;
+  pointer-events: none !important;
+}
+
+.buff-stack {
+  position: absolute !important;
+  width: var(--spell-w) !important;
+  height: var(--spell-h) !important;
+  display: grid !important;
+  place-items: center !important;
+  background: transparent !important;
+  pointer-events: none !important;
+  z-index: 9 !important;
+}
+
+/* Gap positions from the red sketch: between monsters, plus one after the last monster. */
+.buff-stack:nth-child(1) {
+  left: 24% !important;
+}
+
+.buff-stack:nth-child(2) {
+  left: 48% !important;
+}
+
+.buff-stack:nth-child(3) {
+  left: 72% !important;
+}
+
+.buff-stack:nth-child(4) {
+  left: 93% !important;
+}
+
+/* Opponent side: spell row sits slightly above the monster row. */
+.battlefield-side:first-child .buff-stack {
+  top: 42% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+/* Player side: spell row sits slightly below the monster row. */
+.battlefield-side:last-child .buff-stack {
+  top: 62% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+/* The last spell must not collide with the pile rail. */
+.buff-stack:nth-child(4) {
+  transform: translate(-72%, -50%) !important;
+}
+
+.battlefield-side:first-child .buff-stack:nth-child(4) {
+  transform: translate(-72%, -50%) !important;
+}
+
+.battlefield-side:last-child .buff-stack:nth-child(4) {
+  transform: translate(-72%, -50%) !important;
+}
+
+/* Large readable spell slots. */
+.buff-stack::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  border-radius: 2px !important;
+  background:
+    radial-gradient(ellipse at center, rgba(255, 244, 223, 0.14), transparent 58%),
+    rgba(255, 244, 223, 0.035) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 244, 223, 0.075) inset,
+    0 10px 18px rgba(0, 0, 0, 0.13) inset !important;
+  opacity: 0.48 !important;
+  pointer-events: none !important;
+}
+
+.buff-stack:has(.card-view)::after {
+  opacity: 0.08 !important;
+}
+
+.buff-stack .spell-card-stack {
+  position: relative !important;
+  z-index: 2 !important;
+  width: 100% !important;
+  min-height: var(--spell-h) !important;
+  display: flex !important;
+  flex-flow: row wrap !important;
+  gap: 4px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: auto !important;
+}
+
+.buff-stack .spell-card-stack:empty::before {
+  display: none !important;
+}
+
+.buff-stack .card-view--small,
+.buff-stack .empty-slot--small,
+.buff-stack .card-view--board,
+.buff-stack .empty-slot {
+  width: calc(var(--spell-w) - 4px) !important;
+  max-width: calc(var(--spell-w) - 4px) !important;
+  border-radius: 2px !important;
+  position: static !important;
+}
+
+/* Permanent and special: small edge card positions, not part of the main 4 gap row. */
+.spell-wing {
+  position: absolute !important;
+  top: 62% !important;
+  width: clamp(38px, 3.8vw, 50px) !important;
+  height: calc(clamp(38px, 3.8vw, 50px) * 1.4) !important;
+  display: grid !important;
+  place-items: center !important;
+  transform: translate(-50%, -50%) !important;
+  pointer-events: auto !important;
+  z-index: 10 !important;
+  background: transparent !important;
+}
+
+.battlefield-side:first-child .spell-wing {
+  top: 42% !important;
+}
+
+.spell-wing--permanent {
+  left: 3.5% !important;
+}
+
+.spell-wing--special {
+  left: 97% !important;
+  transform: translate(-78%, -50%) !important;
+}
+
+.spell-wing::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: 2px !important;
+  background: rgba(255, 244, 223, 0.028) !important;
+  box-shadow: 0 0 0 1px rgba(255, 244, 223, 0.05) inset !important;
+  opacity: 0.40 !important;
+  pointer-events: none !important;
+}
+
+.spell-wing:has(.card-view)::after {
+  opacity: 0.08 !important;
+}
+
+.spell-wing .spell-card-stack {
+  position: relative !important;
+  z-index: 2 !important;
+  width: 100% !important;
+  min-height: 100% !important;
+  display: flex !important;
+  flex-flow: row wrap !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+}
+
+.spell-wing .card-view--small,
+.spell-wing .empty-slot--small,
+.spell-wing .card-view--board,
+.spell-wing .empty-slot {
+  width: calc(clamp(38px, 3.8vw, 50px) - 4px) !important;
+  max-width: calc(clamp(38px, 3.8vw, 50px) - 4px) !important;
+  border-radius: 2px !important;
+  position: static !important;
+}
+
+/* Keep monster cards visually primary. */
+.card-view--board {
+  z-index: 4 !important;
+}
+
+.buff-stack .card-view:hover,
+.buff-stack .card-view:focus-visible,
+.spell-wing .card-view:hover,
+.spell-wing .card-view:focus-visible {
+  z-index: 90 !important;
+  transform: translateY(-8px) scale(1.28) !important;
+  box-shadow: 0 24px 44px rgba(0, 0, 0, 0.55) !important;
+}
+
+/* Thin tactile cues only. */
+.empty-slot {
+  border: 0 !important;
+  border-radius: 2px !important;
+  background:
+    radial-gradient(ellipse at center, rgba(255, 244, 223, 0.10), transparent 45%),
+    rgba(255, 244, 223, 0.018) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 244, 223, 0.07) inset,
+    0 10px 18px rgba(0, 0, 0, 0.10) inset !important;
+  opacity: 0.58 !important;
+}
+
+.zone-label,
+.zone-hint,
+.spell-wing > span {
+  display: none !important;
+}
+
+/* More breathing room for the drawn board shape. */
+.field-board {
+  grid-template-columns: minmax(0, 1fr) 52px !important;
+  gap: 6px !important;
+}
+
+.field-piles {
+  width: 52px !important;
+  z-index: 30 !important;
+}
+
+/* Responsive fallback. */
+@media (max-width: 980px) {
+  .field-main {
+    --monster-w: clamp(70px, 12vw, 94px);
+    --spell-w: clamp(42px, 7vw, 56px);
+  }
+
+  .monster-row > :nth-child(1) {
+    left: 13% !important;
+  }
+
+  .monster-row > :nth-child(2) {
+    left: 37% !important;
+  }
+
+  .monster-row > :nth-child(3) {
+    left: 61% !important;
+  }
+
+  .monster-row > :nth-child(4) {
+    left: 84% !important;
+  }
+
+  .buff-stack:nth-child(1) {
+    left: 25% !important;
+  }
+
+  .buff-stack:nth-child(2) {
+    left: 49% !important;
+  }
+
+  .buff-stack:nth-child(3) {
+    left: 73% !important;
+  }
+
+  .buff-stack:nth-child(4) {
+    left: 93% !important;
+  }
+}

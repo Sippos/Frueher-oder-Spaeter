@@ -309,3 +309,1057 @@
     width: 100%;
   }
 }
+
+/* One-page setup polish with local WebP deck backs and coin faces */
+.onboarding-app--sleek {
+  min-height: 100vh;
+  align-items: center;
+  padding: 8px;
+}
+
+.onboarding-panel--sleek {
+  width: min(1180px, calc(100vw - 16px));
+  min-height: auto;
+  max-height: calc(100vh - 16px);
+  overflow: auto;
+  padding: clamp(12px, 1.5vw, 20px);
+  gap: 10px;
+}
+
+.onboarding-copy--sleek h1 {
+  font-size: clamp(2.2rem, 5vw, 3.55rem);
+}
+
+.onboarding-copy--sleek p:not(.eyebrow) {
+  margin: 6px auto 0;
+}
+
+.deck-assignment--sleek {
+  grid-template-columns: minmax(0, 1fr) 116px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.deck-assignment-card--sleek {
+  min-height: 150px;
+  padding: 10px;
+}
+
+.deck-assignment-card--sleek .deck-back {
+  width: min(92px, 30vw);
+  height: auto;
+  aspect-ratio: 5 / 7;
+  min-width: 0;
+  min-height: 0;
+  max-width: none;
+}
+
+.deck-back {
+  background: transparent !important;
+}
+
+.deck-back__image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.deck-back__logo,
+.deck-back__title {
+  display: none;
+}
+
+.coin-toss-button--sleek {
+  width: 116px;
+  height: 116px;
+  padding: 8px;
+  grid-template-rows: 58px auto auto;
+  gap: 2px;
+  line-height: 1.05;
+}
+
+.coin-toss-button--sleek small {
+  display: block;
+  max-width: 84px;
+  font-size: 0.55rem;
+  font-weight: 800;
+  line-height: 1.05;
+  opacity: 0.72;
+}
+
+.coin-result {
+  width: 58px;
+  height: 58px;
+  padding: 0;
+  border: 0;
+  background: transparent !important;
+  overflow: hidden;
+}
+
+.coin-result__image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.coin-overview {
+  min-height: 190px;
+  padding: 14px;
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at center, rgba(255, 244, 223, 0.11), transparent 48%),
+    rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  gap: 12px;
+}
+
+.coin-face {
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  color: rgba(255, 244, 223, 0.72);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.coin-face img {
+  width: clamp(72px, 10vw, 104px);
+  aspect-ratio: 1;
+  object-fit: contain;
+  border-radius: 999px;
+  transition:
+    transform 180ms ease,
+    filter 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.coin-face--active img {
+  transform: translateY(-4px) scale(1.08);
+  filter: brightness(1.08);
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.32);
+}
+
+.setup-step-overview {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.setup-step-overview__item {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 7px 9px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  color: rgba(255, 244, 223, 0.7);
+}
+
+.setup-step-overview__item span {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 244, 223, 0.1);
+  color: #ffd6a8;
+  font-weight: 900;
+}
+
+.setup-step-overview__item strong {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 0.78rem;
+}
+
+.setup-step-overview__item--active {
+  border-color: rgba(255, 211, 106, 0.55);
+  background: rgba(255, 211, 106, 0.09);
+  color: #fff4df;
+}
+
+.setup-walkthrough--sleek {
+  grid-template-columns: minmax(250px, 0.72fr) minmax(320px, 1fr);
+  min-height: 190px;
+  gap: 14px;
+}
+
+.setup-copy--sleek h2 {
+  font-size: clamp(1.55rem, 3.2vw, 2.65rem);
+}
+
+.setup-copy--sleek p:not(.step-counter) {
+  margin: 0;
+}
+
+.setup-rules-card,
+.monster-pick-stage--hidden,
+.draw-stage,
+.shuffle-stack--sleek {
+  min-height: 190px;
+}
+
+@media (max-width: 840px) {
+  .onboarding-panel--sleek {
+    max-height: none;
+  }
+
+  .deck-assignment--sleek,
+  .setup-walkthrough--sleek,
+  .setup-step-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .coin-toss-button--sleek {
+    margin: 0 auto;
+  }
+}
+
+/* Cleaner setup screen: coins belong to the deck cards, not a second lower panel */
+.deck-assignment-card--sleek {
+  position: relative;
+}
+
+.deck-assignment-visual {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  margin: 0 auto;
+}
+
+.deck-assignment-coin {
+  position: absolute;
+  right: -30px;
+  bottom: -18px;
+  width: 58px;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  filter: saturate(0.9) brightness(0.86);
+  opacity: 0.82;
+  transition:
+    transform 180ms ease,
+    filter 180ms ease,
+    opacity 180ms ease;
+}
+
+.deck-assignment-coin img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.deck-assignment-coin span {
+  position: absolute;
+  bottom: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(255, 244, 223, 0.94);
+  color: #3a2117;
+  font-size: 0.47rem;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+}
+
+.deck-assignment-coin--winner {
+  transform: translateY(-4px) scale(1.08);
+  filter: brightness(1.08);
+  opacity: 1;
+}
+
+.coin-toss-button--sleek {
+  width: 118px;
+  height: auto;
+  min-height: 58px;
+  padding: 9px 10px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  gap: 2px;
+}
+
+.coin-toss-button--sleek small {
+  max-width: 92px;
+  font-size: 0.55rem;
+  line-height: 1.05;
+  opacity: 0.72;
+}
+
+.setup-step-overview {
+  display: none;
+}
+
+.setup-walkthrough--text-only {
+  grid-template-columns: minmax(0, 760px);
+  justify-content: center;
+  min-height: 0;
+  margin-top: 4px;
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek {
+  text-align: center;
+  align-items: center;
+  padding: clamp(12px, 2vw, 20px);
+}
+
+.setup-walkthrough--text-only .setup-actions {
+  justify-content: center;
+}
+
+@media (max-width: 840px) {
+  .deck-assignment-coin {
+    right: -18px;
+    bottom: -14px;
+    width: 48px;
+  }
+}
+
+/* Coin layout v2: corner badges plus a real two-sided center coin */
+.deck-assignment-card--sleek {
+  overflow: visible;
+}
+
+.deck-assignment-coin {
+  top: 14px;
+  bottom: auto;
+  right: auto;
+  left: auto;
+  width: 54px;
+  opacity: 0.86;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.deck-assignment-card--sleek:first-child .deck-assignment-coin {
+  left: 14px;
+}
+
+.deck-assignment-card--sleek:last-child .deck-assignment-coin {
+  right: 14px;
+}
+
+.deck-assignment-coin span {
+  display: none !important;
+}
+
+.deck-assignment-coin--winner {
+  transform: scale(1.08);
+  filter: brightness(1.06) saturate(1.06);
+  opacity: 1;
+  box-shadow:
+    0 0 0 3px rgba(255, 244, 223, 0.18),
+    0 0 26px rgba(255, 213, 122, 0.34);
+}
+
+.coin-toss-button--sleek {
+  width: 128px;
+  min-height: 142px;
+  height: auto;
+  padding: 9px 10px 12px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  grid-template-rows: 66px auto auto;
+  gap: 3px;
+}
+
+.coin-flip {
+  width: 66px;
+  height: 66px;
+  position: relative;
+  display: block;
+  transform-style: preserve-3d;
+  transition: transform 220ms ease;
+}
+
+.coin-toss-button--sleek:hover .coin-flip,
+.coin-toss-button--sleek:focus-visible .coin-flip {
+  transform: rotateY(18deg) translateY(-1px);
+}
+
+.coin-toss-button--sleek.is-tossing .coin-flip {
+  animation: fos-coin-spin 650ms cubic-bezier(0.2, 0.72, 0.18, 1) both;
+}
+
+.coin-flip__face {
+  position: absolute;
+  inset: 0;
+  display: block;
+  backface-visibility: hidden;
+  border-radius: 999px;
+}
+
+.coin-flip__face--back {
+  transform: rotateY(180deg);
+}
+
+.coin-flip__face img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+@keyframes fos-coin-spin {
+  0% {
+    transform: rotateY(0deg) scale(1);
+  }
+
+  45% {
+    transform: rotateY(540deg) scale(1.08);
+  }
+
+  100% {
+    transform: rotateY(1080deg) scale(1);
+  }
+}
+
+@media (max-width: 840px) {
+  .deck-assignment-coin {
+    top: 10px;
+    width: 44px;
+  }
+
+  .deck-assignment-card--sleek:first-child .deck-assignment-coin {
+    left: 10px;
+  }
+
+  .deck-assignment-card--sleek:last-child .deck-assignment-coin {
+    right: 10px;
+  }
+}
+
+/* Layout v3: step copy first, then deck/coin overview */
+.onboarding-copy--sleek p:not(.eyebrow) {
+  display: none;
+}
+
+.onboarding-copy--sleek {
+  order: 1;
+}
+
+.setup-walkthrough--sleek {
+  order: 2;
+}
+
+.deck-assignment--sleek {
+  order: 3;
+}
+
+.setup-walkthrough--text-only {
+  width: min(780px, 100%);
+  margin-inline: auto;
+  margin-top: 0;
+  margin-bottom: 4px;
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek {
+  padding: 10px 16px 14px;
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek h2 {
+  margin: 2px 0 8px;
+  font-size: clamp(1.9rem, 4vw, 3.05rem);
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek p:not(.step-counter) {
+  max-width: 720px;
+}
+
+.setup-walkthrough--text-only .setup-actions {
+  margin-top: 12px;
+}
+
+/* Re-center the small deck coins as clean corner badges. */
+.deck-assignment-card--sleek {
+  position: relative;
+  overflow: hidden;
+}
+
+.deck-assignment-coin {
+  top: 16px !important;
+  bottom: auto !important;
+  width: 58px !important;
+  height: 58px !important;
+  aspect-ratio: 1;
+  padding: 0;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+
+.deck-assignment-card--sleek:first-child .deck-assignment-coin {
+  left: 16px !important;
+  right: auto !important;
+}
+
+.deck-assignment-card--sleek:last-child .deck-assignment-coin {
+  right: 16px !important;
+  left: auto !important;
+}
+
+.deck-assignment-coin img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 999px;
+}
+
+.deck-assignment-coin--winner {
+  transform: none !important;
+  filter: brightness(1.07) saturate(1.06);
+  box-shadow:
+    0 0 0 2px rgba(255, 244, 223, 0.32),
+    0 0 22px rgba(255, 213, 122, 0.36);
+}
+
+.deck-assignment-card--sleek .deck-assignment-visual {
+  margin-top: 18px;
+}
+
+/* Keep the center coin as the prominent coin toss interaction. */
+.coin-toss-button--sleek {
+  align-self: center;
+}
+
+@media (max-width: 840px) {
+  .setup-walkthrough--sleek,
+  .deck-assignment--sleek {
+    order: unset;
+  }
+
+  .onboarding-copy--sleek p:not(.eyebrow) {
+    display: none;
+  }
+
+  .deck-assignment-card--sleek:first-child .deck-assignment-coin,
+  .deck-assignment-card--sleek:last-child .deck-assignment-coin {
+    top: 12px !important;
+  }
+
+  .deck-assignment-coin {
+    width: 48px !important;
+    height: 48px !important;
+  }
+}
+
+/* Step 2 v4: put the four hidden monster choices under their matching deck. */
+.deck-assignment-card--sleek {
+  cursor: default;
+}
+
+.deck-swap-button {
+  margin-top: 8px;
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 14px;
+  background: rgba(255, 244, 223, 0.9);
+  color: #321b13;
+  font-weight: 900;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+  cursor: pointer;
+}
+
+.deck-swap-button:hover,
+.deck-swap-button:focus-visible {
+  transform: translateY(-1px);
+  outline: 2px solid rgba(255, 213, 122, 0.45);
+  outline-offset: 3px;
+}
+
+.deck-assignment-card--with-pick {
+  min-height: 292px;
+  padding-bottom: 14px;
+  align-content: start;
+  gap: 8px;
+}
+
+.deck-assignment-card--with-pick .deck-assignment-visual {
+  margin-top: 8px;
+}
+
+.deck-assignment-card--with-pick > strong {
+  margin-top: 0;
+  font-size: clamp(1.15rem, 2vw, 1.55rem);
+}
+
+.deck-monster-pick {
+  width: min(100%, 370px);
+  margin: 8px auto 0;
+}
+
+.deck-monster-pick .monster-pick-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 244, 223, 0.12);
+  background: rgba(0, 0, 0, 0.16);
+}
+
+.deck-monster-pick .monster-pick-copy {
+  display: grid;
+  gap: 3px;
+  text-align: center;
+}
+
+.deck-monster-pick .monster-pick-copy strong {
+  color: #fff4df;
+  font-size: 0.86rem;
+  line-height: 1.1;
+}
+
+.deck-monster-pick .monster-pick-copy span {
+  color: rgba(255, 226, 188, 0.72);
+  font-size: 0.68rem;
+  line-height: 1.2;
+}
+
+.deck-monster-pick .hidden-pick-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(42px, 1fr));
+  gap: 7px;
+  align-items: center;
+  justify-items: center;
+}
+
+.deck-monster-pick .hidden-pick-card {
+  width: clamp(46px, 5.2vw, 66px);
+  aspect-ratio: 5 / 7;
+  border-radius: 8px;
+  padding: 0;
+}
+
+.deck-monster-pick .hidden-pick-card .deck-back {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0;
+  min-height: 0;
+  border-radius: inherit;
+}
+
+.deck-monster-pick .hidden-pick-card--selected {
+  transform: translateY(-5px);
+  box-shadow:
+    0 0 0 3px rgba(255, 213, 122, 0.42),
+    0 14px 24px rgba(0, 0, 0, 0.34);
+}
+
+.setup-walkthrough--text-only {
+  width: min(850px, 100%);
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek {
+  padding-bottom: 10px;
+}
+
+@media (max-width: 840px) {
+  .deck-assignment-card--with-pick {
+    min-height: 0;
+  }
+
+  .deck-monster-pick {
+    width: min(100%, 330px);
+  }
+}
+
+/* Interaction cleanup: deck panels swap on click, navigation no longer overlaps cards. */
+.deck-swap-button {
+  display: none !important;
+}
+
+.deck-assignment-card--clickable {
+  cursor: pointer;
+}
+
+.deck-assignment-card--clickable:hover,
+.deck-assignment-card--clickable:focus-visible {
+  border-color: rgba(255, 213, 122, 0.5);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 213, 122, 0.2),
+    0 18px 42px rgba(0, 0, 0, 0.24);
+  outline: none;
+}
+
+.deck-assignment-card--clickable:hover .deck-back,
+.deck-assignment-card--clickable:focus-visible .deck-back {
+  transform: translateY(-2px);
+}
+
+.deck-assignment-label {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+}
+
+.deck-assignment-label em {
+  max-width: 170px;
+  color: rgba(255, 226, 188, 0.58);
+  font-size: 0.56rem;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+.setup-walkthrough--text-only {
+  position: relative;
+  z-index: 4;
+  margin-bottom: clamp(12px, 2vw, 24px);
+}
+
+.setup-walkthrough--text-only .setup-actions {
+  position: relative;
+  z-index: 12;
+  margin-top: 18px;
+  margin-bottom: 4px;
+}
+
+.setup-walkthrough--text-only .setup-actions button {
+  pointer-events: auto;
+}
+
+.deck-assignment--sleek {
+  position: relative;
+  z-index: 2;
+  margin-top: 8px;
+}
+
+.deck-assignment-card--sleek {
+  min-height: 260px;
+}
+
+.deck-assignment-card--sleek > strong {
+  margin-top: 8px;
+}
+
+.coin-toss-button--sleek {
+  margin-top: 18px;
+}
+
+@media (max-width: 840px) {
+  .setup-walkthrough--text-only {
+    margin-bottom: 12px;
+  }
+
+  .deck-assignment-card--sleek {
+    min-height: 0;
+  }
+}
+
+/* Step 2 v5: cross-pick layout and less overlap */
+.deck-assignment--sleek {
+  align-items: stretch;
+}
+
+.deck-assignment--sleek:not(:has(.coin-toss-button--sleek)) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(14px, 2vw, 24px);
+  max-width: 1040px;
+  margin-inline: auto;
+}
+
+.deck-assignment-card--with-pick {
+  min-height: 330px;
+  padding-top: 18px;
+}
+
+.deck-assignment-card--with-pick .deck-assignment-visual {
+  margin-top: 6px;
+}
+
+.deck-assignment-card--with-pick .deck-back {
+  width: min(76px, 11vw) !important;
+}
+
+.deck-assignment-card--with-pick > strong {
+  font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+}
+
+.deck-monster-pick {
+  margin-top: 10px;
+}
+
+.deck-monster-pick .monster-pick-copy strong {
+  font-size: 0.82rem;
+}
+
+.deck-monster-pick .monster-pick-copy span {
+  font-size: 0.64rem;
+}
+
+.deck-monster-pick .hidden-pick-card {
+  width: clamp(42px, 4.6vw, 58px);
+}
+
+.setup-walkthrough--text-only {
+  margin-bottom: 12px;
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek h2 {
+  font-size: clamp(1.75rem, 3.4vw, 2.65rem);
+  line-height: 1.02;
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek p:not(.step-counter) {
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+@media (max-width: 840px) {
+  .deck-assignment--sleek:not(:has(.coin-toss-button--sleek)) {
+    grid-template-columns: 1fr;
+  }
+
+  .deck-assignment-card--with-pick {
+    min-height: 0;
+  }
+}
+
+/* Step 2 v6: correct cross-pick cards and move navigation below the panels. */
+.setup-copy--sleek > .setup-actions {
+  display: none !important;
+}
+
+.onboarding-panel--sleek {
+  display: flex;
+  flex-direction: column;
+}
+
+.setup-walkthrough--sleek {
+  order: 2;
+}
+
+.deck-assignment--sleek {
+  order: 3;
+}
+
+.setup-nav-bottom {
+  order: 4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: clamp(12px, 2vw, 18px) auto 0;
+  position: relative;
+  z-index: 20;
+}
+
+.setup-nav-bottom button {
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 22px;
+  background: rgba(255, 244, 223, 0.16);
+  color: #fff4df;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.setup-nav-bottom .primary-button {
+  background: #fff4df;
+  color: #321b13;
+}
+
+.setup-nav-bottom button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.setup-nav-bottom button:not(:disabled):hover,
+.setup-nav-bottom button:not(:disabled):focus-visible {
+  transform: translateY(-1px);
+  outline: 2px solid rgba(255, 213, 122, 0.42);
+  outline-offset: 3px;
+}
+
+.setup-walkthrough--text-only {
+  position: static;
+  z-index: auto;
+  margin-bottom: clamp(14px, 2vw, 22px);
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek {
+  padding: 6px 14px 4px;
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek h2 {
+  margin-bottom: 10px;
+}
+
+.deck-assignment--sleek:not(:has(.coin-toss-button--sleek)) {
+  margin-top: 0;
+}
+
+.deck-assignment-card--with-pick {
+  min-height: 350px;
+}
+
+.deck-monster-pick .hidden-pick-card {
+  cursor: pointer;
+}
+
+@media (max-width: 840px) {
+  .setup-nav-bottom {
+    margin-top: 12px;
+  }
+
+  .setup-nav-bottom button {
+    padding: 11px 18px;
+  }
+
+  .deck-assignment-card--with-pick {
+    min-height: 0;
+  }
+}
+
+/* Step 2 v7: compact instruction banner so it never overlaps the card-choice panels. */
+.setup-walkthrough--text-only {
+  width: min(940px, 100%) !important;
+  min-height: 0 !important;
+  margin: 0 auto 14px !important;
+  padding: 0 !important;
+  display: block !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek {
+  width: 100%;
+  min-height: 0 !important;
+  padding: 8px 14px 10px !important;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(255, 244, 223, 0.08);
+  text-align: center;
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek .step-counter {
+  margin: 0 0 5px !important;
+  font-size: 0.68rem !important;
+  letter-spacing: 0.22em;
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek h2 {
+  margin: 0 !important;
+  font-size: clamp(1.22rem, 2.25vw, 1.72rem) !important;
+  line-height: 1.06 !important;
+  white-space: normal;
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek p:not(.step-counter) {
+  display: none !important;
+}
+
+.setup-walkthrough--text-only .setup-copy--sleek > strong,
+.setup-walkthrough--text-only .setup-copy--sleek > span,
+.setup-walkthrough--text-only .setup-copy--sleek .setup-actions {
+  display: none !important;
+}
+
+.deck-assignment--sleek {
+  margin-top: 0 !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.deck-assignment--sleek:not(:has(.coin-toss-button--sleek)) {
+  max-width: 1000px !important;
+  grid-template-columns: repeat(2, minmax(280px, 1fr)) !important;
+  gap: clamp(14px, 2vw, 24px) !important;
+}
+
+.deck-assignment-card--with-pick {
+  min-height: 318px !important;
+  padding: 14px 12px 12px !important;
+}
+
+.deck-assignment-card--with-pick .deck-assignment-label {
+  margin-bottom: 4px;
+}
+
+.deck-assignment-card--with-pick .deck-assignment-visual {
+  margin-top: 4px !important;
+}
+
+.deck-assignment-card--with-pick .deck-back {
+  width: min(68px, 9vw) !important;
+}
+
+.deck-assignment-card--with-pick > strong {
+  margin: 6px 0 4px !important;
+  font-size: clamp(1rem, 1.6vw, 1.25rem) !important;
+}
+
+.deck-monster-pick {
+  margin-top: 8px !important;
+}
+
+.deck-monster-pick .monster-pick-row {
+  padding: 8px !important;
+}
+
+.deck-monster-pick .monster-pick-copy strong {
+  font-size: 0.78rem !important;
+}
+
+.deck-monster-pick .monster-pick-copy span {
+  font-size: 0.6rem !important;
+}
+
+.deck-monster-pick .hidden-pick-cards {
+  gap: 6px !important;
+}
+
+.deck-monster-pick .hidden-pick-card {
+  width: clamp(40px, 4.2vw, 54px) !important;
+}
+
+.setup-nav-bottom {
+  margin-top: 12px !important;
+}
+
+.onboarding-copy--sleek h1 {
+  margin-bottom: 4px !important;
+}
+
+@media (max-width: 840px) {
+  .deck-assignment--sleek:not(:has(.coin-toss-button--sleek)) {
+    grid-template-columns: 1fr !important;
+  }
+
+  .deck-assignment-card--with-pick {
+    min-height: 0 !important;
+  }
+
+  .setup-walkthrough--text-only .setup-copy--sleek h2 {
+    font-size: 1.25rem !important;
+  }
+}

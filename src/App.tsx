@@ -1,4 +1,8 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
+import eyeCardBackUrl from "./assets/card-backs/eye_card_back.webp";
+import fingerCardBackUrl from "./assets/card-backs/finger_card_back.webp";
+import eyeCoinUrl from "./assets/icons/eye_coin.webp";
+import fingerCoinUrl from "./assets/icons/finger_coin.webp";
 import { cards, type Card, type DeckId } from "./game/cards/cards";
 import { createGame } from "./game/cards/state/createGame";
 import {
@@ -24,6 +28,16 @@ import "./SleekOnboarding.css";
 type DisplayCard = Card | PlayedCard;
 type MonsterCard = Extract<Card, { type: "monster" }>;
 type CoinSide = DeckId;
+
+const deckBackImages: Record<DeckId, string> = {
+  eye: eyeCardBackUrl,
+  finger: fingerCardBackUrl,
+};
+
+const coinImages: Record<CoinSide, string> = {
+  eye: eyeCoinUrl,
+  finger: fingerCoinUrl,
+};
 
 type SetupStep = {
   title: string;
@@ -68,11 +82,19 @@ function getDeckMonsters(deckId: DeckId): MonsterCard[] {
 function DeckBack({ deckId, small = false }: { deckId: DeckId; small?: boolean }) {
   return (
     <div className={`deck-back deck-back--${deckId} ${small ? "deck-back--small" : ""}`}>
-      <span className="deck-back__logo" aria-hidden="true">
-        {deckId === "eye" ? "◉" : "◒"}
-      </span>
-      <span className="deck-back__title">Früher oder Später</span>
+      <img className="deck-back__image" src={deckBackImages[deckId]} alt={`${getDeckName(deckId)} Kartenrücken`} />
     </div>
+  );
+}
+
+function DeckCoinBadge({ deckId, isWinner }: { deckId: DeckId; isWinner: boolean }) {
+  return (
+    <span
+      className={`deck-assignment-coin deck-assignment-coin--${deckId} ${isWinner ? "deck-assignment-coin--winner" : ""}`}
+      aria-label={`${getDeckName(deckId)} Münzseite${isWinner ? " gewinnt den Münzwurf" : ""}`}
+    >
+      <img src={coinImages[deckId]} alt="" aria-hidden="true" />
+    </span>
   );
 }
 
@@ -116,6 +138,7 @@ function HiddenMonsterPickRow({
 
 function OnboardingAnimation({
   step,
+  coinSide,
   playerDeckId,
   opponentDeckId,
   monsterOrders,
@@ -123,6 +146,7 @@ function OnboardingAnimation({
   onSelectStartingMonster,
 }: {
   step: SetupStep;
+  coinSide: CoinSide;
   playerDeckId: DeckId;
   opponentDeckId: DeckId;
   monsterOrders: Record<DeckId, MonsterCard[]>;
@@ -130,7 +154,16 @@ function OnboardingAnimation({
   onSelectStartingMonster: (deckId: DeckId, cardId: string) => void;
 }) {
   if (step.animation === "coins") {
-    return <div className="setup-rules-card" />;
+    return (
+      <div className="coin-overview" aria-label="Münzwurf: Vorder- und Rückseite">
+        {(["eye", "finger"] as CoinSide[]).map((side) => (
+          <figure className={`coin-face coin-face--${side} ${coinSide === side ? "coin-face--active" : ""}`} key={side}>
+            <img src={coinImages[side]} alt={`${getDeckName(side)} Münzseite`} />
+            <figcaption>{getDeckName(side)}</figcaption>
+          </figure>
+        ))}
+      </div>
+    );
   }
 
   if (step.animation === "monster") {
@@ -163,6 +196,71 @@ function OnboardingAnimation({
           <DeckBack deckId={playerDeckId} small />
         </div>
       ))}
+    </div>
+  );
+}
+
+function DeckAssignmentCard({
+  label,
+  deckId,
+  pickDeckId,
+  coinSide,
+  showMonsterPick,
+  monsterOrder,
+  selectedMonsterId,
+  pickTitle,
+  pickHelper,
+  onSelectMonster,
+  onSwap,
+}: {
+  label: string;
+  deckId: DeckId;
+  pickDeckId: DeckId;
+  coinSide: CoinSide;
+  showMonsterPick: boolean;
+  monsterOrder: MonsterCard[];
+  selectedMonsterId?: string;
+  pickTitle: string;
+  pickHelper: string;
+  onSelectMonster: (cardId: string) => void;
+  onSwap?: () => void;
+}) {
+  return (
+    <div
+      className={`deck-assignment-card deck-assignment-card--sleek ${showMonsterPick ? "deck-assignment-card--with-pick" : ""} ${onSwap ? "deck-assignment-card--clickable" : ""}`}
+      onClick={onSwap}
+      onKeyDown={(event) => {
+        if (!onSwap) return;
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onSwap();
+        }
+      }}
+      role={onSwap ? "button" : undefined}
+      tabIndex={onSwap ? 0 : undefined}
+    >
+      <span className="deck-assignment-label">
+        {label}
+        {onSwap && <em>Zum Tauschen ein Deck anklicken</em>}
+      </span>
+      <span className="deck-assignment-visual">
+        <DeckBack deckId={deckId} />
+      </span>
+      <DeckCoinBadge deckId={deckId} isWinner={coinSide === deckId} />
+      <strong>{getDeckName(deckId)}</strong>
+
+      {showMonsterPick && (
+        <div className="deck-monster-pick">
+          <HiddenMonsterPickRow
+            title={pickTitle}
+            helper={pickHelper}
+            deckId={pickDeckId}
+            monsterOrder={monsterOrder}
+            selectedMonsterId={selectedMonsterId}
+            onSelect={onSelectMonster}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -223,33 +321,81 @@ function Onboarding({
         </div>
 
         <section className="deck-assignment deck-assignment--sleek" aria-label="Deckzuordnung">
-          <button className="deck-assignment-card deck-assignment-card--sleek" onClick={swapDecks} type="button">
-            <span>Du spielst</span>
-            <DeckBack deckId={playerDeckId} />
-            <strong>{getDeckName(playerDeckId)}</strong>
-          </button>
-          <button className={`coin-toss-button coin-toss-button--sleek ${isTossingCoin ? "is-tossing" : ""}`} onClick={tossCoin} type="button">
-            <span className={`coin-result coin-result--${coinSide}`}>
-              {coinSide === "eye" ? "◉" : "◒"}
-            </span>
-            Münze werfen
-          </button>
-          <button className="deck-assignment-card deck-assignment-card--sleek" onClick={swapDecks} type="button">
-            <span>Gegenüber spielt</span>
-            <DeckBack deckId={opponentDeckId} />
-            <strong>{getDeckName(opponentDeckId)}</strong>
-          </button>
+          <DeckAssignmentCard
+            label="Du spielst"
+            deckId={playerDeckId}
+            pickDeckId={opponentDeckId}
+            coinSide={coinSide}
+            showMonsterPick={activeStep.animation === "monster"}
+            monsterOrder={monsterOrders[opponentDeckId]}
+            selectedMonsterId={selectedStartingMonsterIds[opponentDeckId]}
+            pickTitle="Du ziehst beim Gegenüber"
+            pickHelper={`Wähle 1 verdecktes Monster aus ${getDeckName(opponentDeckId)}.`}
+            onSelectMonster={(cardId) => selectStartingMonster(opponentDeckId, cardId)}
+            onSwap={activeStep.animation === "coins" ? swapDecks : undefined}
+          />
+
+          {activeStep.animation === "coins" && (
+            <button className={`coin-toss-button coin-toss-button--sleek ${isTossingCoin ? "is-tossing" : ""}`} onClick={tossCoin} type="button">
+              <span className="coin-flip" aria-hidden="true">
+                <span className="coin-flip__face coin-flip__face--front">
+                  <img src={coinImages[coinSide]} alt="" />
+                </span>
+                <span className="coin-flip__face coin-flip__face--back">
+                  <img src={coinImages[coinSide === "eye" ? "finger" : "eye"]} alt="" />
+                </span>
+              </span>
+              <span>Münze werfen</span>
+              <small>{getDeckName(coinSide)} gewinnt</small>
+            </button>
+          )}
+
+          <DeckAssignmentCard
+            label="Gegenüber spielt"
+            deckId={opponentDeckId}
+            pickDeckId={playerDeckId}
+            coinSide={coinSide}
+            showMonsterPick={activeStep.animation === "monster"}
+            monsterOrder={monsterOrders[playerDeckId]}
+            selectedMonsterId={selectedStartingMonsterIds[playerDeckId]}
+            pickTitle="Gegenüber zieht bei dir"
+            pickHelper={`Das Gegenüber wählt 1 verdecktes Monster aus ${getDeckName(playerDeckId)}.`}
+            onSelectMonster={(cardId) => selectStartingMonster(playerDeckId, cardId)}
+            onSwap={activeStep.animation === "coins" ? swapDecks : undefined}
+          />
         </section>
 
-        <section className="setup-walkthrough setup-walkthrough--sleek">
+        <div className="setup-nav-bottom">
+          <button
+            onClick={() => setStepIndex((index) => Math.max(0, index - 1))}
+            disabled={stepIndex === 0}
+            type="button"
+          >
+            Zurück
+          </button>
+          {stepIndex < setupSteps.length - 1 ? (
+            <button className="primary-button" disabled={!canContinue} onClick={goForward} type="button">
+              Weiter
+            </button>
+          ) : (
+            <button className="primary-button" onClick={() => onStart(playerDeckId, selectedStartingMonsterIds)} type="button">
+              Spielbrett öffnen
+            </button>
+          )}
+        </div>
+
+        <section className={`setup-walkthrough setup-walkthrough--sleek ${activeStep.animation !== "shuffle" ? "setup-walkthrough--text-only" : ""}`}>
+          {activeStep.animation === "shuffle" && (
           <OnboardingAnimation
             step={activeStep}
+            coinSide={coinSide}
             playerDeckId={playerDeckId}
             opponentDeckId={opponentDeckId}
             monsterOrders={monsterOrders}
             selectedStartingMonsterIds={selectedStartingMonsterIds}
             onSelectStartingMonster={selectStartingMonster}
           />
+          )}
           <div className="setup-copy setup-copy--sleek">
             <p className="step-counter">Schritt {stepIndex + 1} / {setupSteps.length}</p>
             <h2>{activeStep.title}</h2>
@@ -793,15 +939,8 @@ function GameScreen({ game, setGame }: { game: GameState; setGame: Dispatch<SetS
     <main className="app">
       <section className="game-layout">
         <section className="game-table">
-          <div className="game-status">
-            <span>
-              Runde {game.round} / {game.maxRounds} · {game.phase} · {game.players[game.currentPlayerId].name} beginnt
-            </span>
+          
 
-            <button className="phase-button" disabled={game.phase === "gameEnd" || needsSetupDraw} onClick={handlePhaseAction} type="button">
-              {getPhaseButtonText()}
-            </button>
-          </div>
 
           {pendingCard && (
             <div className="target-banner">
@@ -841,8 +980,19 @@ function GameScreen({ game, setGame }: { game: GameState; setGame: Dispatch<SetS
 
           <Hand player={player} selectedCardId={pendingSpell?.cardId} onPlayCard={handlePlayCard} onInspect={setInspectedCard} />
         </section>
+        <aside className="game-sidebar">
+          <div className="game-status">
+                      <span>
+                        Runde {game.round} / {game.maxRounds} · {game.phase} · {game.players[game.currentPlayerId].name} beginnt
+                      </span>
 
-        <CardPreview card={inspectedCard} />
+                      <button className="phase-button" disabled={game.phase === "gameEnd" || needsSetupDraw} onClick={handlePhaseAction} type="button">
+                        {getPhaseButtonText()}
+                      </button>
+                    </div>
+
+          <CardPreview card={inspectedCard} />
+        </aside>
       </section>
     </main>
   );

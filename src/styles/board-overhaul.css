@@ -1,0 +1,2130 @@
+/*
+  Board layout overhaul:
+  - enemy hand stays as a small top strip
+  - your hand becomes a bottom dock, half out of frame
+  - hovering a hand card pulls it fully into view
+  - monster / buff / permanent / special / debuff zones get clearer placement
+*/
+
+.game-layout {
+  width: min(100vw - 16px, 1520px) !important;
+  height: calc(100vh - 16px) !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) clamp(170px, 16vw, 235px) !important;
+  gap: 10px !important;
+  margin: 8px auto !important;
+}
+
+.game-table {
+  position: relative !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  display: grid !important;
+  grid-template-rows: auto 48px minmax(0, 1fr) !important;
+  gap: 7px !important;
+  padding: 10px 10px 118px !important;
+  overflow: hidden !important;
+  border-radius: 20px !important;
+}
+
+.game-status {
+  min-height: 44px !important;
+  padding: 7px 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  border-radius: 14px !important;
+}
+
+.phase-button {
+  min-height: 30px !important;
+  padding: 6px 12px !important;
+  border-radius: 999px !important;
+  white-space: nowrap !important;
+}
+
+/* Opponent hand: just a readable strip, not a board zone. */
+.game-table > .hand-zone--opponent {
+  min-height: 0 !important;
+  height: 48px !important;
+  position: relative !important;
+  z-index: 4 !important;
+}
+
+.game-table > .hand-zone--opponent .hand-cards {
+  height: 48px !important;
+  padding: 0 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+}
+
+.card-view--opponentHand {
+  width: clamp(28px, 2.9vw, 42px) !important;
+  border-radius: 6px !important;
+  filter: brightness(0.86) saturate(0.8) !important;
+}
+
+/* Your hand: bottom dock, partly off-screen. */
+.game-table > .hand-zone:not(.hand-zone--opponent) {
+  position: absolute !important;
+  left: 12px !important;
+  right: 12px !important;
+  bottom: -78px !important;
+  height: 158px !important;
+  z-index: 30 !important;
+  padding: 0 16px !important;
+  pointer-events: none !important;
+  transition: bottom 180ms ease;
+  background:
+    linear-gradient(to top, rgba(20, 10, 6, 0.98), rgba(20, 10, 6, 0.72) 58%, transparent);
+}
+
+.game-table > .hand-zone:not(.hand-zone--opponent):hover,
+.game-table > .hand-zone:not(.hand-zone--opponent):focus-within {
+  bottom: -16px !important;
+}
+
+.game-table > .hand-zone:not(.hand-zone--opponent) .hand-cards {
+  height: 158px !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  gap: clamp(6px, 0.8vw, 12px) !important;
+  padding: 12px 8px 0 !important;
+  overflow: visible !important;
+  pointer-events: auto !important;
+}
+
+.card-view--hand {
+  width: clamp(72px, 7.2vw, 108px) !important;
+  flex: 0 0 auto !important;
+  border-radius: 9px !important;
+  transform: translateY(38px) rotate(var(--hand-tilt, 0deg));
+  transform-origin: 50% 100%;
+  transition:
+    transform 170ms ease,
+    filter 170ms ease,
+    box-shadow 170ms ease,
+    z-index 0s linear 170ms;
+}
+
+.hand-cards .card-view--hand:nth-child(odd) {
+  --hand-tilt: -1.5deg;
+}
+
+.hand-cards .card-view--hand:nth-child(even) {
+  --hand-tilt: 1.5deg;
+}
+
+.card-view--hand:hover,
+.card-view--hand:focus-visible,
+.card-view--hand.card-view--targetable {
+  z-index: 5 !important;
+  transform: translateY(-30px) scale(1.18) !important;
+  filter: brightness(1.06) saturate(1.05) !important;
+  box-shadow: 0 22px 42px rgba(0, 0, 0, 0.52) !important;
+  transition:
+    transform 170ms ease,
+    filter 170ms ease,
+    box-shadow 170ms ease;
+}
+
+/* Battlefield structure */
+.battlefield {
+  min-height: 0 !important;
+  height: 100% !important;
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) 44px minmax(0, 1fr) !important;
+  gap: 6px !important;
+}
+
+.battlefield-side {
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: 30px minmax(0, 1fr) !important;
+  gap: 5px !important;
+  padding: 7px !important;
+  border-radius: 16px !important;
+}
+
+.player-strip {
+  min-height: 28px !important;
+  padding: 0 2px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+}
+
+.player-strip strong {
+  font-size: 12px !important;
+}
+
+.player-strip span {
+  font-size: 11px !important;
+}
+
+.field-board {
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 72px !important;
+  gap: 6px !important;
+}
+
+.field-main {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) 72px !important;
+  gap: 6px !important;
+}
+
+.field-zone {
+  min-height: 0 !important;
+  padding: 6px !important;
+  border-radius: 12px !important;
+  background: rgba(0, 0, 0, 0.12) !important;
+}
+
+.zone-label {
+  display: block !important;
+  margin-bottom: 4px !important;
+  font-size: 10px !important;
+  letter-spacing: 0.08em !important;
+  line-height: 1 !important;
+  text-transform: uppercase !important;
+  opacity: 0.64 !important;
+}
+
+.monster-row {
+  height: calc(100% - 14px) !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+  align-items: stretch !important;
+}
+
+.field-zone--monsters .card-view--board,
+.field-zone--monsters .empty-slot {
+  width: min(100%, 82px) !important;
+  justify-self: center !important;
+  align-self: center !important;
+}
+
+/* Zauberzone: permanent left, buffs under monsters, special right. */
+.spell-board {
+  height: calc(100% - 14px) !important;
+  display: grid !important;
+  grid-template-columns: 58px minmax(0, 1fr) 58px !important;
+  gap: 5px !important;
+  align-items: stretch !important;
+}
+
+.spell-wing,
+.buff-stack {
+  min-height: 0 !important;
+  border-radius: 9px !important;
+  padding: 3px !important;
+  background: rgba(0, 0, 0, 0.16) !important;
+  display: grid !important;
+  place-items: center !important;
+  font-size: 9px !important;
+  line-height: 1 !important;
+}
+
+.spell-wing > span {
+  font-size: 8px !important;
+  opacity: 0.68 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+}
+
+.buff-grid {
+  min-width: 0 !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 5px !important;
+}
+
+.spell-card-stack,
+.debuff-cards {
+  min-width: 0 !important;
+  display: flex !important;
+  gap: 3px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-wrap: wrap !important;
+}
+
+.card-view--small,
+.empty-slot--small,
+.spell-board .card-view--board,
+.spell-board .empty-slot {
+  width: 32px !important;
+  border-radius: 5px !important;
+}
+
+/* Debuffs are the clear middle combat line. */
+.conflict-line {
+  min-height: 44px !important;
+  display: grid !important;
+  grid-template-columns: 132px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 5px 10px !important;
+  border: 1px solid rgba(255, 213, 122, 0.22) !important;
+  border-radius: 12px !important;
+  background:
+    linear-gradient(90deg, rgba(90, 42, 26, 0.48), rgba(0, 0, 0, 0.22), rgba(90, 42, 26, 0.48)) !important;
+}
+
+.conflict-line > span {
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+
+.zone-hint {
+  font-size: 11px !important;
+  opacity: 0.52 !important;
+}
+
+/* Piles: compact and clearly separated on the right side of each player board. */
+.field-piles {
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  gap: 5px !important;
+  align-content: stretch !important;
+}
+
+.deck-graveyard-stack {
+  min-height: 0 !important;
+  display: grid !important;
+  gap: 5px !important;
+}
+
+.pile {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  padding: 4px !important;
+  border-radius: 10px !important;
+  display: grid !important;
+  place-items: center !important;
+  gap: 2px !important;
+}
+
+.pile .deck-back,
+.pile .deck-back--small {
+  width: 34px !important;
+  min-width: 0 !important;
+  height: auto !important;
+  aspect-ratio: 5 / 7 !important;
+}
+
+.pile span {
+  font-size: 10px !important;
+  line-height: 1 !important;
+}
+
+.pile strong {
+  font-size: 16px !important;
+  line-height: 1 !important;
+}
+
+.draw-hint {
+  text-align: center !important;
+  font-size: 10px !important;
+  color: #ffd87f !important;
+}
+
+/* Right preview becomes supporting, not the main layout problem. */
+.card-preview {
+  height: 100% !important;
+  min-height: 0 !important;
+  padding: 10px !important;
+  border-radius: 20px !important;
+  display: grid !important;
+  place-items: center !important;
+  overflow: hidden !important;
+}
+
+.card-preview img {
+  width: min(100%, 210px) !important;
+  height: auto !important;
+  max-height: calc(100vh - 52px) !important;
+  object-fit: contain !important;
+  border-radius: 10px !important;
+}
+
+/* Responsive: on small screens preview drops away before the board breaks. */
+@media (max-width: 980px) {
+  .game-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .card-preview {
+    display: none !important;
+  }
+
+  .game-table {
+    padding-bottom: 116px !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .game-table {
+    grid-template-rows: auto 40px minmax(0, 1fr) !important;
+    padding: 7px 7px 108px !important;
+  }
+
+  .battlefield {
+    grid-template-rows: minmax(0, 1fr) 38px minmax(0, 1fr) !important;
+  }
+
+  .field-board {
+    grid-template-columns: minmax(0, 1fr) 58px !important;
+  }
+
+  .field-main {
+    grid-template-rows: minmax(0, 1fr) 62px !important;
+  }
+
+  .spell-board {
+    grid-template-columns: 46px minmax(0, 1fr) 46px !important;
+  }
+
+  .card-view--hand {
+    width: 64px !important;
+  }
+
+  .game-table > .hand-zone:not(.hand-zone--opponent) {
+    bottom: -74px !important;
+    height: 144px !important;
+  }
+}
+
+/* Board layout v2: status lives in the right sidebar, board uses the freed space. */
+.game-layout {
+  grid-template-columns: minmax(0, 1fr) clamp(210px, 18vw, 270px) !important;
+  gap: 10px !important;
+}
+
+.game-sidebar {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 10px;
+}
+
+.game-sidebar .game-status {
+  min-height: 0 !important;
+  padding: 10px !important;
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  align-items: stretch !important;
+  gap: 8px !important;
+  border-radius: 18px !important;
+}
+
+.game-sidebar .phase-button {
+  width: 100% !important;
+  min-height: 38px !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+.game-table {
+  grid-template-rows: 48px minmax(0, 1fr) !important;
+  padding: 8px !important;
+  overflow: hidden !important;
+}
+
+.game-table > .game-status {
+  display: none !important;
+}
+
+.game-table > .hand-zone--opponent {
+  grid-row: 1;
+  height: 44px !important;
+}
+
+.battlefield {
+  grid-row: 2;
+  min-height: 0 !important;
+}
+
+.game-table > .hand-zone:not(.hand-zone--opponent) {
+  left: 18px !important;
+  right: 18px !important;
+  bottom: -92px !important;
+  height: 148px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  pointer-events: none !important;
+  z-index: 40 !important;
+}
+
+.game-table > .hand-zone:not(.hand-zone--opponent):hover,
+.game-table > .hand-zone:not(.hand-zone--opponent):focus-within {
+  bottom: -50px !important;
+}
+
+.game-table > .hand-zone:not(.hand-zone--opponent) .hand-cards {
+  height: 148px !important;
+  padding: 0 8px !important;
+  align-items: flex-start !important;
+  pointer-events: auto !important;
+}
+
+.card-view--hand {
+  transform: translateY(0) rotate(var(--hand-tilt, 0deg)) !important;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.38) !important;
+}
+
+.card-view--hand:hover,
+.card-view--hand:focus-visible,
+.card-view--hand.card-view--targetable {
+  transform: translateY(-72px) scale(1.18) !important;
+}
+
+.battlefield-side,
+.field-board,
+.field-main,
+.field-zone {
+  overflow: visible !important;
+}
+
+.battlefield-side:last-child .field-main {
+  grid-template-rows: minmax(0, 1fr) 74px !important;
+}
+
+.battlefield-side:last-child .field-zone--spells {
+  position: relative;
+  z-index: 1;
+}
+
+.game-sidebar .card-preview {
+  min-height: 0 !important;
+  height: 100% !important;
+}
+
+.game-sidebar .card-preview img {
+  max-height: calc(100vh - 130px) !important;
+}
+
+@media (max-width: 980px) {
+  .game-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .game-sidebar {
+    display: none !important;
+  }
+
+  .game-table {
+    grid-template-rows: 44px minmax(0, 1fr) !important;
+    padding: 7px !important;
+  }
+}
+
+/* Card style v3: tarot-like cards + no bottom-edge hover glitch.
+   Only hovering/focusing a real hand card lifts it. */
+.card-view,
+.empty-slot,
+.card-preview img,
+.deck-back,
+.deck-back__image,
+.card-view img,
+.card-preview img {
+  border-radius: 2px !important;
+}
+
+.card-view {
+  border-color: rgba(255, 236, 202, 0.32) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.14) inset,
+    0 10px 22px rgba(0, 0, 0, 0.34) !important;
+}
+
+.card-view:hover,
+.card-view:focus-visible {
+  border-color: rgba(255, 236, 202, 0.62) !important;
+}
+
+/* Keep hand dock fixed. Do not open it when the mouse only reaches the bottom edge. */
+.game-table > .hand-zone:not(.hand-zone--opponent),
+.game-table > .hand-zone:not(.hand-zone--opponent):hover,
+.game-table > .hand-zone:not(.hand-zone--opponent):focus-within {
+  bottom: -102px !important;
+  height: 168px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  pointer-events: none !important;
+}
+
+/* Only the cards themselves are interactive. */
+.game-table > .hand-zone:not(.hand-zone--opponent) .hand-cards {
+  height: 168px !important;
+  padding: 0 8px !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  overflow: visible !important;
+  pointer-events: none !important;
+}
+
+.card-view--hand {
+  width: clamp(76px, 7.4vw, 112px) !important;
+  pointer-events: auto !important;
+  border-radius: 2px !important;
+  transform: translateY(0) rotate(var(--hand-tilt, 0deg)) !important;
+  transform-origin: 50% 100% !important;
+  transition:
+    transform 160ms ease,
+    filter 160ms ease,
+    box-shadow 160ms ease,
+    z-index 0s linear 160ms !important;
+}
+
+/* The only reveal interaction: actual card hover/focus/target. */
+.card-view--hand:hover,
+.card-view--hand:focus-visible,
+.card-view--hand.card-view--targetable {
+  z-index: 60 !important;
+  transform: translateY(-78px) scale(1.16) !important;
+  filter: brightness(1.06) saturate(1.05) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 24px 48px rgba(0, 0, 0, 0.58) !important;
+  transition:
+    transform 160ms ease,
+    filter 160ms ease,
+    box-shadow 160ms ease !important;
+}
+
+/* Board slots can stay slightly softer, but still not pill/rounded-card style. */
+.field-zone,
+.conflict-line,
+.pile,
+.game-sidebar .game-status,
+.card-preview {
+  border-radius: 6px !important;
+}
+
+/* Preview card should read like a physical tarot card, not a web tile. */
+.card-preview {
+  padding: 12px !important;
+}
+
+.card-preview img {
+  border-radius: 2px !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 18px 36px rgba(0, 0, 0, 0.42) !important;
+}
+
+/* Board layout v4:
+   - opponent hand is also a floating edge hand, not a reserved board row
+   - top player board is mirrored so opponent monsters face your monsters across the debuff line
+*/
+.game-table {
+  grid-template-rows: minmax(0, 1fr) !important;
+  padding: 8px !important;
+}
+
+/* Opponent hand: top floating dock, only individual cards react on hover/focus. */
+.game-table > .hand-zone--opponent,
+.game-table > .hand-zone--opponent:hover,
+.game-table > .hand-zone--opponent:focus-within {
+  position: absolute !important;
+  left: 18px !important;
+  right: 18px !important;
+  top: -78px !important;
+  height: 132px !important;
+  z-index: 40 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  pointer-events: none !important;
+}
+
+.game-table > .hand-zone--opponent .hand-cards {
+  height: 132px !important;
+  padding: 0 8px !important;
+  align-items: flex-end !important;
+  justify-content: center !important;
+  overflow: visible !important;
+  pointer-events: none !important;
+}
+
+.card-view--opponentHand {
+  width: clamp(54px, 5.4vw, 78px) !important;
+  pointer-events: auto !important;
+  border-radius: 2px !important;
+  transform: translateY(0) rotate(var(--opp-hand-tilt, 0deg)) !important;
+  transform-origin: 50% 0 !important;
+  filter: brightness(0.86) saturate(0.82) !important;
+  transition:
+    transform 160ms ease,
+    filter 160ms ease,
+    box-shadow 160ms ease,
+    z-index 0s linear 160ms !important;
+}
+
+.hand-zone--opponent .card-view--opponentHand:nth-child(odd) {
+  --opp-hand-tilt: 1.3deg;
+}
+
+.hand-zone--opponent .card-view--opponentHand:nth-child(even) {
+  --opp-hand-tilt: -1.3deg;
+}
+
+.card-view--opponentHand:hover,
+.card-view--opponentHand:focus-visible {
+  z-index: 60 !important;
+  transform: translateY(70px) scale(1.16) !important;
+  filter: brightness(1.03) saturate(0.96) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 24px 48px rgba(0, 0, 0, 0.58) !important;
+}
+
+/* With both hands floating, the battlefield gets the whole table. */
+.battlefield {
+  grid-row: 1 !important;
+  height: 100% !important;
+  grid-template-rows: minmax(0, 1fr) 44px minmax(0, 1fr) !important;
+}
+
+/* Mirror the opponent field:
+   opponent spell zone at far/top side,
+   opponent monster zone next to the Schwächungszone.
+*/
+.battlefield-side:first-child .field-main {
+  grid-template-rows: 72px minmax(0, 1fr) !important;
+}
+
+.battlefield-side:first-child .field-zone--spells {
+  grid-row: 1 !important;
+}
+
+.battlefield-side:first-child .field-zone--monsters {
+  grid-row: 2 !important;
+}
+
+/* Own field remains:
+   own monster zone next to Schwächungszone,
+   own spell zone at bottom/hand side.
+*/
+.battlefield-side:last-child .field-main {
+  grid-template-rows: minmax(0, 1fr) 74px !important;
+}
+
+.battlefield-side:last-child .field-zone--monsters {
+  grid-row: 1 !important;
+}
+
+.battlefield-side:last-child .field-zone--spells {
+  grid-row: 2 !important;
+}
+
+/* Mirror pile order too, so each deck/grave/play stack sits beside its own side. */
+.battlefield-side:first-child .field-piles {
+  grid-template-rows: auto auto minmax(0, 1fr) !important;
+}
+
+.battlefield-side:last-child .field-piles {
+  grid-template-rows: minmax(0, 1fr) auto auto !important;
+}
+
+/* Give the actual monster rows slightly more height now that the hand row is gone. */
+.monster-row {
+  align-items: center !important;
+}
+
+.field-zone--monsters .card-view--board,
+.field-zone--monsters .empty-slot {
+  width: min(100%, 90px) !important;
+}
+
+/* Keep edge hands above the table but not over the important monster-vs-monster center. */
+.conflict-line {
+  position: relative !important;
+  z-index: 5 !important;
+}
+
+@media (max-width: 720px) {
+  .game-table > .hand-zone--opponent,
+  .game-table > .hand-zone--opponent:hover,
+  .game-table > .hand-zone--opponent:focus-within {
+    top: -68px !important;
+    height: 118px !important;
+  }
+
+  .card-view--opponentHand {
+    width: 50px !important;
+  }
+
+  .card-view--opponentHand:hover,
+  .card-view--opponentHand:focus-visible {
+    transform: translateY(58px) scale(1.13) !important;
+  }
+}
+
+/* Board layout v5: remove boxy scaffolding, use tactile cues/orbs, give cards more space. */
+
+/* Player strip becomes compact: name + mana/strength orbs. */
+.player-strip {
+  min-height: 22px !important;
+  padding: 0 2px 2px !important;
+  gap: 6px !important;
+}
+
+.player-strip strong {
+  margin-right: auto !important;
+  font-size: 12px !important;
+  letter-spacing: 0.01em;
+}
+
+.stat-orb {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  position: relative;
+  color: #fff4df;
+  font-size: 11px !important;
+  font-weight: 950;
+  line-height: 1;
+  border: 1px solid rgba(255, 244, 223, 0.28);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.18) inset,
+    0 5px 12px rgba(0, 0, 0, 0.22);
+}
+
+.stat-orb::before {
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  opacity: 0.72;
+}
+
+.stat-orb--mana {
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.55), transparent 26%),
+    radial-gradient(circle at center, rgba(117, 88, 255, 0.7), rgba(54, 34, 127, 0.72));
+}
+
+.stat-orb--mana::before {
+  content: "✦";
+  color: #b9abff;
+}
+
+.stat-orb--strength {
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.48), transparent 26%),
+    radial-gradient(circle at center, rgba(255, 169, 76, 0.74), rgba(122, 51, 24, 0.76));
+}
+
+.stat-orb--strength::before {
+  content: "●";
+  color: #ffbd74;
+}
+
+/* Fallback for old textual spans if App.tsx did not match. */
+.player-strip span:not(.stat-orb) {
+  padding: 3px 7px !important;
+  border-radius: 999px;
+  background: rgba(255, 244, 223, 0.08);
+  font-size: 10px !important;
+}
+
+/* Remove zone headings and heavy boxes. */
+.zone-label,
+.spell-wing > span,
+.zone-hint {
+  display: none !important;
+}
+
+.field-zone {
+  padding: 2px !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.battlefield-side {
+  padding: 6px 7px !important;
+  border-color: rgba(255, 244, 223, 0.08) !important;
+  background:
+    radial-gradient(circle at 14% 22%, rgba(255, 244, 223, 0.04), transparent 32%),
+    rgba(0, 0, 0, 0.08) !important;
+}
+
+.field-board {
+  grid-template-columns: minmax(0, 1fr) 58px !important;
+  gap: 4px !important;
+}
+
+.field-main {
+  gap: 3px !important;
+}
+
+/* Make card slots feel like table placement guides instead of boxes. */
+.monster-row,
+.buff-grid {
+  gap: clamp(8px, 1.6vw, 22px) !important;
+}
+
+.empty-slot {
+  border: 0 !important;
+  background:
+    radial-gradient(ellipse at center, rgba(255, 244, 223, 0.12), transparent 58%),
+    linear-gradient(180deg, rgba(255, 244, 223, 0.08), rgba(255, 244, 223, 0.015)) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 244, 223, 0.08) inset,
+    0 12px 24px rgba(0, 0, 0, 0.12) inset !important;
+  opacity: 0.72 !important;
+}
+
+.field-zone--monsters .empty-slot {
+  width: min(100%, 96px) !important;
+}
+
+.empty-slot--small {
+  width: 28px !important;
+  opacity: 0.45 !important;
+}
+
+/* Spell area: no containers, just permanent/buff/special landing shadows. */
+.spell-board {
+  grid-template-columns: 42px minmax(0, 1fr) 42px !important;
+  gap: 5px !important;
+}
+
+.spell-wing,
+.buff-stack {
+  background:
+    radial-gradient(ellipse at center, rgba(255, 244, 223, 0.10), transparent 66%) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.spell-board .card-view--board,
+.spell-board .empty-slot,
+.card-view--small,
+.empty-slot--small {
+  width: 30px !important;
+}
+
+/* Debuff line becomes a tactile divider, not another big box. */
+.conflict-line {
+  min-height: 34px !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  padding: 4px 10px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background:
+    linear-gradient(90deg, transparent, rgba(255, 205, 116, 0.23) 18%, rgba(255, 205, 116, 0.12) 50%, rgba(255, 205, 116, 0.23) 82%, transparent),
+    radial-gradient(circle at 50% 50%, rgba(255, 244, 223, 0.08), transparent 55%) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 244, 223, 0.14) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.22) inset !important;
+}
+
+.conflict-line > span {
+  display: none !important;
+}
+
+.debuff-cards:empty::before {
+  content: "Schwächungen";
+  color: rgba(255, 226, 188, 0.38);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Piles shrink into tactile stack tokens. */
+.field-piles {
+  gap: 3px !important;
+}
+
+.pile {
+  padding: 2px !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background:
+    radial-gradient(circle at center, rgba(255, 244, 223, 0.1), transparent 62%),
+    rgba(0, 0, 0, 0.16) !important;
+}
+
+.pile .deck-back,
+.pile .deck-back--small {
+  width: 28px !important;
+}
+
+.pile span {
+  font-size: 0 !important;
+}
+
+.pile span::before {
+  font-size: 9px !important;
+  line-height: 1;
+  opacity: 0.72;
+}
+
+.pile strong {
+  font-size: 13px !important;
+}
+
+/* Reclaim more space for actual monster cards. */
+.field-zone--monsters .card-view--board,
+.field-zone--monsters .empty-slot {
+  width: min(100%, 104px) !important;
+}
+
+.card-view--board {
+  border-radius: 2px !important;
+}
+
+/* Edge hands: keep them outside, but a little less intrusive. */
+.game-table > .hand-zone--opponent,
+.game-table > .hand-zone--opponent:hover,
+.game-table > .hand-zone--opponent:focus-within {
+  top: -88px !important;
+}
+
+.game-table > .hand-zone:not(.hand-zone--opponent),
+.game-table > .hand-zone:not(.hand-zone--opponent):hover,
+.game-table > .hand-zone:not(.hand-zone--opponent):focus-within {
+  bottom: -112px !important;
+}
+
+.card-view--opponentHand:hover,
+.card-view--opponentHand:focus-visible {
+  transform: translateY(76px) scale(1.16) !important;
+}
+
+.card-view--hand:hover,
+.card-view--hand:focus-visible,
+.card-view--hand.card-view--targetable {
+  transform: translateY(-84px) scale(1.16) !important;
+}
+
+/* Board layout v6:
+   - thinner placement cues
+   - distinct deck / graveyard / play-stack piles
+   - reclaim more width for card lanes
+*/
+
+/* The previous soft halos were too wide. Use thin table marks instead. */
+.empty-slot {
+  background:
+    radial-gradient(ellipse at center, rgba(255, 244, 223, 0.10), transparent 44%),
+    linear-gradient(180deg, rgba(255, 244, 223, 0.055), rgba(255, 244, 223, 0.01)) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 244, 223, 0.075) inset,
+    0 10px 18px rgba(0, 0, 0, 0.10) inset !important;
+  opacity: 0.56 !important;
+}
+
+.field-zone--monsters .empty-slot {
+  width: min(100%, 92px) !important;
+}
+
+/* Remove the broad glowing bands from the spell area. */
+.spell-wing,
+.buff-stack {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  position: relative;
+}
+
+.spell-wing::after,
+.buff-stack::after {
+  content: "";
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  top: 50%;
+  height: 1px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, transparent, rgba(255, 226, 188, 0.20), transparent);
+  pointer-events: none;
+}
+
+.buff-stack .card-view,
+.spell-wing .card-view,
+.buff-stack .empty-slot,
+.spell-wing .empty-slot {
+  position: relative;
+  z-index: 1;
+}
+
+/* Give actual card lanes more room by shrinking the pile rail. */
+.field-board {
+  grid-template-columns: minmax(0, 1fr) 46px !important;
+  gap: 4px !important;
+}
+
+.monster-row,
+.buff-grid {
+  gap: clamp(10px, 1.9vw, 28px) !important;
+}
+
+.field-zone--monsters .card-view--board,
+.field-zone--monsters .empty-slot {
+  width: min(100%, 102px) !important;
+}
+
+/* Piles become three distinct tactile tokens instead of identical boxes. */
+.field-piles {
+  width: 46px !important;
+  gap: 6px !important;
+  align-items: stretch !important;
+}
+
+.pile {
+  width: 46px !important;
+  min-height: 42px !important;
+  padding: 3px !important;
+  border-radius: 4px !important;
+  border: 0 !important;
+  position: relative !important;
+  overflow: visible !important;
+  isolation: isolate;
+}
+
+/* 1: Deck / draw pile — visible mini card stack */
+.field-piles .pile:nth-of-type(1) {
+  background:
+    linear-gradient(135deg, rgba(255, 244, 223, 0.16), rgba(255, 244, 223, 0.03)),
+    rgba(0, 0, 0, 0.18) !important;
+  box-shadow:
+    4px 4px 0 rgba(255, 244, 223, 0.12),
+    8px 8px 0 rgba(255, 244, 223, 0.06),
+    0 8px 16px rgba(0, 0, 0, 0.28) !important;
+}
+
+.field-piles .pile:nth-of-type(1)::before {
+  content: "Deck";
+  position: absolute;
+  left: 50%;
+  top: -13px;
+  transform: translateX(-50%);
+  color: #ffd87f;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+/* 2: Friedhof — dark sunken slot */
+.field-piles .pile:nth-of-type(2) {
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255, 244, 223, 0.07), transparent 45%),
+    rgba(0, 0, 0, 0.46) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 244, 223, 0.08) inset,
+    0 10px 18px rgba(0, 0, 0, 0.38) inset !important;
+}
+
+.field-piles .pile:nth-of-type(2)::before {
+  content: "✕";
+  color: rgba(255, 226, 188, 0.72);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+/* 3: Spielstapel — shallow tray / active stack */
+.field-piles .pile:nth-of-type(3) {
+  background:
+    linear-gradient(180deg, rgba(255, 210, 116, 0.16), rgba(255, 210, 116, 0.03)),
+    rgba(60, 31, 18, 0.28) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 210, 116, 0.18) inset,
+    0 -5px 10px rgba(255, 210, 116, 0.08) inset,
+    0 7px 14px rgba(0, 0, 0, 0.24) !important;
+}
+
+.field-piles .pile:nth-of-type(3)::before {
+  content: "↧";
+  color: rgba(255, 216, 127, 0.82);
+  font-size: 15px;
+  font-weight: 900;
+}
+
+/* Make the pile labels/counts consistent and small. */
+.pile .deck-back,
+.pile .deck-back--small {
+  width: 24px !important;
+  border-radius: 2px !important;
+}
+
+.pile span {
+  display: none !important;
+}
+
+.pile strong {
+  min-width: 20px;
+  min-height: 20px;
+  padding: 2px 4px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  background: rgba(0, 0, 0, 0.74);
+  color: #fff4df;
+  font-size: 12px !important;
+  line-height: 1 !important;
+  font-weight: 950;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
+/* Draw hint becomes a tiny tag next to the deck pile, not a block of text. */
+.draw-hint {
+  position: absolute !important;
+  right: 50px !important;
+  top: 4px !important;
+  width: max-content !important;
+  font-size: 9px !important;
+  font-weight: 900 !important;
+  line-height: 1.05 !important;
+  color: #ffd87f !important;
+  text-align: right !important;
+  pointer-events: none !important;
+}
+
+/* Debuff lane thinner too; it should guide the eye, not consume a row. */
+.conflict-line {
+  min-height: 28px !important;
+  background:
+    linear-gradient(90deg, transparent, rgba(255, 205, 116, 0.18) 24%, rgba(255, 205, 116, 0.08) 50%, rgba(255, 205, 116, 0.18) 76%, transparent) !important;
+}
+
+.debuff-cards:empty::before {
+  font-size: 9px !important;
+  opacity: 0.32 !important;
+}
+
+/* Slightly reduce chrome in side panels so the board feels like a table surface. */
+.battlefield-side {
+  border-color: rgba(255, 244, 223, 0.055) !important;
+  background:
+    radial-gradient(circle at 18% 35%, rgba(255, 244, 223, 0.028), transparent 30%),
+    rgba(0, 0, 0, 0.055) !important;
+}
+
+.battlefield-side--active {
+  box-shadow:
+    0 0 0 1px rgba(255, 210, 116, 0.42) inset,
+    0 0 26px rgba(255, 210, 116, 0.10) !important;
+}
+
+/* Board layout v7:
+   Put spell cards next to their monster slots, slightly offset,
+   instead of using a full separate spell row.
+*/
+.field-main {
+  position: relative !important;
+  grid-template-rows: minmax(0, 1fr) !important;
+  overflow: visible !important;
+}
+
+/* Monster zone owns the main space now. */
+.field-zone--monsters {
+  grid-row: 1 !important;
+  position: relative !important;
+  z-index: 2 !important;
+  min-height: 0 !important;
+}
+
+/* Spell zone becomes an overlay layer above the monster grid. */
+.field-zone--spells {
+  grid-row: 1 !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 3 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+}
+
+.spell-board {
+  position: absolute !important;
+  inset: 0 !important;
+  height: 100% !important;
+  display: block !important;
+  pointer-events: none !important;
+}
+
+/* Buffs line up with the four monster columns and sit beside the monster card. */
+.buff-grid {
+  position: absolute !important;
+  inset: 0 48px !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: clamp(10px, 1.9vw, 28px) !important;
+  align-items: center !important;
+  pointer-events: none !important;
+}
+
+.buff-stack {
+  width: min(100%, 104px) !important;
+  height: 100% !important;
+  display: grid !important;
+  place-items: center !important;
+  position: relative !important;
+  background: transparent !important;
+  pointer-events: none !important;
+}
+
+.buff-stack::after,
+.spell-wing::after {
+  display: none !important;
+}
+
+/* Small spell cards become offset attachments to their monster slot. */
+.buff-stack .spell-card-stack,
+.buff-stack .card-view,
+.buff-stack .empty-slot {
+  pointer-events: auto !important;
+}
+
+.buff-stack .spell-card-stack {
+  position: absolute !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  z-index: 7 !important;
+}
+
+/* Own side: spell cards sit low/right of the monster. */
+.battlefield-side:last-child .buff-stack .spell-card-stack {
+  right: -14px !important;
+  bottom: 8px !important;
+  align-items: flex-end !important;
+}
+
+/* Opponent side is mirrored: spell cards sit high/right of the monster. */
+.battlefield-side:first-child .buff-stack .spell-card-stack {
+  right: -14px !important;
+  top: 8px !important;
+  align-items: flex-end !important;
+}
+
+/* If there are no spell cards, show only a tiny offset landing mark. */
+.buff-stack .spell-card-stack:empty::before {
+  content: "";
+  width: 24px;
+  height: 34px;
+  display: block;
+  border-radius: 2px;
+  background:
+    radial-gradient(ellipse at center, rgba(255, 244, 223, 0.12), transparent 55%),
+    rgba(255, 244, 223, 0.035);
+  box-shadow: 0 0 0 1px rgba(255, 244, 223, 0.06) inset;
+  opacity: 0.45;
+}
+
+.buff-stack .card-view--small,
+.buff-stack .empty-slot--small,
+.buff-stack .card-view--board,
+.buff-stack .empty-slot {
+  width: 32px !important;
+  border-radius: 2px !important;
+}
+
+/* Permanent and special cards stay at the outer edges, also as offset attachments. */
+.spell-wing {
+  position: absolute !important;
+  width: 42px !important;
+  display: grid !important;
+  place-items: center !important;
+  background: transparent !important;
+  pointer-events: auto !important;
+  z-index: 8 !important;
+}
+
+.spell-wing--permanent {
+  left: 4px !important;
+}
+
+.spell-wing--special {
+  right: 4px !important;
+}
+
+/* Own permanents/specials near the bottom edge; opponent near the top edge. */
+.battlefield-side:last-child .spell-wing {
+  bottom: 8px !important;
+}
+
+.battlefield-side:first-child .spell-wing {
+  top: 8px !important;
+}
+
+.spell-wing .spell-card-stack {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  align-items: center !important;
+}
+
+.spell-wing .spell-card-stack:empty::before {
+  content: "";
+  width: 24px;
+  height: 34px;
+  display: block;
+  border-radius: 2px;
+  background:
+    linear-gradient(180deg, rgba(255, 244, 223, 0.06), rgba(255, 244, 223, 0.015));
+  box-shadow: 0 0 0 1px rgba(255, 244, 223, 0.06) inset;
+  opacity: 0.38;
+}
+
+/* Since spells no longer need a row, monster cards can grow a bit. */
+.field-zone--monsters .card-view--board,
+.field-zone--monsters .empty-slot {
+  width: min(100%, 112px) !important;
+}
+
+/* Restore both mirrored sides to a single monster/spell overlay row. */
+.battlefield-side:first-child .field-main,
+.battlefield-side:last-child .field-main {
+  grid-template-rows: minmax(0, 1fr) !important;
+}
+
+/* Avoid text labels from the old spell row appearing in the overlay layer. */
+.field-zone--spells .zone-label,
+.spell-wing > span {
+  display: none !important;
+}
+
+/* Board layout v8:
+   Structured spell row again.
+   Spells are no longer random attachments; they form a compact second row,
+   aligned with the monster columns and pulled slightly toward the monsters.
+*/
+
+/* Restore the field to a two-row monster/spell structure. */
+.field-main {
+  position: relative !important;
+  display: grid !important;
+  overflow: visible !important;
+  gap: 0 !important;
+}
+
+/* Opponent: spell row above, monster row below, so monsters face the center. */
+.battlefield-side:first-child .field-main {
+  grid-template-rows: 44px minmax(0, 1fr) !important;
+}
+
+.battlefield-side:first-child .field-zone--spells {
+  grid-row: 1 !important;
+  transform: translateY(8px);
+}
+
+.battlefield-side:first-child .field-zone--monsters {
+  grid-row: 2 !important;
+}
+
+/* Player: monster row above, spell row below, so monsters face the center. */
+.battlefield-side:last-child .field-main {
+  grid-template-rows: minmax(0, 1fr) 44px !important;
+}
+
+.battlefield-side:last-child .field-zone--monsters {
+  grid-row: 1 !important;
+}
+
+.battlefield-side:last-child .field-zone--spells {
+  grid-row: 2 !important;
+  transform: translateY(-8px);
+}
+
+/* Undo the random absolute overlay from the previous attachment experiment. */
+.field-zone--spells {
+  position: relative !important;
+  inset: auto !important;
+  z-index: 4 !important;
+  min-height: 42px !important;
+  height: 44px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  pointer-events: auto !important;
+  overflow: visible !important;
+}
+
+.spell-board {
+  position: static !important;
+  inset: auto !important;
+  width: 100% !important;
+  height: 44px !important;
+  display: grid !important;
+  grid-template-columns: 42px minmax(0, 1fr) 42px !important;
+  gap: 4px !important;
+  align-items: center !important;
+  pointer-events: auto !important;
+}
+
+/* The buff row mirrors the monster row: four lanes, same rhythm. */
+.buff-grid {
+  position: static !important;
+  inset: auto !important;
+  height: 44px !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: clamp(10px, 1.9vw, 28px) !important;
+  align-items: center !important;
+  pointer-events: auto !important;
+}
+
+.buff-stack {
+  width: 100% !important;
+  height: 44px !important;
+  display: grid !important;
+  place-items: center !important;
+  position: relative !important;
+  background: transparent !important;
+  pointer-events: auto !important;
+}
+
+/* A thin second-row guide, not a huge glow. */
+.buff-stack::after {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  left: 20% !important;
+  right: 20% !important;
+  top: 50% !important;
+  height: 1px !important;
+  transform: translateY(-50%) !important;
+  background: linear-gradient(90deg, transparent, rgba(255, 226, 188, 0.22), transparent) !important;
+  pointer-events: none !important;
+}
+
+.buff-stack .spell-card-stack {
+  position: static !important;
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 4px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 2 !important;
+  pointer-events: auto !important;
+}
+
+.buff-stack .spell-card-stack:empty::before {
+  content: "" !important;
+  width: 24px !important;
+  height: 34px !important;
+  display: block !important;
+  border-radius: 2px !important;
+  background:
+    radial-gradient(ellipse at center, rgba(255, 244, 223, 0.10), transparent 54%),
+    rgba(255, 244, 223, 0.025) !important;
+  box-shadow: 0 0 0 1px rgba(255, 244, 223, 0.055) inset !important;
+  opacity: 0.42 !important;
+}
+
+/* Permanent and special stay as small side lanes, aligned with the spell row. */
+.spell-wing {
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+  width: 42px !important;
+  height: 44px !important;
+  display: grid !important;
+  place-items: center !important;
+  background: transparent !important;
+  pointer-events: auto !important;
+  z-index: 5 !important;
+}
+
+.spell-wing::after {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  left: 20% !important;
+  right: 20% !important;
+  top: 50% !important;
+  height: 1px !important;
+  transform: translateY(-50%) !important;
+  background: linear-gradient(90deg, transparent, rgba(255, 226, 188, 0.16), transparent) !important;
+  pointer-events: none !important;
+}
+
+.spell-wing .spell-card-stack {
+  position: static !important;
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 4px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 2 !important;
+}
+
+.spell-wing .spell-card-stack:empty::before {
+  content: "" !important;
+  width: 22px !important;
+  height: 32px !important;
+  display: block !important;
+  border-radius: 2px !important;
+  background: rgba(255, 244, 223, 0.025) !important;
+  box-shadow: 0 0 0 1px rgba(255, 244, 223, 0.045) inset !important;
+  opacity: 0.34 !important;
+}
+
+/* Spell cards are small row cards, not randomly pinned cards. */
+.buff-stack .card-view--small,
+.buff-stack .empty-slot--small,
+.buff-stack .card-view--board,
+.buff-stack .empty-slot,
+.spell-wing .card-view--small,
+.spell-wing .empty-slot--small,
+.spell-wing .card-view--board,
+.spell-wing .empty-slot {
+  width: 30px !important;
+  border-radius: 2px !important;
+  position: static !important;
+}
+
+/* Monster rows get the freed space but remain cleanly separated from spell rows. */
+.field-zone--monsters {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.monster-row {
+  height: 100% !important;
+  align-items: center !important;
+}
+
+.field-zone--monsters .card-view--board,
+.field-zone--monsters .empty-slot {
+  width: min(100%, 106px) !important;
+}
+
+/* Remove old overlay labels if any escaped earlier rules. */
+.field-zone--spells .zone-label,
+.spell-wing > span {
+  display: none !important;
+}
+
+/* Board layout v9:
+   Spell slots live in the horizontal gaps between monster slots.
+   They are part of the monster row, slightly offset downward/upward,
+   not a separate row underneath the monsters.
+*/
+
+/* Both sides use one main monster row; spells overlay that row. */
+.field-main,
+.battlefield-side:first-child .field-main,
+.battlefield-side:last-child .field-main {
+  position: relative !important;
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) !important;
+  gap: 0 !important;
+  overflow: visible !important;
+}
+
+.field-zone--monsters,
+.battlefield-side:first-child .field-zone--monsters,
+.battlefield-side:last-child .field-zone--monsters {
+  grid-row: 1 !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* Spell layer overlays the monster lane instead of creating a second row. */
+.field-zone--spells,
+.battlefield-side:first-child .field-zone--spells,
+.battlefield-side:last-child .field-zone--spells {
+  grid-row: 1 !important;
+  position: absolute !important;
+  inset: 0 48px 0 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+  pointer-events: none !important;
+  z-index: 6 !important;
+}
+
+.spell-board {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  pointer-events: none !important;
+}
+
+/* Four virtual lanes matching the monster lanes. */
+.buff-grid {
+  position: absolute !important;
+  inset: 0 !important;
+  height: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: clamp(10px, 1.9vw, 28px) !important;
+  align-items: center !important;
+  pointer-events: none !important;
+}
+
+/* Each spell slot is shifted into the gap to the right of its monster.
+   The last one tucks inward so it does not collide with the pile rail. */
+.buff-stack {
+  position: relative !important;
+  width: 34px !important;
+  height: 48px !important;
+  justify-self: end !important;
+  align-self: center !important;
+  display: grid !important;
+  place-items: center !important;
+  background: transparent !important;
+  pointer-events: none !important;
+  transform: translateX(calc(50% + 6px)) translateY(16px) !important;
+  z-index: 8 !important;
+}
+
+.buff-stack:nth-child(4) {
+  transform: translateX(-8px) translateY(16px) !important;
+}
+
+/* Opponent side is mirrored vertically: still in the gap, but nudged toward the center. */
+.battlefield-side:first-child .buff-stack {
+  transform: translateX(calc(50% + 6px)) translateY(-16px) !important;
+}
+
+.battlefield-side:first-child .buff-stack:nth-child(4) {
+  transform: translateX(-8px) translateY(-16px) !important;
+}
+
+.buff-stack::after {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  inset: 6px 3px !important;
+  height: auto !important;
+  width: auto !important;
+  transform: none !important;
+  border-radius: 2px !important;
+  background:
+    radial-gradient(ellipse at center, rgba(255, 244, 223, 0.12), transparent 58%),
+    rgba(255, 244, 223, 0.035) !important;
+  box-shadow: 0 0 0 1px rgba(255, 244, 223, 0.06) inset !important;
+  opacity: 0.42 !important;
+  pointer-events: none !important;
+}
+
+.buff-stack:has(.card-view)::after {
+  opacity: 0.12 !important;
+}
+
+.buff-stack .spell-card-stack {
+  position: relative !important;
+  z-index: 2 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: auto !important;
+}
+
+.buff-stack .spell-card-stack:empty::before {
+  content: "" !important;
+  display: none !important;
+}
+
+.buff-stack .card-view--small,
+.buff-stack .empty-slot--small,
+.buff-stack .card-view--board,
+.buff-stack .empty-slot {
+  width: 30px !important;
+  height: auto !important;
+  border-radius: 2px !important;
+  position: static !important;
+}
+
+/* Permanents and specials remain tiny edge slots, centered vertically on the monster row. */
+.spell-wing {
+  position: absolute !important;
+  top: 50% !important;
+  width: 34px !important;
+  height: 48px !important;
+  transform: translateY(-50%) !important;
+  display: grid !important;
+  place-items: center !important;
+  background: transparent !important;
+  pointer-events: auto !important;
+  z-index: 9 !important;
+}
+
+.spell-wing--permanent {
+  left: 4px !important;
+}
+
+.spell-wing--special {
+  right: -42px !important;
+}
+
+.battlefield-side:first-child .spell-wing,
+.battlefield-side:last-child .spell-wing {
+  top: 50% !important;
+  bottom: auto !important;
+}
+
+.spell-wing::after {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  inset: 7px 4px !important;
+  height: auto !important;
+  width: auto !important;
+  transform: none !important;
+  border-radius: 2px !important;
+  background: rgba(255, 244, 223, 0.028) !important;
+  box-shadow: 0 0 0 1px rgba(255, 244, 223, 0.045) inset !important;
+  opacity: 0.36 !important;
+}
+
+.spell-wing .spell-card-stack {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* Monster cards keep the main reading rhythm. */
+.monster-row {
+  height: 100% !important;
+  align-items: center !important;
+}
+
+.field-zone--monsters .card-view--board,
+.field-zone--monsters .empty-slot {
+  width: min(100%, 108px) !important;
+}
+
+/* Board layout v10:
+   Larger, deterministic spell placement.
+   Spell cards sit in the gaps between monster lanes and never overlap monsters or piles.
+*/
+.field-board {
+  grid-template-columns: minmax(0, 1fr) 52px !important;
+  gap: 6px !important;
+}
+
+/* Monster row uses fixed rhythm: 4 lanes with deliberate air between them. */
+.monster-row {
+  height: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(92px, 116px)) !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: clamp(34px, 5vw, 76px) !important;
+}
+
+.field-zone--monsters .card-view--board,
+.field-zone--monsters .empty-slot {
+  width: min(100%, 112px) !important;
+  justify-self: center !important;
+  align-self: center !important;
+}
+
+/* One shared visual row: monsters are primary, spell positions are an overlay grid. */
+.field-main,
+.battlefield-side:first-child .field-main,
+.battlefield-side:last-child .field-main {
+  position: relative !important;
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) !important;
+  overflow: visible !important;
+}
+
+.field-zone--monsters,
+.battlefield-side:first-child .field-zone--monsters,
+.battlefield-side:last-child .field-zone--monsters {
+  grid-row: 1 !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.field-zone--spells,
+.battlefield-side:first-child .field-zone--spells,
+.battlefield-side:last-child .field-zone--spells {
+  grid-row: 1 !important;
+  position: absolute !important;
+  inset: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+  pointer-events: none !important;
+  z-index: 6 !important;
+}
+
+.spell-board {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  pointer-events: none !important;
+}
+
+/* Buff spell grid:
+   9 columns = edge, monster, gap, monster, gap, monster, gap, monster, edge.
+   Buffs go into the gap columns 3/5/7 and the final safe edge column 8.
+*/
+.buff-grid {
+  position: absolute !important;
+  inset: 0 58px 0 42px !important;
+  height: 100% !important;
+  display: grid !important;
+  grid-template-columns: 0.7fr 1fr 0.72fr 1fr 0.72fr 1fr 0.72fr 1fr 0.35fr !important;
+  align-items: center !important;
+  column-gap: 0 !important;
+  pointer-events: none !important;
+}
+
+.buff-stack {
+  width: 52px !important;
+  height: 74px !important;
+  justify-self: center !important;
+  align-self: center !important;
+  display: grid !important;
+  place-items: center !important;
+  position: relative !important;
+  background: transparent !important;
+  pointer-events: none !important;
+  z-index: 8 !important;
+  transform: translateY(18px) !important;
+}
+
+/* Opponent spells are nudged toward the center from above. */
+.battlefield-side:first-child .buff-stack {
+  transform: translateY(-18px) !important;
+}
+
+/* Exact gap positions. */
+.buff-stack:nth-child(1) {
+  grid-column: 3 !important;
+}
+
+.buff-stack:nth-child(2) {
+  grid-column: 5 !important;
+}
+
+.buff-stack:nth-child(3) {
+  grid-column: 7 !important;
+}
+
+.buff-stack:nth-child(4) {
+  grid-column: 8 !important;
+  justify-self: end !important;
+}
+
+/* Bigger, readable spell slots. */
+.buff-stack::after {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  width: 48px !important;
+  height: 66px !important;
+  inset: auto !important;
+  border-radius: 2px !important;
+  background:
+    radial-gradient(ellipse at center, rgba(255, 244, 223, 0.11), transparent 58%),
+    rgba(255, 244, 223, 0.035) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 244, 223, 0.07) inset,
+    0 8px 16px rgba(0, 0, 0, 0.12) inset !important;
+  opacity: 0.44 !important;
+  pointer-events: none !important;
+}
+
+.buff-stack:has(.card-view)::after {
+  opacity: 0.08 !important;
+}
+
+.buff-stack .spell-card-stack {
+  position: relative !important;
+  z-index: 2 !important;
+  width: 100% !important;
+  min-height: 70px !important;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  gap: 4px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: auto !important;
+}
+
+.buff-stack .spell-card-stack:empty::before {
+  content: "" !important;
+  display: none !important;
+}
+
+.buff-stack .card-view--small,
+.buff-stack .empty-slot--small,
+.buff-stack .card-view--board,
+.buff-stack .empty-slot {
+  width: 46px !important;
+  max-width: 46px !important;
+  border-radius: 2px !important;
+  position: static !important;
+}
+
+/* Side spell types get a clear but separate home.
+   Permanent = far left. Special = far right before the pile rail. */
+.spell-wing {
+  position: absolute !important;
+  top: 50% !important;
+  width: 46px !important;
+  height: 66px !important;
+  transform: translateY(-50%) !important;
+  display: grid !important;
+  place-items: center !important;
+  background: transparent !important;
+  pointer-events: auto !important;
+  z-index: 9 !important;
+}
+
+.spell-wing--permanent {
+  left: 4px !important;
+}
+
+.spell-wing--special {
+  right: 4px !important;
+}
+
+.spell-wing::after {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  width: 42px !important;
+  height: 60px !important;
+  inset: auto !important;
+  border-radius: 2px !important;
+  background:
+    radial-gradient(ellipse at center, rgba(255, 244, 223, 0.08), transparent 58%),
+    rgba(255, 244, 223, 0.026) !important;
+  box-shadow: 0 0 0 1px rgba(255, 244, 223, 0.052) inset !important;
+  opacity: 0.40 !important;
+  pointer-events: none !important;
+}
+
+.spell-wing:has(.card-view)::after {
+  opacity: 0.08 !important;
+}
+
+.spell-wing .spell-card-stack {
+  position: relative !important;
+  z-index: 2 !important;
+  width: 46px !important;
+  min-height: 66px !important;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  gap: 3px !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.spell-wing .spell-card-stack:empty::before {
+  content: "" !important;
+  display: none !important;
+}
+
+.spell-wing .card-view--small,
+.spell-wing .empty-slot--small,
+.spell-wing .card-view--board,
+.spell-wing .empty-slot {
+  width: 42px !important;
+  max-width: 42px !important;
+  border-radius: 2px !important;
+  position: static !important;
+}
+
+/* If a real spell card is hovered, show it clearly above the board. */
+.buff-stack .card-view:hover,
+.buff-stack .card-view:focus-visible,
+.spell-wing .card-view:hover,
+.spell-wing .card-view:focus-visible {
+  z-index: 70 !important;
+  transform: translateY(-8px) scale(1.35) !important;
+  box-shadow: 0 24px 44px rgba(0, 0, 0, 0.55) !important;
+}
+
+/* Prevent accidental collision with the pile rail. */
+.field-piles {
+  width: 52px !important;
+  position: relative !important;
+  z-index: 15 !important;
+}
+
+.pile {
+  width: 48px !important;
+}
+
+/* Tighter row dividers now that spells are larger. */
+.conflict-line {
+  min-height: 24px !important;
+}
+
+/* On narrow widths, keep the structure but reduce spell size a little. */
+@media (max-width: 980px) {
+  .monster-row {
+    grid-template-columns: repeat(4, minmax(76px, 96px)) !important;
+    gap: clamp(20px, 3vw, 42px) !important;
+  }
+
+  .buff-grid {
+    inset: 0 52px 0 36px !important;
+  }
+
+  .buff-stack {
+    width: 44px !important;
+    height: 62px !important;
+  }
+
+  .buff-stack::after {
+    width: 40px !important;
+    height: 56px !important;
+  }
+
+  .buff-stack .card-view--small,
+  .buff-stack .empty-slot--small,
+  .buff-stack .card-view--board,
+  .buff-stack .empty-slot {
+    width: 38px !important;
+    max-width: 38px !important;
+  }
+}
