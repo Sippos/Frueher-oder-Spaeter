@@ -4,9 +4,9 @@
   --eye-card-back-image: url("/src/assets/cards/eye_card_back.webp");
   --finger-card-back-image: url("/src/assets/cards/finger_card_back.webp");
 }
-
 .deck-back {
   background-position: center !important;
-  background-size: cover !important;
+  background-size: contain !important;
   background-repeat: no-repeat !important;
   border: 0 !important
+}

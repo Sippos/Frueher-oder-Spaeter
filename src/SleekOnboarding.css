@@ -347,7 +347,7 @@
 .deck-assignment-card--sleek .deck-back {
   width: min(92px, 30vw);
   height: auto;
-  aspect-ratio: 5 / 7;
+  aspect-ratio: 607 / 1040;
   min-width: 0;
   min-height: 0;
   max-width: none;
@@ -361,7 +361,7 @@
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: inherit;
 }
 
@@ -952,7 +952,7 @@
 
 .deck-monster-pick .hidden-pick-card {
   width: clamp(46px, 5.2vw, 66px);
-  aspect-ratio: 5 / 7;
+  aspect-ratio: 607 / 1040;
   border-radius: 8px;
   padding: 0;
 }

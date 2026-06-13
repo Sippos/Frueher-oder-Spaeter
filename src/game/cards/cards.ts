@@ -46,7 +46,7 @@ export const cards = [
     strength: 0,
     monsterEffect: "passive",
     page: 1,
-    imagePath: "/src/assets/cards/card-1.webp",
+    imagePath: "/src/assets/cards/card-01.webp",
     text: "Sollte diese Karte am Beginn der Runde 6 das einzige Monster auf deiner Seite sein, verdopple ihre aktuelle Stärke.",
   },
   {
@@ -58,7 +58,7 @@ export const cards = [
     strength: 500,
     monsterEffect: "passive",
     page: 2,
-    imagePath: "/src/assets/cards/card-2.webp",
+    imagePath: "/src/assets/cards/card-02.webp",
     text: "Zauber der Kategorie Schwächung können in Runde 1, 3 und 5 nicht auf diese Karte angewendet werden.",
   },
   {
@@ -70,7 +70,7 @@ export const cards = [
     strength: 500,
     monsterEffect: "none",
     page: 3,
-    imagePath: "/src/assets/cards/card-3.webp",
+    imagePath: "/src/assets/cards/card-03.webp",
     text: "Wie entspannt kann man eigentlich sein?",
   },
   {
@@ -82,7 +82,7 @@ export const cards = [
     strength: 200,
     monsterEffect: "passive",
     page: 4,
-    imagePath: "/src/assets/cards/card-4.webp",
+    imagePath: "/src/assets/cards/card-04.webp",
     text: "Dieses Monster erhält zu Beginn jeder Runde +200 Stärke.",
   },
   {
@@ -93,7 +93,7 @@ export const cards = [
     mana: 2,
     effectType: "permanent",
     page: 5,
-    imagePath: "/src/assets/cards/card-5.webp",
+    imagePath: "/src/assets/cards/card-05.webp",
     text: "Ein Monster deiner Wahl erhält zu Beginn jeder Runde +100 Stärke.",
   },
   {
@@ -104,7 +104,7 @@ export const cards = [
     mana: 1,
     effectType: "special",
     page: 6,
-    imagePath: "/src/assets/cards/card-6.webp",
+    imagePath: "/src/assets/cards/card-06.webp",
     text: "Der nächste Zauber mit dem Effekt Verstärkung, den du spielst, verdoppelt seine Wirkung.",
   },
   {
@@ -115,7 +115,7 @@ export const cards = [
     mana: 1,
     effectType: "special",
     page: 7,
-    imagePath: "/src/assets/cards/card-7.webp",
+    imagePath: "/src/assets/cards/card-07.webp",
     text: "Der nächste Zauber mit dem Effekt Schwächung, der gespielt wird, verliert seine Wirkung.",
   },
   {
@@ -126,7 +126,7 @@ export const cards = [
     mana: 1,
     effectType: "buff",
     page: 8,
-    imagePath: "/src/assets/cards/card-8.webp",
+    imagePath: "/src/assets/cards/card-08.webp",
     text: "Ein Monster deiner Wahl erhält +300 Stärke.",
   },
   {
@@ -137,7 +137,7 @@ export const cards = [
     mana: 1,
     effectType: "permanent",
     page: 9,
-    imagePath: "/src/assets/cards/card-9.webp",
+    imagePath: "/src/assets/cards/card-09.webp",
     text: "1. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +100 Stärke. 2. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +500 Stärke. 3. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +1000 Stärke und deine Karten können nicht zerstört werden.",
   },
   {

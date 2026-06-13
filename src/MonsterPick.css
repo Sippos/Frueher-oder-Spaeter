@@ -79,7 +79,7 @@
 
 .monster-pick-card img {
   width: min(100%, 76px);
-  aspect-ratio: 134 / 232;
+  aspect-ratio: 607 / 1040;
   object-fit: cover;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.42);
 }
