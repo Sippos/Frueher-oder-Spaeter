@@ -72,7 +72,7 @@
   position: absolute !important;
   left: 12px !important;
   right: 12px !important;
-  bottom: -78px !important;
+  bottom: -48px !important; /* Moved higher up to see more of the cards by default */
   height: 158px !important;
   z-index: 30 !important;
   padding: 0 16px !important;
@@ -542,19 +542,20 @@
 .deck-back__image,
 .card-view img,
 .card-preview img {
-  border-radius: 2px !important;
+  border-radius: 14px !important;
 }
 
 .card-view {
   border-color: rgba(255, 236, 202, 0.32) !important;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.14) inset,
-    0 10px 22px rgba(0, 0, 0, 0.34) !important;
+  box-shadow: none !important;
+  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.34));
 }
 
 .card-view:hover,
 .card-view:focus-visible {
   border-color: rgba(255, 236, 202, 0.62) !important;
+  box-shadow: none !important;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.42));
 }
 
 /* Keep hand dock fixed. Do not open it when the mouse only reaches the bottom edge. */
@@ -581,7 +582,7 @@
 .card-view--hand {
   width: clamp(76px, 7.4vw, 112px) !important;
   pointer-events: auto !important;
-  border-radius: 2px !important;
+  border-radius: 14px !important;
   transform: translateY(0) rotate(var(--hand-tilt, 0deg)) !important;
   transform-origin: 50% 100% !important;
   transition:
@@ -622,10 +623,9 @@
 }
 
 .card-preview img {
-  border-radius: 2px !important;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.18) inset,
-    0 18px 36px rgba(0, 0, 0, 0.42) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+  filter: drop-shadow(0 18px 36px rgba(0, 0, 0, 0.42));
 }
 
 /* Board layout v4:
@@ -662,9 +662,9 @@
 }
 
 .card-view--opponentHand {
-  width: clamp(54px, 5.4vw, 78px) !important;
-  pointer-events: auto !important;
-  border-radius: 2px !important;
+  width: clamp(54px, 6vw, 84px) !important;
+  pointer-events: none !important;
+  border-radius: 14px !important;
   transform: translateY(0) rotate(var(--opp-hand-tilt, 0deg)) !important;
   transform-origin: 50% 0 !important;
   filter: brightness(0.86) saturate(0.82) !important;

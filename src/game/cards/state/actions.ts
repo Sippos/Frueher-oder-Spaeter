@@ -48,13 +48,17 @@ function isSpellCard(card: Card): card is Extract<Card, { type: "spell" }> {
 }
 
 export function getTargetRequirement(card: Card): TargetRequirement | undefined {
-  if (card.type === "monster") return undefined;
+  if (card.type === "monster") {
+    if (card.id === "du") return "enemyMonster";
+    return undefined;
+  }
 
   if (card.effectType === "buff" || card.effectType === "permanent") {
     return "ownMonster";
   }
 
   if (card.effectType === "debuff") {
+    if (card.id === "hab-dich") return undefined;
     return "enemyMonster";
   }
 
@@ -108,24 +112,51 @@ function applySpellEffect(
   const opponentId = getOpponentId(playerId);
   const opponent = game.players[opponentId];
 
-  if (!spell.target) return;
+  const targetMonster = spell.target ? findMonster(game, spell.target) : undefined;
 
-  const targetMonster = findMonster(game, spell.target);
+  // Handle Debuffs
+  if (spell.effectType === "debuff") {
+    // Rhyzer immunity
+    if (targetMonster && targetMonster.id === "rhyzer-der-lichtgejagte" && [1, 3, 5].includes(game.round)) {
+      return;
+    }
 
-  if (spell.effectType === "buff" && targetMonster) {
-    const multiplier = player.nextBuffMultiplier;
-    targetMonster.currentStrength += 300 * multiplier;
-    player.nextBuffMultiplier = 1;
-    return;
-  }
-
-  if (spell.effectType === "debuff" && targetMonster) {
     if (game.blockNextDebuff) {
       game.blockNextDebuff = false;
       return;
     }
 
-    targetMonster.currentStrength -= 300;
+    if (targetMonster) {
+      targetMonster.currentStrength = Math.max(0, targetMonster.currentStrength - 300);
+    }
+    return;
+  }
+
+  // Handle Buffs
+  if (spell.effectType === "buff" && targetMonster) {
+    let amount = 300;
+    if (spell.id === "motivationsspritze" || spell.id === "pomodoro-technik") amount = 600;
+
+    const multiplier = player.nextBuffMultiplier;
+    targetMonster.currentStrength += amount * multiplier;
+    player.nextBuffMultiplier = 1;
+    return;
+  }
+
+  // Handle Gefühl cards
+  if (spell.id.startsWith("gefuehl-")) {
+    const gefuehlCount = player.spellZone.filter(c => c.id.startsWith("gefuehl-")).length;
+    if (targetMonster) {
+      let buffAmount = 100;
+      if (gefuehlCount === 2) buffAmount = spell.deck === "finger" ? 300 : 500;
+      if (gefuehlCount >= 3) buffAmount = spell.deck === "finger" ? 500 : 1000;
+      
+      targetMonster.currentStrength += buffAmount;
+
+      if (gefuehlCount >= 3 && spell.deck === "finger") {
+        player.bonusManaNextRound = (player.bonusManaNextRound || 0) + 1;
+      }
+    }
     return;
   }
 
@@ -133,7 +164,7 @@ function applySpellEffect(
     game.ongoingEffects.push({
       id: createInstanceId(spell.id),
       sourceCardId: spell.id,
-      target: spell.target,
+      target: spell.target as import('./gameTypes').TargetRef,
       amount: 100,
       timing: "roundStart",
     });
@@ -151,21 +182,38 @@ function applySpellEffect(
   }
 
   if (spell.id === "aufschieberitis") {
-    const targetCard = findPlayedCard(game, spell.target);
-
-    if (!targetCard) return;
-
-    if (targetCard.type === "monster") {
-      opponent.monsterZone = opponent.monsterZone.filter(
-        (card) => card.instanceId !== targetCard.instanceId
-      );
+    if (spell.target) {
+      const targetCard = findPlayedCard(game, spell.target);
+      if (targetCard) {
+        if (targetCard.type === "monster") {
+          opponent.monsterZone = opponent.monsterZone.filter(c => c.instanceId !== targetCard.instanceId);
+        } else {
+          opponent.spellZone = opponent.spellZone.filter(c => c.instanceId !== targetCard.instanceId);
+        }
+        opponent.graveyard.push(targetCard);
+      }
     } else {
-      opponent.spellZone = opponent.spellZone.filter(
-        (card) => card.instanceId !== targetCard.instanceId
-      );
+      if (opponent.hand.length > 0) {
+        const randomIndex = Math.floor(Math.random() * opponent.hand.length);
+        const discardedCard = opponent.hand.splice(randomIndex, 1)[0];
+        opponent.graveyard.push(discardedCard);
+      }
     }
+    return;
+  }
 
-    opponent.graveyard.push(targetCard);
+  if (spell.id === "falsche-goetter") {
+    if (opponent.hand.length > 0) {
+      const randomIndex = Math.floor(Math.random() * opponent.hand.length);
+      const discardedCard = opponent.hand.splice(randomIndex, 1)[0];
+      opponent.graveyard.push(discardedCard);
+    }
+    return;
+  }
+
+  if (spell.id === "hab-dich") {
+    opponent.bonusManaNextRound = (opponent.bonusManaNextRound || 0) - 1;
+    return;
   }
 }
 
@@ -208,9 +256,10 @@ export function playCardFromHand(
       instanceId: createInstanceId(card.id),
       baseStrength,
       currentStrength: baseStrength,
+      target,
     };
 
-    player.monsterZone.push(playedMonster);
+    player.stagedCards.push(playedMonster);
     return nextGame;
   }
 
@@ -221,24 +270,76 @@ export function playCardFromHand(
       target,
     };
 
-    player.spellZone.push(playedSpell);
-    applySpellEffect(nextGame, playerId, playedSpell);
+    player.stagedCards.push(playedSpell);
   }
 
   return nextGame;
 }
 
-export function startPlayPhase(game: GameState): GameState {
+export function revealStagedCards(game: GameState): GameState {
   const nextGame = cloneGame(game);
+  nextGame.phase = "reveal";
+  
+  const allStagedSpells: { playerId: PlayerId; spell: PlayedSpellCard }[] = [];
 
-  nextGame.phase = "play";
-  nextGame.players.player1.mana = 2 + nextGame.players.player1.bonusManaNextRound;
-  nextGame.players.player2.mana = 2 + nextGame.players.player2.bonusManaNextRound;
-  nextGame.players.player1.bonusManaNextRound = 0;
-  nextGame.players.player2.bonusManaNextRound = 0;
+  // Phase 1: Place all monsters onto the field first
+  for (const playerId of ["player1", "player2"] as PlayerId[]) {
+    const player = nextGame.players[playerId];
+    for (const playedCard of player.stagedCards) {
+      if (playedCard.type === "monster") {
+        player.monsterZone.push(playedCard);
+      }
+    }
+  }
+
+  // Phase 1.5: Apply onPlay monster effects
+  for (const playerId of ["player1", "player2"] as PlayerId[]) {
+    const player = nextGame.players[playerId];
+    const opponent = nextGame.players[playerId === "player1" ? "player2" : "player1"];
+    
+    for (const playedCard of player.stagedCards) {
+      if (playedCard.type === "monster") {
+        if (playedCard.id === "nira-die-augenlose") {
+          if (opponent.hand.length > 0) {
+            const randomIndex = Math.floor(Math.random() * opponent.hand.length);
+            const discardedCard = opponent.hand.splice(randomIndex, 1)[0];
+            opponent.graveyard.push(discardedCard);
+          }
+        } else if (playedCard.id === "du" && playedCard.target) {
+          const targetMonster = findMonster(nextGame, playedCard.target);
+          if (targetMonster) {
+            const duInstance = player.monsterZone.find(m => m.instanceId === playedCard.instanceId);
+            if (duInstance) {
+              duInstance.currentStrength = targetMonster.currentStrength;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Phase 2: Place all spells onto the field
+  for (const playerId of ["player1", "player2"] as PlayerId[]) {
+    const player = nextGame.players[playerId];
+    for (const playedCard of player.stagedCards) {
+      if (playedCard.type === "spell") {
+        player.spellZone.push(playedCard);
+        allStagedSpells.push({ playerId, spell: playedCard });
+      }
+    }
+    // Clear staged cards since they are now on the field
+    player.stagedCards = [];
+  }
+
+  // Phase 3: Apply all spell effects now that the board is fully populated
+  for (const { playerId, spell } of allStagedSpells) {
+    applySpellEffect(nextGame, playerId, spell);
+  }
 
   return nextGame;
 }
+
+// startPlayPhase removed
 
 export function endRound(game: GameState): GameState {
   const nextGame = cloneGame(game);
@@ -249,7 +350,7 @@ export function endRound(game: GameState): GameState {
     const targetMonster = findMonster(nextGame, effect.target);
 
     if (targetMonster) {
-      targetMonster.currentStrength += effect.amount;
+      targetMonster.currentStrength = Math.max(0, targetMonster.currentStrength + effect.amount);
     }
   }
 
@@ -259,15 +360,46 @@ export function endRound(game: GameState): GameState {
   }
 
   nextGame.round += 1;
-  nextGame.phase = "draw";
+  nextGame.phase = "play";
+  nextGame.players.player1.mana = Math.max(0, 2 + (nextGame.players.player1.bonusManaNextRound || 0));
+  nextGame.players.player2.mana = Math.max(0, 2 + (nextGame.players.player2.bonusManaNextRound || 0));
+  nextGame.players.player1.bonusManaNextRound = 0;
+  nextGame.players.player2.bonusManaNextRound = 0;
 
-  for (const player of Object.values(nextGame.players)) {
-    const drawnCard = player.deck[0];
+  // Apply Start-of-Round Passive Monster Effects
+  for (const playerId of ["player1", "player2"] as PlayerId[]) {
+    const player = nextGame.players[playerId];
+    const opponentId = getOpponentId(playerId);
+    const opponent = nextGame.players[opponentId];
 
-    if (drawnCard) {
-      player.hand.push(drawnCard);
-      player.deck = player.deck.slice(1);
+    for (const monster of player.monsterZone) {
+      if (monster.id === "murmoria-die-wirre") {
+        monster.currentStrength += 100;
+        if (opponent.monsterZone.length > 0) {
+          const randomIndex = Math.floor(Math.random() * opponent.monsterZone.length);
+          const target = opponent.monsterZone[randomIndex];
+          target.currentStrength = Math.max(0, target.currentStrength - 100);
+        }
+      } else if (monster.id === "gravis-der-unermuedliche") {
+        monster.currentStrength += 200;
+      } else if (monster.id === "augri-die-sanfte-riesin") {
+        if (nextGame.round === 6 && player.monsterZone.length === 1) {
+          monster.currentStrength *= 2;
+        }
+      }
     }
+  }
+
+  // Calculate dynamic turn order based on current score
+  const p1Score = nextGame.players.player1.monsterZone.reduce((sum, m) => sum + m.currentStrength, 0);
+  const p2Score = nextGame.players.player2.monsterZone.reduce((sum, m) => sum + m.currentStrength, 0);
+  nextGame.players.player1.score = p1Score;
+  nextGame.players.player2.score = p2Score;
+  
+  if (p1Score > p2Score) {
+    nextGame.currentPlayerId = "player1";
+  } else if (p2Score > p1Score) {
+    nextGame.currentPlayerId = "player2";
   }
 
   return nextGame;

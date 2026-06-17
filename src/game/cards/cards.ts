@@ -46,7 +46,7 @@ export const cards = [
     strength: 0,
     monsterEffect: "passive",
     page: 1,
-    imagePath: "/src/assets/cards/card-01.webp",
+    imagePath: new URL("../../assets/cards/card-1.webp", import.meta.url).href,
     text: "Sollte diese Karte am Beginn der Runde 6 das einzige Monster auf deiner Seite sein, verdopple ihre aktuelle Stärke.",
   },
   {
@@ -58,7 +58,7 @@ export const cards = [
     strength: 500,
     monsterEffect: "passive",
     page: 2,
-    imagePath: "/src/assets/cards/card-02.webp",
+    imagePath: new URL("../../assets/cards/card-2.webp", import.meta.url).href,
     text: "Zauber der Kategorie Schwächung können in Runde 1, 3 und 5 nicht auf diese Karte angewendet werden.",
   },
   {
@@ -70,7 +70,7 @@ export const cards = [
     strength: 500,
     monsterEffect: "none",
     page: 3,
-    imagePath: "/src/assets/cards/card-03.webp",
+    imagePath: new URL("../../assets/cards/card-3.webp", import.meta.url).href,
     text: "Wie entspannt kann man eigentlich sein?",
   },
   {
@@ -82,7 +82,7 @@ export const cards = [
     strength: 200,
     monsterEffect: "passive",
     page: 4,
-    imagePath: "/src/assets/cards/card-04.webp",
+    imagePath: new URL("../../assets/cards/card-4.webp", import.meta.url).href,
     text: "Dieses Monster erhält zu Beginn jeder Runde +200 Stärke.",
   },
   {
@@ -93,7 +93,7 @@ export const cards = [
     mana: 2,
     effectType: "permanent",
     page: 5,
-    imagePath: "/src/assets/cards/card-05.webp",
+    imagePath: new URL("../../assets/cards/card-5.webp", import.meta.url).href,
     text: "Ein Monster deiner Wahl erhält zu Beginn jeder Runde +100 Stärke.",
   },
   {
@@ -104,7 +104,7 @@ export const cards = [
     mana: 1,
     effectType: "special",
     page: 6,
-    imagePath: "/src/assets/cards/card-06.webp",
+    imagePath: new URL("../../assets/cards/card-6.webp", import.meta.url).href,
     text: "Der nächste Zauber mit dem Effekt Verstärkung, den du spielst, verdoppelt seine Wirkung.",
   },
   {
@@ -115,7 +115,7 @@ export const cards = [
     mana: 1,
     effectType: "special",
     page: 7,
-    imagePath: "/src/assets/cards/card-07.webp",
+    imagePath: new URL("../../assets/cards/card-7.webp", import.meta.url).href,
     text: "Der nächste Zauber mit dem Effekt Schwächung, der gespielt wird, verliert seine Wirkung.",
   },
   {
@@ -126,7 +126,7 @@ export const cards = [
     mana: 1,
     effectType: "buff",
     page: 8,
-    imagePath: "/src/assets/cards/card-08.webp",
+    imagePath: new URL("../../assets/cards/card-8.webp", import.meta.url).href,
     text: "Ein Monster deiner Wahl erhält +300 Stärke.",
   },
   {
@@ -137,7 +137,7 @@ export const cards = [
     mana: 1,
     effectType: "permanent",
     page: 9,
-    imagePath: "/src/assets/cards/card-09.webp",
+    imagePath: new URL("../../assets/cards/card-9.webp", import.meta.url).href,
     text: "1. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +100 Stärke. 2. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +500 Stärke. 3. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +1000 Stärke und deine Karten können nicht zerstört werden.",
   },
   {
@@ -148,7 +148,7 @@ export const cards = [
     mana: 1,
     effectType: "permanent",
     page: 10,
-    imagePath: "/src/assets/cards/card-10.webp",
+    imagePath: new URL("../../assets/cards/card-10.webp", import.meta.url).href,
     text: "1. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +100 Stärke. 2. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +500 Stärke. 3. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +1000 Stärke und deine Karten können nicht zerstört werden.",
   },
   {
@@ -159,7 +159,7 @@ export const cards = [
     mana: 1,
     effectType: "permanent",
     page: 11,
-    imagePath: "/src/assets/cards/card-11.webp",
+    imagePath: new URL("../../assets/cards/card-11.webp", import.meta.url).href,
     text: "1. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +100 Stärke. 2. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +500 Stärke. 3. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +1000 Stärke und deine Karten können nicht zerstört werden.",
   },
   {
@@ -170,7 +170,7 @@ export const cards = [
     mana: 2,
     effectType: "permanent",
     page: 12,
-    imagePath: "/src/assets/cards/card-12.webp",
+    imagePath: new URL("../../assets/cards/card-12.webp", import.meta.url).href,
     text: "Während diese Karte auf dem Spielfeld liegt, zählen gespielte Zauber mit dem Effekt Verstärkung für alle deine Monster.",
   },
   {
@@ -181,7 +181,7 @@ export const cards = [
     mana: 2,
     effectType: "buff",
     page: 13,
-    imagePath: "/src/assets/cards/card-13.webp",
+    imagePath: new URL("../../assets/cards/card-13.webp", import.meta.url).href,
     text: "Ein Monster deiner Wahl erhält +600 Stärke.",
   },
   {
@@ -192,7 +192,7 @@ export const cards = [
     mana: 2,
     effectType: "buff",
     page: 14,
-    imagePath: "/src/assets/cards/card-14.webp",
+    imagePath: new URL("../../assets/cards/card-14.webp", import.meta.url).href,
     text: "Ein Monster deiner Wahl erhält +600 Stärke.",
   },
   {
@@ -203,7 +203,7 @@ export const cards = [
     mana: 2,
     effectType: "special",
     page: 15,
-    imagePath: "/src/assets/cards/card-15.webp",
+    imagePath: new URL("../../assets/cards/card-15.webp", import.meta.url).href,
     text: "Die soeben gespielte Spielphase wird wiederholt. Die Gegenseite darf keine der abgelegten Karten erneut ausspielen.",
   },
 
@@ -216,7 +216,7 @@ export const cards = [
     strength: 500,
     monsterEffect: "none",
     page: 16,
-    imagePath: "/src/assets/cards/card-16.webp",
+    imagePath: new URL("../../assets/cards/card-16.webp", import.meta.url).href,
     text: "Für dich gibt’s kein High Five!",
   },
   {
@@ -228,7 +228,7 @@ export const cards = [
     strength: 0,
     monsterEffect: "passive",
     page: 17,
-    imagePath: "/src/assets/cards/card-17.webp",
+    imagePath: new URL("../../assets/cards/card-17.webp", import.meta.url).href,
     text: "Ziehe zu Beginn jeder Runde einem gegnerischen Monster 100 Stärke ab. Diese Karte erhält am Beginn jeder Runde +100 Stärke.",
   },
   {
@@ -240,7 +240,7 @@ export const cards = [
     strength: 300,
     monsterEffect: "onPlay",
     page: 18,
-    imagePath: "/src/assets/cards/card-18.webp",
+    imagePath: new URL("../../assets/cards/card-18.webp", import.meta.url).href,
     text: "Wähle eine zufällige Karte aus der Hand deines Gegenübers. Die Karte muss auf dem Friedhof abgelegt werden.",
   },
   {
@@ -252,7 +252,7 @@ export const cards = [
     strength: "copy",
     monsterEffect: "onPlay",
     page: 19,
-    imagePath: "/src/assets/cards/card-19.webp",
+    imagePath: new URL("../../assets/cards/card-19.webp", import.meta.url).href,
     text: "Kopiere die Stärke, die ein Monster deines Gegenübers aktuell hat.",
   },
   {
@@ -263,7 +263,7 @@ export const cards = [
     mana: 1,
     effectType: "permanent",
     page: 20,
-    imagePath: "/src/assets/cards/card-20.webp",
+    imagePath: new URL("../../assets/cards/card-20.webp", import.meta.url).href,
     text: "1. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +100 Stärke. 2. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +300 Stärke. 3. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +500 Stärke und du erhältst in der nächsten Runde +1 Mana.",
   },
   {
@@ -274,7 +274,7 @@ export const cards = [
     mana: 1,
     effectType: "permanent",
     page: 21,
-    imagePath: "/src/assets/cards/card-21.webp",
+    imagePath: new URL("../../assets/cards/card-21.webp", import.meta.url).href,
     text: "1. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +100 Stärke. 2. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +300 Stärke. 3. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +500 Stärke und du erhältst in der nächsten Runde +1 Mana.",
   },
   {
@@ -285,7 +285,7 @@ export const cards = [
     mana: 1,
     effectType: "permanent",
     page: 22,
-    imagePath: "/src/assets/cards/card-22.webp",
+    imagePath: new URL("../../assets/cards/card-22.webp", import.meta.url).href,
     text: "1. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +100 Stärke. 2. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +300 Stärke. 3. Gefühl auf dem Feld: Ein Monster deiner Wahl erhält +500 Stärke und du erhältst in der nächsten Runde +1 Mana.",
   },
   {
@@ -296,7 +296,7 @@ export const cards = [
     mana: 2,
     effectType: "special",
     page: 23,
-    imagePath: "/src/assets/cards/card-23.webp",
+    imagePath: new URL("../../assets/cards/card-23.webp", import.meta.url).href,
     text: "Zerstöre eine Karte auf dem Feld deines Gegenübers. Du kannst auch zufällig eine Karte aus der Hand deines Gegenübers wählen, die auf den Friedhof abgelegt werden muss.",
   },
   {
@@ -307,7 +307,7 @@ export const cards = [
     mana: 1,
     effectType: "debuff",
     page: 24,
-    imagePath: "/src/assets/cards/card-24.webp",
+    imagePath: new URL("../../assets/cards/card-24.webp", import.meta.url).href,
     text: "Ein Monster deiner Wahl verliert -300 Stärke.",
   },
   {
@@ -318,7 +318,7 @@ export const cards = [
     mana: 1,
     effectType: "debuff",
     page: 25,
-    imagePath: "/src/assets/cards/card-25.webp",
+    imagePath: new URL("../../assets/cards/card-25.webp", import.meta.url).href,
     text: "Ein Monster deiner Wahl verliert -300 Stärke.",
   },
   {
@@ -329,7 +329,7 @@ export const cards = [
     mana: 2,
     effectType: "special",
     page: 26,
-    imagePath: "/src/assets/cards/card-26.webp",
+    imagePath: new URL("../../assets/cards/card-26.webp", import.meta.url).href,
     text: "Wähle zufällig eine Karte aus der Hand deines Gegenübers. Diese Karte muss in der nächsten Runde gespielt werden.",
   },
   {
@@ -340,7 +340,7 @@ export const cards = [
     mana: 1,
     effectType: "debuff",
     page: 27,
-    imagePath: "/src/assets/cards/card-27.webp",
+    imagePath: new URL("../../assets/cards/card-27.webp", import.meta.url).href,
     text: "Ein Monster deiner Wahl verliert -300 Stärke.",
   },
   {
@@ -351,7 +351,7 @@ export const cards = [
     mana: 1,
     effectType: "debuff",
     page: 28,
-    imagePath: "/src/assets/cards/card-28.webp",
+    imagePath: new URL("../../assets/cards/card-28.webp", import.meta.url).href,
     text: "Dein Gegenüber hat in der nächsten Runde -1 Mana.",
   },
   {
@@ -362,7 +362,7 @@ export const cards = [
     mana: 2,
     effectType: "special",
     page: 29,
-    imagePath: "/src/assets/cards/card-29.webp",
+    imagePath: new URL("../../assets/cards/card-29.webp", import.meta.url).href,
     text: "Wähle ein Monster auf dem Spielfeld deines Gegenübers. Zauber mit dem Effekt Verstärkung wirken 2 Runden nicht auf dieses Monster.",
   },
   {
@@ -373,7 +373,7 @@ export const cards = [
     mana: 2,
     effectType: "special",
     page: 30,
-    imagePath: "/src/assets/cards/card-30.webp",
+    imagePath: new URL("../../assets/cards/card-30.webp", import.meta.url).href,
     text: "Der nächste Zauber mit dem Effekt Verstärkung, den dein Gegenüber spielt, geht auf ein Monster deiner Wahl über.",
   },
 ] as const satisfies readonly Card[];

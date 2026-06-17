@@ -2,7 +2,15 @@ import type { Card } from "../cards";
 
 export type PlayerId = "player1" | "player2";
 
-export type Phase = "draw" | "play" | "reveal" | "roundEnd" | "gameEnd";
+export type SetupState = {
+  stepIndex: number;
+  coinSide?: "eye" | "finger";
+  player1DeckId?: "eye" | "finger";
+  player2DeckId?: "eye" | "finger";
+  selectedStartingMonsters: { player1?: string; player2?: string };
+};
+
+export type Phase = "play" | "reveal" | "roundEnd" | "gameEnd";
 
 export type TargetRef = {
   playerId: PlayerId;
@@ -20,6 +28,7 @@ export type PlayedMonsterCard = Extract<Card, { type: "monster" }> & {
   baseStrength: number;
   currentStrength: number;
   noBuffsUntilRound?: number;
+  target?: TargetRef;
 };
 
 export type PlayedSpellCard = Extract<Card, { type: "spell" }> & {
@@ -52,6 +61,7 @@ export type PlayerState = {
   monsterZone: PlayedMonsterCard[];
   spellZone: PlayedSpellCard[];
   graveyard: Card[];
+  stagedCards: PlayedCard[];
   mana: number;
   bonusManaNextRound: number;
   nextBuffMultiplier: number;

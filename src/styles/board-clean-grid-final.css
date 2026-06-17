@@ -35,19 +35,22 @@
   display: none !important;
 }
 
-/* Compact round/action button in the right-side free space. */
 .game-sidebar {
   position: absolute !important;
-  right: 86px !important;
+  right: 100px !important; /* Move to the left of the deck column */
   top: 50% !important;
-  width: 136px !important;
+  width: 120px !important; /* Wider to fit button */
   height: auto !important;
   transform: translateY(-50%) !important;
   z-index: 96 !important;
   pointer-events: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
 }
 
 .game-sidebar .game-status {
+  width: 120px !important;
   display: grid !important;
   grid-template-columns: 1fr !important;
   gap: 6px !important;
@@ -60,6 +63,8 @@
   border: 1px solid rgba(255, 244, 223, 0.14) !important;
   box-shadow: 0 16px 34px rgba(0, 0, 0, 0.38) !important;
   pointer-events: auto !important;
+  text-align: center !important;
+  justify-content: center !important;
 }
 
 .game-sidebar .game-status > :first-child {
@@ -78,55 +83,20 @@
   font-weight: 950 !important;
 }
 
-/* Preview remains popup only. */
-.game-sidebar .card-preview {
-  position: absolute !important;
-  right: 0 !important;
-  bottom: calc(100% + 10px) !important;
-  width: clamp(160px, 15vw, 220px) !important;
-  height: auto !important;
-  min-height: 0 !important;
-  padding: 10px !important;
-  display: grid !important;
-  place-items: center !important;
-  border-radius: 14px !important;
-  background: rgba(18, 10, 7, 0.92) !important;
-  border: 1px solid rgba(255, 244, 223, 0.14) !important;
-  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.56) !important;
-  opacity: 0 !important;
-  transform: translateY(8px) scale(0.97) !important;
-  pointer-events: none !important;
-  transition: opacity 140ms ease, transform 140ms ease !important;
-}
 
-.game-sidebar .card-preview img {
-  width: min(100%, 210px) !important;
-  height: auto !important;
-  max-height: calc(100vh - 96px) !important;
-  object-fit: contain !important;
-}
 
-.game-layout:has(.card-view:hover) .game-sidebar .card-preview,
-.game-layout:has(.card-view:focus-visible) .game-sidebar .card-preview,
-.game-sidebar:hover .card-preview,
-.game-sidebar:focus-within .card-preview {
-  opacity: 1 !important;
-  transform: translateY(0) scale(1) !important;
-}
-
-/* Player text headings stay off the board. */
 .player-strip {
   position: absolute !important;
-  inset-inline: 8px 90px !important;
+  inset-inline: 18px 90px !important;
   top: 8px !important;
-  height: 18px !important;
+  height: 24px !important;
   min-height: 0 !important;
   z-index: 24 !important;
   padding: 0 !important;
   display: flex !important;
-  justify-content: flex-end !important;
+  justify-content: flex-start !important;
   align-items: center !important;
-  gap: 4px !important;
+  gap: 12px !important;
   pointer-events: none !important;
 }
 
@@ -134,8 +104,54 @@
   display: none !important;
 }
 
-.player-strip span,
-.player-strip .stat-orb {
+.mana-orbs {
+  display: flex !important;
+  gap: 4px !important;
+  align-items: center !important;
+}
+
+.mana-orb {
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 50% !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.8) !important;
+}
+
+.mana-orb--filled {
+  background: radial-gradient(circle at 30% 30%, #aae6ff, #1188bb) !important;
+  border-color: #aae6ff !important;
+  box-shadow: 0 0 8px rgba(170, 230, 255, 0.6) !important;
+}
+
+.player-strength {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: linear-gradient(135deg, #bd4b2b, #782915) !important;
+  padding: 2px 10px !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(255, 180, 150, 0.6) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.strength-label {
+  font-size: 0.65rem !important;
+  text-transform: uppercase !important;
+  font-weight: 800 !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.strength-value {
+  font-size: 1.2rem !important;
+  font-weight: 900 !important;
+  color: white !important;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5) !important;
+}
+
+.player-strip span.round-starter-badge,
+.player-strip span.forced-card-badge {
   height: 17px !important;
   min-width: 0 !important;
   padding: 2px 6px !important;
@@ -160,6 +176,10 @@
   display: grid !important;
   grid-template-rows: minmax(0, 1fr) 28px minmax(0, 1fr) !important;
   gap: 4px !important;
+
+  --monster-w: clamp(74px, 11vw, 126px);
+  --buff-w: clamp(46px, 7vw, 68px);
+  --edge-w: clamp(40px, 6vw, 60px);
 }
 
 .battlefield-side {
@@ -172,6 +192,13 @@
   overflow: visible !important;
   background: rgba(0, 0, 0, 0.055) !important;
   border-color: rgba(255, 244, 223, 0.06) !important;
+  transition: outline 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.battlefield-side.is-active-turn {
+  outline: 2px solid #f5c16d !important;
+  outline-offset: -2px !important;
+  box-shadow: inset 0 0 40px rgba(245, 193, 109, 0.08) !important;
 }
 
 /* Reserve right rail for green piles. */
@@ -189,27 +216,64 @@
   padding-top: 24px !important;
   padding-bottom: 8px !important;
   display: grid !important;
-  grid-template-rows: repeat(3, minmax(46px, auto)) !important;
+  grid-template-rows: repeat(3, minmax(46px, max-content)) !important;
   align-content: center !important;
+  align-items: center !important;
   gap: 10px !important;
   z-index: 42 !important;
 }
 
+.deck-graveyard-stack {
+  display: contents !important;
+}
+
+.deck-graveyard-stack > .pile:nth-child(1) { order: 1 !important; }
+.deck-graveyard-stack > .pile:nth-child(2) { order: 2 !important; }
+.field-piles > .pile { order: 3 !important; }
+
+.is-opponent .deck-graveyard-stack > .pile:nth-child(1) { order: 3 !important; }
+.is-opponent .deck-graveyard-stack > .pile:nth-child(2) { order: 2 !important; }
+.is-opponent .field-piles > .pile { order: 1 !important; }
+
 .field-piles .pile {
-  width: 64px !important;
-  min-height: 48px !important;
+  width: clamp(40px, 4.4vw, 56px) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  aspect-ratio: 607 / 1040 !important;
   justify-self: center !important;
-  border-radius: 5px !important;
-  border: 1px solid rgba(99, 230, 128, 0.22) !important;
-  background:
-    radial-gradient(circle at center, rgba(75, 210, 100, 0.12), transparent 62%),
-    rgba(0, 0, 0, 0.30) !important;
+  align-self: center !important;
+  border-radius: 2px !important;
+  border: 1px solid rgba(255, 236, 202, 0.12) !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.field-piles .pile::before,
+.field-piles .pile span {
+  display: none !important;
+}
+
+.field-piles .pile--drawable,
+.field-piles button.pile--drawable {
+  outline: 3px solid #f5c16d !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 15px rgba(245, 193, 109, 0.8) !important;
+  cursor: pointer !important;
+  animation: pulse-glow-outer 1.5s infinite alternate !important;
+  z-index: 10 !important;
+}
+
+@keyframes pulse-glow-outer {
+  0% { outline-color: #f5c16d; box-shadow: 0 0 10px rgba(245, 193, 109, 0.5); }
+  100% { outline-color: #ffcc77; box-shadow: 0 0 25px rgba(255, 204, 119, 0.9); }
 }
 
 .pile .deck-back,
 .pile .deck-back--small {
-  width: 30px !important;
-  border-radius: 2px !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: inherit !important;
 }
 
 .pile span {
@@ -490,15 +554,27 @@
   text-transform: uppercase;
 }
 
+.debuff-cards .card-view {
+  width: var(--monster-w) !important;
+  position: static !important;
+  transform: translateY(-24px) !important;
+  border-radius: 2px !important;
+}
+
 /* Hover readability. */
 .buff-stack .card-view:hover,
 .buff-stack .card-view:focus-visible,
 .spell-wing .card-view:hover,
-.spell-wing .card-view:focus-visible,
+.spell-wing .card-view:focus-visible {
+  z-index: 120 !important;
+  transform: translateY(-8px) scale(1.28) !important;
+  box-shadow: 0 24px 44px rgba(0, 0, 0, 0.55) !important;
+}
+
 .debuff-cards .card-view:hover,
 .debuff-cards .card-view:focus-visible {
   z-index: 120 !important;
-  transform: translateY(-8px) scale(1.28) !important;
+  transform: translateY(-32px) scale(1.28) !important;
   box-shadow: 0 24px 44px rgba(0, 0, 0, 0.55) !important;
 }
 
@@ -533,7 +609,7 @@
 .game-table > .hand-zone:not(.hand-zone--opponent),
 .game-table > .hand-zone:not(.hand-zone--opponent):hover,
 .game-table > .hand-zone:not(.hand-zone--opponent):focus-within {
-  bottom: -116px !important;
+  bottom: -36px !important;
 }
 
 .card-view--hand:hover,
@@ -551,7 +627,7 @@
     width: 60px !important;
   }
 
-  .field-main {
+  .battlefield {
     --monster-w: clamp(66px, 11vw, 90px);
     --buff-w: clamp(40px, 6.4vw, 54px);
     --edge-w: clamp(34px, 5.4vw, 44px);

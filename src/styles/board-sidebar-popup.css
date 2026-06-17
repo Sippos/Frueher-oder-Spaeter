@@ -30,15 +30,15 @@
 /* The old right column becomes a compact floating HUD. */
 .game-sidebar {
   position: absolute !important;
-  right: clamp(58px, 5.8vw, 86px) !important;
+  right: 100px !important; /* Move it to the left, inside the board but past the deck column */
   top: 50% !important;
-  width: clamp(138px, 13vw, 176px) !important;
+  width: 120px !important; /* Make it narrower */
   height: auto !important;
   min-height: 0 !important;
   display: grid !important;
   grid-template-rows: auto !important;
   gap: 8px !important;
-  transform: translateY(-50%) !important;
+  transform: translateY(-50%) !important; /* Only translate Y, keep right edge flush */
   z-index: 90 !important;
   pointer-events: none !important;
 }
@@ -67,6 +67,8 @@
 .game-sidebar .game-status > strong,
 .game-sidebar .game-status > div {
   min-width: 0 !important;
+  text-align: center !important;
+  justify-content: center !important;
 }
 
 .game-sidebar .game-status > :first-child {
@@ -91,17 +93,20 @@
 }
 
 /* The card preview is no longer a fixed column. It becomes a popup. */
-.game-sidebar .card-preview {
-  order: 1 !important;
-  position: absolute !important;
-  right: 0 !important;
-  bottom: calc(100% + 10px) !important;
-  width: clamp(170px, 16vw, 230px) !important;
+.card-preview {
+  position: fixed !important;
+  left: 20px !important;
+  bottom: 20px !important;
+  top: auto !important;
+  right: auto !important;
+  transform: none !important;
+  width: clamp(200px, 18vw, 300px) !important;
   height: auto !important;
   min-height: 0 !important;
   max-height: calc(100vh - 40px) !important;
   padding: 10px !important;
   border-radius: 14px !important;
+  z-index: 100 !important;
   display: grid !important;
   place-items: center !important;
   background:
@@ -109,47 +114,25 @@
     rgba(18, 10, 7, 0.92) !important;
   border: 1px solid rgba(255, 244, 223, 0.14) !important;
   box-shadow:
-    0 24px 56px rgba(0, 0, 0, 0.56),
     0 0 0 1px rgba(0, 0, 0, 0.24) inset !important;
   opacity: 0 !important;
-  transform: translateY(8px) scale(0.97) !important;
-  transform-origin: 100% 100% !important;
   pointer-events: none !important;
   transition:
-    opacity 140ms ease,
-    transform 140ms ease !important;
+    opacity 140ms ease !important;
 }
 
-.game-sidebar .card-preview img {
-  width: min(100%, 210px) !important;
+.card-preview img {
+  width: 100% !important;
   height: auto !important;
-  max-height: calc(100vh - 96px) !important;
+  max-height: calc(100vh - 60px) !important;
   object-fit: contain !important;
-  border-radius: 2px !important;
+  border-radius: 6px !important;
 }
 
 /* Show preview as popup when it is useful. */
-.game-layout:has(.card-view:hover) .game-sidebar .card-preview,
-.game-layout:has(.card-view:focus-visible) .game-sidebar .card-preview,
-.game-sidebar:hover .card-preview,
-.game-sidebar:focus-within .card-preview {
+.app:has(.card-view:hover) .card-preview,
+.app:has(.card-view:focus-visible) .card-preview {
   opacity: 1 !important;
-  transform: translateY(0) scale(1) !important;
-}
-
-/* If browser does not support :has, hovering the compact control still reveals it. */
-.game-sidebar::after {
-  content: "Vorschau";
-  justify-self: end;
-  padding: 3px 7px;
-  border-radius: 999px;
-  color: rgba(255, 244, 223, 0.56);
-  background: rgba(255, 244, 223, 0.07);
-  font-size: 0.58rem;
-  font-weight: 900;
-  letter-spacing: 0.05em;
-  pointer-events: auto;
-  order: 3;
 }
 
 /* Pile rail gets a touch more room because the preview column is gone. */

@@ -134,7 +134,7 @@
   justify-items: center;
 }
 
-.setup-walkthrough--sleek:has(.setup-rules-card) .setup-copy--sleek p:not(.step-counter) {
+.setup-walkthrough--sleek:has(.setup-rules-card) .setup-copy--sleek p:not(.step-counter):not(.setup-warning) {
   max-width: 640px;
 }
 
@@ -361,7 +361,7 @@
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: contain;
+  object-fit: cover;
   border-radius: inherit;
 }
 
@@ -504,7 +504,7 @@
   font-size: clamp(1.55rem, 3.2vw, 2.65rem);
 }
 
-.setup-copy--sleek p:not(.step-counter) {
+.setup-copy--sleek p:not(.step-counter):not(.setup-warning) {
   margin: 0;
 }
 
@@ -783,7 +783,7 @@
   font-size: clamp(1.9rem, 4vw, 3.05rem);
 }
 
-.setup-walkthrough--text-only .setup-copy--sleek p:not(.step-counter) {
+.setup-walkthrough--text-only .setup-copy--sleek p:not(.step-counter):not(.setup-warning) {
   max-width: 720px;
 }
 
@@ -955,6 +955,7 @@
   aspect-ratio: 607 / 1040;
   border-radius: 8px;
   padding: 0;
+  overflow: hidden;
 }
 
 .deck-monster-pick .hidden-pick-card .deck-back {
@@ -1129,7 +1130,7 @@
   line-height: 1.02;
 }
 
-.setup-walkthrough--text-only .setup-copy--sleek p:not(.step-counter) {
+.setup-walkthrough--text-only .setup-copy--sleek p:not(.step-counter):not(.setup-warning) {
   font-size: 0.95rem;
   line-height: 1.35;
 }
@@ -1274,7 +1275,7 @@
   white-space: normal;
 }
 
-.setup-walkthrough--text-only .setup-copy--sleek p:not(.step-counter) {
+.setup-walkthrough--text-only .setup-copy--sleek p:not(.step-counter):not(.setup-warning) {
   display: none !important;
 }
 

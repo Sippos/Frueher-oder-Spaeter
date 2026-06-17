@@ -1,0 +1,365 @@
+/* =========================================================================
+   BOARD LAYOUT - CSS GRID OVERHAUL
+   ========================================================================= */
+
+.game-layout {
+  position: relative !important;
+  width: min(100vw - 12px, 1580px) !important;
+  height: calc(100vh - 12px) !important;
+  margin: 6px auto !important;
+  display: flex !important;
+}
+
+.game-table {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  padding: 12px !important;
+  overflow: hidden !important;
+}
+
+.battlefield {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  position: relative;
+  z-index: 20;
+
+  /* Global board scaling variables */
+  --monster-w: clamp(70px, 10vw, 120px);
+  --buff-w: clamp(48px, 7vw, 70px);
+  --edge-w: clamp(44px, 6vw, 64px);
+}
+
+.battlefield-side {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.field-main {
+  display: grid;
+  grid-template-columns: var(--edge-w) repeat(4, var(--monster-w)) var(--edge-w);
+  grid-template-rows: auto auto;
+  gap: 12px 16px;
+  align-items: center;
+  justify-items: center;
+}
+
+/* 
+  Flatten DOM structure visually using display: contents 
+  This allows monsters, buffs, and spells to participate directly in .field-main's grid
+*/
+.monster-row,
+.spell-board,
+.buff-grid {
+  display: contents;
+}
+
+.monster-row > *,
+.buff-stack,
+.spell-wing--permanent,
+.spell-wing--special {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+}
+
+/* =========================================================================
+   LOCAL PLAYER (BOTTOM BOARD)
+   Row 1: Monsters
+   Row 2: Buffs
+   ========================================================================= */
+.battlefield-side:last-child .monster-row > :nth-child(1) { grid-column: 2; grid-row: 1; align-self: end; }
+.battlefield-side:last-child .monster-row > :nth-child(2) { grid-column: 3; grid-row: 1; align-self: end; }
+.battlefield-side:last-child .monster-row > :nth-child(3) { grid-column: 4; grid-row: 1; align-self: end; }
+.battlefield-side:last-child .monster-row > :nth-child(4) { grid-column: 5; grid-row: 1; align-self: end; }
+
+.battlefield-side:last-child .buff-grid > :nth-child(1) { grid-column: 2; grid-row: 2; align-self: start; }
+.battlefield-side:last-child .buff-grid > :nth-child(2) { grid-column: 3; grid-row: 2; align-self: start; }
+.battlefield-side:last-child .buff-grid > :nth-child(3) { grid-column: 4; grid-row: 2; align-self: start; }
+.battlefield-side:last-child .buff-grid > :nth-child(4) { grid-column: 5; grid-row: 2; align-self: start; }
+
+/* =========================================================================
+   OPPONENT (TOP BOARD) - MIRRORED
+   Row 1: Buffs
+   Row 2: Monsters (So monsters meet in the center)
+   ========================================================================= */
+.battlefield-side:first-child .monster-row > :nth-child(1) { grid-column: 2; grid-row: 2; align-self: start; }
+.battlefield-side:first-child .monster-row > :nth-child(2) { grid-column: 3; grid-row: 2; align-self: start; }
+.battlefield-side:first-child .monster-row > :nth-child(3) { grid-column: 4; grid-row: 2; align-self: start; }
+.battlefield-side:first-child .monster-row > :nth-child(4) { grid-column: 5; grid-row: 2; align-self: start; }
+
+.battlefield-side:first-child .buff-grid > :nth-child(1) { grid-column: 2; grid-row: 1; align-self: end; }
+.battlefield-side:first-child .buff-grid > :nth-child(2) { grid-column: 3; grid-row: 1; align-self: end; }
+.battlefield-side:first-child .buff-grid > :nth-child(3) { grid-column: 4; grid-row: 1; align-self: end; }
+.battlefield-side:first-child .buff-grid > :nth-child(4) { grid-column: 5; grid-row: 1; align-self: end; }
+
+/* =========================================================================
+   PERMANENT AND SPECIAL SPELLS (SPAN BOTH ROWS)
+   ========================================================================= */
+.spell-wing--permanent { grid-column: 1; grid-row: 1 / span 2; align-self: center; justify-self: center; }
+.spell-wing--special   { grid-column: 6; grid-row: 1 / span 2; align-self: center; justify-self: center; }
+
+/* Hide the text labels for zones to keep the board visually clean */
+.spell-wing > span,
+.conflict-line > span {
+  display: none;
+}
+
+/* =========================================================================
+   CENTER DEBUFF ZONE (CONFLICT LINE)
+   ========================================================================= */
+.conflict-line {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  z-index: 30;
+  padding: 8px 0;
+  
+  /* Styling to make it look like a distinct center region */
+  background: linear-gradient(90deg, transparent, rgba(255, 216, 91, 0.15) 24%, rgba(255, 216, 91, 0.05) 50%, rgba(255, 216, 91, 0.15) 76%, transparent);
+  border-top: 1px solid rgba(255, 244, 223, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.debuff-cards {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+}
+
+.debuff-cards:empty::before {
+  content: "Schwächungen";
+  color: rgba(255, 226, 188, 0.3);
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* =========================================================================
+   CARD SIZING
+   ========================================================================= */
+.card-view--board {
+  width: var(--monster-w) !important;
+  border-radius: 6px !important;
+  position: relative !important;
+}
+
+.buff-stack .card-view--board {
+  width: var(--buff-w) !important;
+}
+
+.debuff-cards .card-view {
+  width: var(--monster-w) !important;
+  position: static !important;
+  transform: none !important;
+  border-radius: 6px !important;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.4) !important;
+}
+
+.spell-wing .card-view--board {
+  width: var(--edge-w) !important;
+}
+
+/* =========================================================================
+   DECK PILES
+   ========================================================================= */
+.field-piles {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  justify-content: center;
+}
+
+.pile {
+  width: clamp(50px, 7vw, 80px);
+  aspect-ratio: 607 / 1040;
+  border-radius: 6px;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.pile .deck-back__image {
+  border-radius: 6px;
+}
+
+.pile span {
+  display: none;
+}
+
+/* =========================================================================
+   HOVER EFFECTS
+   ========================================================================= */
+.buff-stack .card-view:hover,
+.buff-stack .card-view:focus-visible,
+.spell-wing .card-view:hover,
+.spell-wing .card-view:focus-visible,
+.debuff-cards .card-view:hover,
+.debuff-cards .card-view:focus-visible {
+  z-index: 120 !important;
+  transform: translateY(-8px) scale(1.15) !important;
+  box-shadow: 0 24px 44px rgba(0, 0, 0, 0.55) !important;
+}
+
+.monster-row .card-view--board:hover,
+.monster-row .card-view--board:focus-visible {
+  z-index: 120 !important;
+  transform: translateY(-8px) scale(1.05) !important;
+}
+
+/* Empty slots should maintain size so the grid doesn't collapse */
+.empty-slot {
+  width: var(--monster-w);
+  aspect-ratio: 607 / 1040;
+  border-radius: 6px !important;
+  background: rgba(255, 244, 223, 0.03) !important;
+  border: 1px dashed rgba(255, 244, 223, 0.15) !important;
+}
+
+.buff-stack .empty-slot {
+  width: var(--buff-w);
+}
+
+.spell-wing .empty-slot {
+  width: var(--edge-w);
+}
+
+/* Animations for staging cards */
+.is-staging {
+  animation: stage-card 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes stage-card {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-80px) scale(1.1); }
+  100% { transform: translateY(-160px) scale(1.2); opacity: 0; }
+}
+
+/* Hands stay visually attached to the bottom/top of the screen */
+.game-table > .hand-zone:not(.hand-zone--opponent) {
+  bottom: 0 !important;
+}
+
+.card-view--hand:hover,
+.card-view--hand:focus-visible,
+.card-view--hand.card-view--targetable {
+  transform: translateY(-40px) scale(1.1) !important;
+}
+
+/* =========================================================================
+   UI COMPONENTS (SIDEBAR, PLAYER STRIP, MANA)
+   ========================================================================= */
+.game-sidebar {
+  position: absolute !important;
+  right: 10px !important;
+  top: 50% !important;
+  width: 130px !important;
+  transform: translateY(-50%) !important;
+  z-index: 96 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+.game-sidebar .game-status {
+  width: 100% !important;
+  display: grid !important;
+  gap: 6px !important;
+  padding: 8px !important;
+  border-radius: 14px !important;
+  background: radial-gradient(circle at 50% 0%, rgba(255, 244, 223, 0.10), transparent 55%), rgba(22, 12, 8, 0.84) !important;
+  border: 1px solid rgba(255, 244, 223, 0.14) !important;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.38) !important;
+  text-align: center !important;
+}
+
+.game-sidebar .phase-button {
+  width: 100% !important;
+  min-height: 30px !important;
+  border-radius: 999px !important;
+  font-size: 0.75rem !important;
+  font-weight: 900 !important;
+}
+
+.player-strip {
+  position: absolute !important;
+  left: 20px !important;
+  top: 10px !important;
+  z-index: 24 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  pointer-events: none !important;
+}
+
+.player-strip strong { display: none !important; }
+
+.mana-orbs {
+  display: flex !important;
+  gap: 4px !important;
+  align-items: center !important;
+}
+
+.mana-orb {
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 50% !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.8) !important;
+}
+
+.mana-orb--filled {
+  background: radial-gradient(circle at 30% 30%, #aae6ff, #1188bb) !important;
+  border-color: #aae6ff !important;
+  box-shadow: 0 0 8px rgba(170, 230, 255, 0.6) !important;
+}
+
+.player-strength {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: linear-gradient(135deg, #bd4b2b, #782915) !important;
+  padding: 2px 10px !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(255, 180, 150, 0.6) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.strength-label {
+  font-size: 0.65rem !important;
+  text-transform: uppercase !important;
+  font-weight: 800 !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.strength-value {
+  font-size: 1.2rem !important;
+  font-weight: 900 !important;
+  color: white !important;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5) !important;
+}
+
+.player-strip span.round-starter-badge,
+.player-strip span.forced-card-badge {
+  padding: 2px 6px !important;
+  border-radius: 999px !important;
+  background: rgba(255, 244, 223, 0.075) !important;
+  color: rgba(255, 244, 223, 0.72) !important;
+  font-size: 9px !important;
+  font-weight: 800 !important;
+}

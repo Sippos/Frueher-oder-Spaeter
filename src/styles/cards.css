@@ -1,4 +1,3 @@
-.card-view,
 .empty-slot {
   position: relative;
   aspect-ratio: 607 / 1040;
@@ -10,9 +9,17 @@
   overflow: hidden;
 }
 
-.card-view {
+#root .card-view {
+  position: relative;
+  aspect-ratio: 607 / 1040;
+  border-radius: 4.5% !important;
+  overflow: hidden !important;
+  border: none !important;
+  background: transparent !important;
   display: block;
-  padding: 0;
+  padding: 0 !important;
+  box-shadow: none !important;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4)) !important;
   color: inherit;
   cursor: pointer;
   transition:
@@ -26,20 +33,33 @@
 .card-view:focus-visible {
   transform: translateY(-2px);
   border-color: rgba(255, 226, 188, 0.5);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.32);
+  box-shadow: none !important;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.45)) !important;
   outline: none;
 }
 
-.card-view img,
-.card-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+#root .card-view img,
+.card-preview img,
+.deck-back__image {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: fill !important;
   display: block;
+  border: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border-radius: 4.5% !important;
+  transform: none !important;
 }
 
 .card-view--hand {
   width: clamp(54px, 7.4vw, 88px);
+  animation: draw-card 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes draw-card {
+  0% { transform: translateY(-30px) scale(0.9); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
 }
 
 .card-view--opponentHand {
@@ -49,6 +69,15 @@
 
 .card-view--board {
   width: clamp(72px, 8vw, 104px);
+}
+
+.is-staging-animation .card-view--board {
+  animation: stage-card-sweep 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+}
+
+@keyframes stage-card-sweep {
+  0% { transform: scale(1) translateY(0); opacity: 1; }
+  100% { transform: scale(0.1) translateY(150px); opacity: 0; }
 }
 
 .card-view--small,
@@ -62,10 +91,26 @@
 }
 
 .card-view--targetable {
-  border-color: rgba(255, 202, 109, 0.95);
-  box-shadow:
-    0 0 0 2px rgba(255, 202, 109, 0.22),
-    0 0 28px rgba(255, 202, 109, 0.34);
+  outline: 3px solid #a8ff78 !important;
+  outline-offset: 2px !important;
+  animation: pulse-glow-targetable 1.5s infinite alternate !important;
+  z-index: 10 !important;
+}
+
+@keyframes pulse-glow-targetable {
+  0% { outline-color: #a8ff78; box-shadow: 0 0 10px rgba(168, 255, 120, 0.5); }
+  100% { outline-color: #78ffd6; box-shadow: 0 0 25px rgba(120, 255, 214, 0.9); }
+}
+
+.card-view--playable {
+  outline: 2px solid #6dd5ed !important;
+  outline-offset: 2px !important;
+  animation: pulse-glow-playable 1.5s infinite alternate !important;
+}
+
+@keyframes pulse-glow-playable {
+  0% { outline-color: #6dd5ed; box-shadow: 0 0 8px rgba(109, 213, 237, 0.4); }
+  100% { outline-color: #2193b0; box-shadow: 0 0 20px rgba(33, 147, 176, 0.8); }
 }
 
 .card-view--hidden .deck-back {

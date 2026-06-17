@@ -18,3 +18,28 @@
 @import './styles/board-semantic-final.css';
 @import './styles/board-space-final.css';
 @import './styles/board-clean-grid-final.css';
+
+/* GLOBAL CARD OVERRIDES TO MATCH GALLERY */
+#root .card-view,
+#root .card-view--hand,
+#root .card-view--opponentHand,
+#root .card-view--board,
+#root .card-preview img,
+#root .card-view img,
+#root .deck-back {
+  border-radius: 4.5% !important;
+}
+
+#root .card-view,
+#root .card-view--hand,
+#root .card-view--opponentHand,
+#root .card-view--board {
+  overflow: visible !important;
+}
+
+#root .card-preview {
+  overflow: hidden !important;
+  border-radius: 4.5% !important;
+  aspect-ratio: 607 / 1040 !important;
+}
+

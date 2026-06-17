@@ -55,6 +55,7 @@ function createPlayer(
     monsterZone: [],
     spellZone: [],
     graveyard: [],
+    stagedCards: [],
     mana: 2,
     bonusManaNextRound: 0,
     nextBuffMultiplier: 1,
@@ -69,7 +70,7 @@ export function createGame(options: CreateGameOptions = {}): GameState {
   return {
     round: 1,
     maxRounds: 6,
-    phase: "draw",
+    phase: "play",
     currentPlayerId: getPlayerIdForDeck(player1DeckId, "eye"),
     players: {
       player1: createPlayer(
