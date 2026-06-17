@@ -1,7 +1,5 @@
 import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
 import { io, Socket } from "socket.io-client";
-import eyeCardBackUrl from "./assets/card-backs/eye_card_back.webp";
-import fingerCardBackUrl from "./assets/card-backs/finger_card_back.webp";
 import eyeCoinUrl from "./assets/icons/eye_coin.webp";
 import fingerCoinUrl from "./assets/icons/finger_coin.webp";
 import { cards, type Card, type DeckId } from "./game/cards/cards";
@@ -36,8 +34,8 @@ type MonsterCard = Extract<Card, { type: "monster" }>;
 type CoinSide = DeckId;
 
 const deckBackImages: Record<DeckId, string> = {
-  eye: eyeCardBackUrl,
-  finger: fingerCardBackUrl,
+  eye: "/card-backs/eye_card_back.webp",
+  finger: "/card-backs/finger_card_back.webp",
 };
 
 const coinImages: Record<CoinSide, string> = {
