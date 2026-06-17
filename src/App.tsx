@@ -1189,7 +1189,7 @@ function GameScreen({ game, setGame, socket, localPlayerId, isMultiplayer, onLea
             
             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "3rem", margin: "3rem 0" }}>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
-                <img src={nextPlayer.deckId === "eye" ? eyeCardBackUrl : fingerCardBackUrl} alt="Deck" style={{ width: 140, borderRadius: "12px", boxShadow: "0 10px 30px rgba(0,0,0,0.6)" }} />
+                <img src={deckBackImages[nextPlayer.deckId]} alt="Deck" style={{ width: 140, borderRadius: "12px", boxShadow: "0 10px 30px rgba(0,0,0,0.6)" }} />
                 <strong style={{ color: "#ffd6a8" }}>{getDeckName(nextPlayer.deckId)}</strong>
               </div>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
